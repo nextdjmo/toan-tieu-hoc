@@ -413,12 +413,21 @@
         display: block;
         margin-top: 8px;
       }
+
+
+      .curriculum-note{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:#eef7ff;border:1px solid #cfe7ff;color:#334155;font-size:12px;line-height:1.45}
+      .structure-box{margin-top:12px;padding:12px 14px;border:1px solid #dbe3f0;border-radius:14px;background:linear-gradient(180deg,#fbfdff,#f5f8fc)}
+      .structure-box .f{margin:0}
+      .structure-box textarea{margin-top:7px;min-height:104px;resize:vertical;line-height:1.55;border:1px solid #cbd5e1;border-radius:10px;background:#fff;padding:10px 12px;box-sizing:border-box;width:100%;font:inherit}
+      .hint{font-size:12px;color:var(--mu);font-weight:500}
+      .structure-help{margin-top:8px;font-size:12px;color:var(--mu);line-height:1.5}
+      .structure-help span{display:inline-block;padding:2px 7px;margin:2px 2px;border-radius:999px;background:#eef2ff;color:#475569}
     </style>
   </head>
   <body>
     <header>
       <h1>🧮 Tạo đề Toán Tiểu học</h1>
-      <p>Chọn lớp → tích module → chọn mức độ (đến HSG Quốc gia) và dạng tự luận / trắc nghiệm → tải Word / PDF</p>
+      <p>Chọn lớp → chọn dạng bài đúng khối kiến thức → chọn mức độ → tạo đề → tải Word / PDF</p>
     </header>
     <main>
       <section>
@@ -451,6 +460,15 @@
           <label class="f"
             >Thời gian làm bài<input type="text" id="tm" value="40 phút"
           /></label>
+          <div class="structure-box">
+            <label class="f"><b>Cấu trúc đề riêng</b> <span class="hint">(không bắt buộc)</span>
+              <textarea id="structure" rows="4" placeholder="Ví dụ:
+Phần I - 5 câu tính toán
+Phần II - 3 câu tìm x
+Phần III - 2 bài toán có lời văn"></textarea>
+            </label>
+            <div class="structure-help">Gợi ý: <span>tính toán</span> · <span>tìm x</span> · <span>tư duy</span> · <span>quy luật</span> · <span>lời văn</span> · <span>hình học</span> · <span>phân số</span> · <span>thập phân</span> · <span>thống kê</span></div>
+          </div>
           <div class="row">
             <label
               ><input type="checkbox" id="sp" checked /> Chừa chỗ trình bày lời
@@ -2664,10 +2682,488 @@
           )(),
         3,
       );
+      /* ---------- Ngân hàng dạng bài mở rộng: phân tầng đúng kiến thức từng lớp ---------- */
+      /*
+       * Bám CTGDPT 2018 môn Toán, theo tiến độ cả năm và không kéo kiến thức
+       * của lớp trên xuống lớp dưới. Các dạng HSG/Violympic vẫn chỉ dùng
+       * kiến thức mà học sinh của chính khối đó đã được học.
+       */
+      const addExtra = (g, id, name, t, gen, w=1, h=0) => add(g, id, name, t, gen, w);
+      const pickName = (g) => p(g==1?["An","Bình","Chi"]:g==2?["An","Bình","Lan","Minh"]:["An","Bình","Chi","Dũng","Lan","Minh"]);
+      const customStructure = () => ($("structure")?.value || "").trim();
+      function structurePlan(g){
+        const raw=customStructure(); if(!raw) return null;
+        const lines=raw.split(/[;\n]+/).map(s=>s.trim()).filter(Boolean), out=[];
+        const aliases=[
+          [/(tìm\s*x|tìm\s(số|thành phần)\s*chưa)/i,/find/],
+          [/(tính\s*nhanh|tính\s*hợp\s*l[ií])/i,/fast/],
+          [/(tư\s*duy|suy\s*luận)/i,/think/],
+          [/(quy\s*luật|dãy\s*số)/i,/pattern/],
+          [/(lời\s*văn|toán\s*đố)/i,/word/],
+          [/(hình\s*học|hình\s*phẳng|diện\s*tích)/i,/geom/],
+          [/(thống\s*kê|biểu\s*đồ)/i,/stats/],
+          [/(phân\s*số)/i,/frac/],
+          [/(thập\s*phân)/i,/decimal/],
+          [/(phần\s*trăm|tỉ\s*số)/i,/percent|ratio/],
+          [/(nhân|chia|tính\s*toán|phép\s*tính)/i,/calc|addsub|muldiv|num/]
+        ];
+        for(const line of lines){
+          const mm=line.match(/(?:-|–|:)?\s*(\d+)\s*câu/i); const n=mm?Math.max(1,Math.min(10,+mm[1])):1;
+          const a=aliases.find(x=>x[0].test(line)); if(!a) continue;
+          const m=M.find(x=>x.g===g && new RegExp(a[1]).test(x.id)); if(m) out.push({m,n});
+        }
+        return out.length?out:null;
+      }
+
+      // LỚP 1: số đến 100, cộng/trừ không nhớ, đo lường và hình học trực quan.
+      addExtra(1,"x1","Tìm số chưa biết","Điền số vào ô trống:",(l)=>{
+        const a=r(2,40), b=r(1,Math.min(20,a));
+        return l==1?[`${b} + □ = ${a}`,a-b,null,[a-b+1,a-b-1,b]]:[`${a} − □ = ${b}`,a-b,null,[a-b+1,a-b-1,b]];
+      });
+      addExtra(1,"fast1","Tính nhanh","Tính hợp lí:",(l)=>{
+        const a=r(10,60), b=r(1,Math.min(20,a-1));
+        return [`${a} + ${b} + ${100-a} = …`,100+b,null,[100+b-1,100+b+1,a+b]];
+      });
+      addExtra(1,"think1","Toán tư duy","Suy nghĩ và trả lời:",(l)=>{
+        const a=r(2,8), b=r(2,8), c=a+b;
+        return [`Có ${c} quả bóng. ${a} quả màu đỏ, còn lại màu xanh. Hỏi có bao nhiêu quả màu xanh?`,b,null,[b+1,b-1,a]];
+      });
+      addExtra(1,"pattern1","Quy luật","Điền số còn thiếu:",(l)=>{
+        const a=r(1,8), d=r(1,3), n=r(2,4), v=Array.from({length:5},(_,i)=>a+i*d), ans=v[n]; v[n]="…";
+        return [v.join(", "),ans,null,[ans+1,ans-1,a+d]];
+      });
+      addExtra(1,"wordx1","Toán có lời văn nâng cao","Giải bài toán:",(l)=>{
+        const a=r(15,60), b=r(2,15);
+        return [`${pickName(1)} có ${a} que tính, cho bạn ${b} que. Hỏi còn lại bao nhiêu que tính?`,`${a-b} que tính`,null,[`${a+b} que tính`,`${a-b+1} que tính`,`${b} que tính`]];
+      },2);
+      addExtra(1,"geomx1","Hình học nâng cao","Quan sát và trả lời:",(l)=>{
+        const type=r(0,1)?"hình vuông":"hình tam giác", ans=type==="hình vuông"?4:3;
+        return [`${type} có bao nhiêu cạnh?`,ans,null,[ans-1,ans+1,4]];
+      });
+      addExtra(1,"hsgx1","Đề thi học sinh giỏi","Bài toán suy luận:",(l)=>{
+        const a=r(10,30), b=r(2,8), c=a+b;
+        return [`Có ${a} con chim. Thêm ${b} con bay đến rồi ${b} con bay đi. Hỏi còn bao nhiêu con chim?`,a,null,[a+b,a-b,c]];
+      });
+      addExtra(1,"stats1","Thống kê, biểu đồ","Dựa vào bảng số liệu:",(l)=>{
+        const a=r(2,8),b=r(2,8),c=r(2,8), vals=[a,b,c], mx=Math.max(...vals), ans=vals.indexOf(mx)+1;
+        return [`Số bạn chọn môn: Toán ${a}, Tiếng Việt ${b}, Mĩ thuật ${c}. Môn nào có nhiều bạn chọn nhất?`,["Toán","Tiếng Việt","Mĩ thuật"][ans-1],null,["Toán","Tiếng Việt","Mĩ thuật"].filter(x=>x!==["Toán","Tiếng Việt","Mĩ thuật"][ans-1])];
+      });
+      addExtra(1,"custom1","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{
+        const a=r(10,50),b=r(1,20); return [`${a} + ${b} = …`,a+b,null,[a+b-1,a+b+1,a-b]];
+      });
+      addExtra(1,"olym1","Đề thi Violympic","Điền số:",(l)=>{
+        const a=r(5,20), b=r(1,5); return [`${a}, ${a+b}, ${a+2*b}, …, ${a+4*b}`,a+3*b,null,[a+2*b,a+4*b,a+b]];
+      });
+
+      // LỚP 2: đến 1000; cộng/trừ, nhân/chia trong phạm vi bảng 2 và 5; chu vi đơn giản.
+      addExtra(2,"x2","Tìm số chưa biết","Tìm số chưa biết:",(l)=>{
+        const mode=r(1,3), b=r(2,5), q=r(2,10), a=mode==1?q+b:mode==2?q*b:q*b;
+        if(mode==1) return [`□ + ${b} = ${a}`,q,null,[q+1,q-1,b]];
+        if(mode==2) return [`${a} − □ = ${b}`,q,null,[q+1,q-1,b]];
+        return [`□ × ${b} = ${a}`,q,null,[q+1,q-1,b]];
+      });
+      addExtra(2,"fast2","Tính nhanh","Tính hợp lí:",(l)=>{
+        const a=r(20,80), b=100-a; return [`${a} + ${b} + 25 = …`,125,null,[124,126,a+b]];
+      });
+      addExtra(2,"think2","Toán tư duy","Suy luận:",(l)=>{
+        const a=r(2,5), b=r(2,5), n=a*2+b*5;
+        return [`Có ${a} nhóm 2 chiếc và ${b} nhóm 5 chiếc. Tất cả có bao nhiêu chiếc?`,n,null,[n+2,n-2,a+b]];
+      });
+      addExtra(2,"pattern2","Quy luật","Điền số còn thiếu:",(l)=>{
+        const a=r(10,30),d=p([2,5,10]),n=r(1,3),v=Array.from({length:5},(_,i)=>a+i*d),ans=v[n];v[n]="…";
+        return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];
+      });
+      addExtra(2,"wordx2","Toán có lời văn nâng cao","Giải bài toán:",(l)=>{
+        const a=r(3,9),b=r(2,8), total=a*5+b;
+        return [`Có ${a} túi, mỗi túi có 5 viên bi và thêm ${b} viên rời. Hỏi có tất cả bao nhiêu viên bi?`,`${total} viên bi`,null,[`${total+5} viên bi`,`${total-5} viên bi`,`${a+b} viên bi`]];
+      },2);
+      addExtra(2,"geomx2","Hình học nâng cao","Tính độ dài:",(l)=>{
+        const a=r(3,10),b=r(3,10),ans=2*(a+b);
+        return [`Hình chữ nhật có chiều dài ${a} cm và chiều rộng ${b} cm. Tính chu vi.`,`${ans} cm`,null,[`${ans+2} cm`,`${a*b} cm`,`${a+b} cm`]];
+      });
+      addExtra(2,"hsgx2","Đề thi học sinh giỏi","Bài toán suy luận:",(l)=>{
+        const a=r(10,30), b=r(2,5), ans=a+b;
+        return [`Tìm số bé nhất lớn hơn ${a} và chia hết cho ${b}.`,`${Math.ceil((a+1)/b)*b}`,null,[`${ans+b}`,`${ans-1}`,`${a+b}`]];
+      });
+      addExtra(2,"stats2","Thống kê, biểu đồ","Dựa vào bảng số liệu:",(l)=>{
+        const a=r(5,15),b=r(5,15),c=r(5,15);return [`Ba ngày lớp thu gom lần lượt ${a}, ${b}, ${c} chai nhựa. Cả ba ngày thu gom bao nhiêu chai?`,a+b+c,null,[a+b+c+1,a+b+c-1,a*b*c]];
+      });
+      addExtra(2,"custom2","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(20,80),b=p([2,5]);return [`${a} + ${b} × 2 = …`,a+b*2,null,[a+b,a+b*2+1,a*2+b]];});
+      addExtra(2,"olym2","Đề thi Violympic","Tìm số:",(l)=>{const a=r(10,30),b=p([2,5]);return [`Số nào lớn hơn ${a}, nhỏ hơn ${a+10} và chia hết cho ${b}?`,Math.ceil((a+1)/b)*b,null,[a+1,a+2,a+3]];});
+
+      // LỚP 3: số đến 100000, nhân/chia 1 chữ số, biểu thức, phân số trực quan.
+      addExtra(3,"x3","Tìm x","Tìm thành phần chưa biết:",(l)=>{
+        const b=r(2,9),q=r(10,90), mode=r(1,3),a=mode==1?q+b:mode==2?q*b:q+b;
+        if(mode==1)return [`x + ${b} = ${a}`,q,null,[q+1,q-1,b]];
+        if(mode==2)return [`x × ${b} = ${a}`,q,null,[q+1,q-1,b]];
+        return [`${a} − x = ${b}`,q,null,[q+1,q-1,b]];
+      });
+      addExtra(3,"fast3","Tính nhanh","Tính hợp lí:",(l)=>{const a=r(20,90),b=100-a;return [`${a} + ${b} + 125 = …`,225,null,[224,226,a+b]];});
+      addExtra(3,"think3","Toán tư duy","Suy luận:",(l)=>{const a=r(12,30),b=r(2,5),ans=a*b;return [`Một số gấp ${b} lần số ${a}. Tìm số đó.`,ans,null,[ans+b,ans-b,a+b]];});
+      addExtra(3,"pattern3","Quy luật","Điền số còn thiếu:",(l)=>{const a=r(10,50),d=p([3,5,10]),v=Array.from({length:6},(_,i)=>a+i*d),i=r(1,4),ans=v[i];v[i]="…";return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];});
+      addExtra(3,"wordx3","Toán có lời văn nâng cao","Giải bài toán:",(l)=>{const a=r(20,50),b=r(2,5),c=r(3,8),ans=a+b*c;return [`Một cửa hàng có ${a} kg gạo, nhập thêm ${b} bao, mỗi bao ${c} kg. Hỏi có tất cả bao nhiêu ki-lô-gam gạo?`,`${ans} kg`,null,[`${ans+c} kg`,`${ans-c} kg`,`${a+b+c} kg`]];},2);
+      addExtra(3,"geomx3","Hình học nâng cao","Tính chu vi hoặc diện tích:",(l)=>{const a=r(4,12),b=r(3,a),ans=l==1?2*(a+b):a*b;return [`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Tính ${l==1?"chu vi":"diện tích"}.`,`${ans} cm${l==1?"":"²"}`,null,[`${ans+2} cm${l==1?"":"²"}`,`${ans-2} cm${l==1?"":"²"}`,`${a+b} cm`]];});
+      addExtra(3,"hsgx3","Đề thi học sinh giỏi","Bài toán suy luận:",(l)=>{const b=r(2,9),q=r(10,30),ans=q*b;return [`Một số khi nhân với ${b} được ${ans}. Tìm số đó.`,q,null,[q+1,q-1,b]];});
+      addExtra(3,"stats3","Thống kê, biểu đồ","Dựa vào bảng số liệu:",(l)=>{const a=r(10,30),b=r(10,30),c=r(10,30),ans=a+b+c;return [`Số sách ba bạn đọc trong tháng lần lượt là ${a}, ${b}, ${c}. Cả ba bạn đọc được bao nhiêu quyển?`,ans,null,[ans+1,ans-1,a+b]];});
+      addExtra(3,"fracx3","Phân số","Nhận biết phân số:",(l)=>{const d=p([2,3,4,5,6,8,9]),a=1;return [`Một đơn vị được chia thành ${d} phần bằng nhau. Chọn ${a} phần. Phân số chỉ phần đã chọn là gì?`,F(a,d),null,[F(2,d),F(a,d+1),F(d,a)]];});
+      addExtra(3,"custom3","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(100,900),b=r(10,99);return [`${a} + ${b} = …`,a+b,null,[a+b-1,a+b+1,a-b]];});
+      addExtra(3,"olym3","Đề thi Violympic","Tìm số theo quy luật:",(l)=>{const a=r(10,50),d=p([3,4,5]),v=[a,a+d,a+2*d,a+3*d],ans=a+4*d;return [`${v.join(", ")}, …`,ans,null,[ans+d,ans-d,a+5*d]];});
+
+      // LỚP 4: số đến lớp triệu, phân số và các phép tính với phân số, biểu đồ.
+      addExtra(4,"x4","Tìm x","Tìm thành phần chưa biết:",(l)=>{const b=r(10,50),q=r(20,100),a=q+b;return l==1?[`x + ${b} = ${a}`,q,null,[q+1,q-1,b]]:[`${a} − x = ${b}`,q,null,[q+1,q-1,b]];});
+      addExtra(4,"fast4","Tính nhanh","Tính hợp lí:",(l)=>{const a=r(20,80),b=100-a;return [`${a} × 25 + ${b} × 25 = …`,2500,null,[2490,2510,100]];});
+      addExtra(4,"think4","Toán tư duy","Suy luận:",(l)=>{const a=r(20,80),b=r(10,30),s=a+b;return [`Tổng hai số là ${s}, hiệu của chúng là ${a-b}. Số lớn là bao nhiêu?`,a,null,[b,s,a-b]];});
+      addExtra(4,"pattern4","Quy luật","Điền số còn thiếu:",(l)=>{const a=r(10,30),d=p([5,10,25]),v=Array.from({length:5},(_,i)=>a+i*d),i=r(1,3),ans=v[i];v[i]="…";return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];});
+      addExtra(4,"wordx4","Toán có lời văn nâng cao","Giải bài toán:",(l)=>{const a=r(100,300),b=r(20,80),c=r(2,4),ans=a+b*c;return [`Một kho có ${a} kg hàng, nhập thêm ${c} bao, mỗi bao ${b} kg. Hỏi kho có tất cả bao nhiêu ki-lô-gam hàng?`,`${ans} kg`,null,[`${ans+b} kg`,`${ans-b} kg`,`${a+b+c} kg`]];},2);
+      addExtra(4,"geomx4","Hình học nâng cao","Tính diện tích:",(l)=>{const a=r(5,15),b=r(3,a),ans=a*b;return [`Hình chữ nhật có chiều dài ${a} cm, chiều rộng ${b} cm. Tính diện tích.`,`${ans} cm²`,null,[`${2*(a+b)} cm²`,`${ans+2} cm²`,`${a+b} cm²`]];});
+      addExtra(4,"hsgx4","Đề thi học sinh giỏi","Bài toán suy luận:",(l)=>{const a=r(10,30),b=r(2,8),q=Math.ceil((a+1)/b)*b;return [`Tìm số tự nhiên nhỏ nhất lớn hơn ${a} và chia hết cho ${b}.`,q,null,[q+b,q-1,a+b]];});
+      addExtra(4,"stats4","Thống kê, biểu đồ","Đọc biểu đồ cột dạng văn bản:",(l)=>{const a=r(10,30),b=r(10,30),c=r(10,30),ans=Math.max(a,b,c);return [`Số cây ba lớp trồng được lần lượt là 4A: ${a}, 4B: ${b}, 4C: ${c}. Lớp nào trồng nhiều cây nhất?`,["4A","4B","4C"][[a,b,c].indexOf(ans)],null,["4A","4B","4C"]];});
+      addExtra(4,"fracx4","Phân số","Tính với phân số:",(l)=>{const d=p([4,6,8,10]),a=r(1,d-1),b=r(1,d-a);return [`Tính: ${F(a,d)} + ${F(b,d)} = …`,F(a+b,d),null,[F(a+b+1,d),F(Math.max(1,a-b),d),F(a,d)]];});
+      addExtra(4,"custom4","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(1000,9000),b=r(100,900);return [`${a} − ${b} = …`,a-b,null,[a-b+1,a-b-1,a+b]];});
+      addExtra(4,"olym4","Đề thi Violympic","Tìm số theo quy luật:",(l)=>{const a=r(10,50),d=p([4,5,10]),ans=a+5*d;return [`${a}, ${a+d}, ${a+2*d}, ${a+3*d}, … . Số thứ 6 là?`,ans,null,[ans+d,ans-d,a+4*d]];});
+
+      // LỚP 5: số tự nhiên, phân số, số thập phân, tỉ số phần trăm, vận dụng nâng cao.
+      addExtra(5,"x5e","Tìm x","Tìm x:",(l)=>{const b=r(10,80),q=r(20,100),a=q+b;return [`x + ${b} = ${a}`,q,null,[q+1,q-1,b]];});
+      addExtra(5,"fast5e","Tính nhanh","Tính hợp lí:",(l)=>{const a=r(20,80),b=100-a;return [`${a} × 25 + ${b} × 25 = …`,2500,null,[2490,2510,100]];});
+      addExtra(5,"think5e","Toán tư duy","Suy luận:",(l)=>{const a=r(20,60),b=r(10,30),s=a+b;return [`Hai số có tổng ${s} và hiệu ${a-b}. Số bé là?`,b,null,[a,s,a-b]];});
+      addExtra(5,"pattern5e","Quy luật","Điền số còn thiếu:",(l)=>{const a=r(10,50),d=p([5,10,25]),v=Array.from({length:6},(_,i)=>a+i*d),i=r(1,4),ans=v[i];v[i]="…";return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];});
+      addExtra(5,"wordx5e","Toán có lời văn nâng cao","Giải bài toán:",(l)=>{const a=r(100,500),b=r(20,80),pct=p([10,20,25]),ans=a*(1-pct/100);return [`Một cửa hàng có ${a} kg hàng, đã bán ${pct}% số hàng đó. Hỏi còn lại bao nhiêu ki-lô-gam?`,`${D(ans)} kg`,null,[`${D(a*pct/100)} kg`,`${D(a*(1+pct/100))} kg`,`${D(a-pct)} kg`]];},2);
+      addExtra(5,"geomx5e","Hình học nâng cao","Tính diện tích hình tròn:",(l)=>{const R=r(2,10),ans=3.14*R*R;return [`Hình tròn bán kính ${R} cm. Tính diện tích, lấy π = 3,14.`,`${D(ans)} cm²`,null,[`${D(2*3.14*R)} cm²`,`${D(3.14*R)} cm²`,`${D(ans+3.14*R)} cm²`]];});
+      addExtra(5,"hsgx5e","Đề thi học sinh giỏi","Bài toán suy luận:",(l)=>{const a=r(2,9),b=r(2,9),ans=a*b;return [`Tìm số nhỏ nhất chia hết cho cả ${a} và ${b}.`,Math.abs(a*b)/gc(a,b),null,[a+b,ans,Math.max(a,b)]];});
+      addExtra(5,"stats5e","Thống kê, biểu đồ","Đọc biểu đồ hình quạt tròn dạng số liệu:",(l)=>{const pct=p([20,25,30,40,50]),total=200,ans=total*pct/100;return [`Một nhóm có ${total} học sinh, ${pct}% chọn môn A. Có bao nhiêu học sinh chọn môn A?`,ans,null,[ans+1,ans-1,total-pct]];});
+      addExtra(5,"fracx5e","Phân số","Tính với phân số:",(l)=>{const a=p([[1,2],[1,3],[2,3],[3,4]]),b=p([[1,4],[1,6],[1,8]]),aa=a[0]*b[1],bb=a[1]*b[0],ans=F(aa+bb,a[1]*b[1]);return [`Tính: ${F(a[0],a[1])} + ${F(b[0],b[1])} = …`,ans,null,[F(Math.max(1,aa),a[1]*b[1]),F(aa+bb+1,a[1]*b[1]),F(a[0],a[1])] ];});
+      addExtra(5,"decimalx5e","Số thập phân nâng cao","Tính:",(l)=>{const a=r(100,999)/100,b=r(10,999)/1000,ans=a*b;return [`${D(a)} × ${D(b)} = …`,D(ans),null,[D(ans+0.1),D(ans-0.1),D(a+b)]];});
+      addExtra(5,"custom5","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(10,90),b=r(10,90);return [`${D(a/10)} + ${D(b/10)} = …`,D((a+b)/10),null,[D((a+b+1)/10),D((a+b-1)/10),D((a*b)/100)]];});
+      addExtra(5,"olym5","Đề thi Violympic","Tìm số theo quy luật:",(l)=>{const a=r(10,50),d=p([5,10,15]),ans=a+7*d;return [`${a}, ${a+d}, ${a+2*d}, … . Số thứ 8 là?`,ans,null,[ans+d,ans-d,a+6*d]];});
+
       ["o1", "r1", "o2", "r2", "o3", "r3", "o4", "r4", "o5", "r5"].forEach(
         (id) => (M.find((m) => m.id == id).h = 1),
       );
       ["u2", "u3", "x5", "d5"].forEach((id) => (M.find((m) => m.id == id).sc = 1));
+
+      /* ================================================================
+         NGÂN HÀNG THEO CHƯƠNG TRÌNH GDPT 2018 - TIỂU HỌC
+         Không dùng công thức "một bộ cho cả 5 lớp". Mỗi lớp có phạm vi riêng.
+         ================================================================ */
+      M.splice(0, M.length);
+      const addC = (g, id, name, t, gen, w=1, sc=0) => M.push({g,id,name,t,gen,w,sc});
+      const nm = (g) => p(g===1?["An","Bình","Chi"]:g===2?["An","Bình","Lan","Minh"]:["An","Bình","Chi","Dũng","Lan","Minh"]);
+
+      // LỚP 1: số đến 100; cộng, trừ không nhớ; đo độ dài cm; giờ đúng; hình phẳng/khối trực quan;
+      // bài toán một bước; quy luật đơn giản; bảng số liệu/tranh ở mức đọc và đếm.
+      addC(1,"num1","Số và so sánh trong phạm vi 100","Đọc, viết, so sánh số:",(l)=>{
+        const a=r(0,99), b=r(0,99); return [`Số nào lớn hơn: ${a} hay ${b}?`, a>b?`${a}`:b>a?`${b}`:`Hai số bằng nhau`, null, [a>b?b:a, a===b?`${a}`:a+b, a===b?`${a}`:Math.abs(a-b)]];
+      },1,1);
+      addC(1,"addsub1","Cộng, trừ không nhớ trong phạm vi 100","Tính:",(l)=>{
+        const op=p(["+","−"]); let a,b; if(op==="+"){a=r(0,98);b=r(0,99-a);}else{a=r(1,99);b=r(0,a);} const ans=op==="+"?a+b:a-b;
+        return [`${a} ${op} ${b} = ${_}`,ans,null,[ans+1,Math.max(0,ans-1),op==="+"?a-b:a+b]];
+      },1,1);
+      addC(1,"mental1","Tính nhẩm","Tính nhẩm:",(l)=>{const a=r(1,9),b=r(0,10-a);return [`${a} + ${b} = ${_}`,a+b,null,[a+b+1,a+b-1,a]];},1,1);
+      addC(1,"find1","Tìm số chưa biết","Điền số còn thiếu:",(l)=>{const a=r(1,9),b=r(1,9-a),c=a+b;return [`${a} + ${_} = ${c}`,b,null,[a,c-a+1,c]];},1,1);
+      addC(1,"pattern1","Quy luật","Điền số thích hợp:",(l)=>{const a=r(0,8),d=p([1,2,5]),v=[0,1,2,3,4].map(i=>a+i*d),i=r(1,3),ans=v[i];v[i]=_;return [v.join(", "),ans,null,[ans+d,Math.max(0,ans-d),a+d]];},1,1);
+      addC(1,"fast1","Tính nhanh","Tính thuận tiện:",(l)=>{const a=r(1,9),b=r(1,9),c=r(1,9);return [`${a} + ${b} + ${c} = ${_}`,a+b+c,null,[a+b, a+c, a+b+c+1]];},1,1);
+      addC(1,"word1","Toán có lời văn","Giải bài toán:",(l)=>{const A=nm(1),a=r(5,20),b=r(1,a),add=p([1,0]),ans=add?a+b:a-b;return [`${A} có ${a} que tính, ${add?"cho đi":"bớt đi"} ${b} que tính. Hỏi ${add?"có tất cả":"còn lại"} bao nhiêu que tính?`,ans+" que tính",null,[(add?a+b:a-b)+1,Math.max(0,ans-1),a]];},1,1);
+      addC(1,"geom1","Hình học và đo lường","Nhận biết hình/độ dài:",(l)=>{const a=r(2,9);return [`Một đoạn thẳng dài ${a} cm. Đoạn thẳng đó dài bao nhiêu xăng-ti-mét?`,`${a} cm`,null,[`${a+1} cm`,`${Math.max(1,a-1)} cm`,`${a+2} cm`]];},1,1);
+      addC(1,"stats1","Thống kê đơn giản","Đọc bảng số liệu:",(l)=>{let a,b,c;do{a=r(2,9);b=r(2,9);c=r(2,9);}while(new Set([a,b,c]).size<3);const mx=Math.max(a,b,c);return [`Ba bạn có số ngôi sao lần lượt: An ${a}, Bình ${b}, Chi ${c}. Bạn nào có nhiều sao nhất?`,["An","Bình","Chi"][[a,b,c].indexOf(mx)],null,["An","Bình","Chi","Cả ba bạn bằng nhau"]];},1,1);
+      addC(1,"think1","Toán tư duy","Suy luận đơn giản:",(l)=>{const a=r(2,8),b=a+2;return [`Lan có ${b} viên bi, Nam có ít hơn Lan ${2} viên. Nam có bao nhiêu viên bi?`,a,null,[b,b-1,a+1]];},1,1);
+      addC(1,"hsg1","Đề thi học sinh giỏi","Thử thách trong phạm vi đã học:",(l)=>{const a=r(10,40),b=r(10,40),ans=Math.max(a,b);return [`Trong các số ${a}, ${b}, ${r(10,40)}, số lớn nhất là số nào?`,ans,null,[a,b,ans+1]];},1,1);
+      addC(1,"olym1","Đề thi Violympic","Thử thách số học:",(l)=>{const a=r(1,9),d=p([1,2,5]),v=[a,a+d,a+2*d,a+3*d],ans=a+4*d;return [`${v.join(", ")}, … Số tiếp theo là?`,ans,null,[ans+d,ans-d,a+d]];},1,1);
+      addC(1,"custom1","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(10,80),b=r(1,20),ans=a+b;return [`${a} + ${b} = …`,ans,null,[ans-1,ans+1,a-b]];},1,1);
+
+      // LỚP 2: số đến 1000; cộng/trừ có nhớ không quá một lượt; nhân/chia bảng 2,5;
+      // đơn vị đo phù hợp; bài toán một bước; hình phẳng/khối; dữ liệu đơn giản.
+      addC(2,"num2","Số và cấu tạo trong phạm vi 1000","Điền số:",(l)=>{const a=r(1,9),b=r(0,9),c=r(0,9),n=100*a+10*b+c;return [`Số ${n} gồm ${a} trăm, ${b} chục và ${c} đơn vị. Số đó là?`,n,null,[n+10,n+1,100*a+10*c+b]];},1,1);
+      addC(2,"addsub2","Cộng, trừ trong phạm vi 1000","Tính:",(l)=>{let a=r(100,899),b=r(1,100),op=p(["+","−"]);if(op==="−"&&b>a)b=a;const ans=op==="+"?a+b:a-b;return [`${a} ${op} ${b} = ${_}`,ans,null,[ans+10,Math.max(0,ans-10),op==="+"?a-b:a+b]];},1,1);
+      addC(2,"muldiv2","Nhân, chia với bảng 2 và 5","Tính:",(l)=>{const k=p([2,5]),b=r(1,10),mul=p([1,0]);if(mul){const ans=k*b;return [`${k} × ${b} = ${_}`,ans,null,[ans+k,ans-k,ans+b]];}const ans=b;return [`${k*b} : ${k} = ${_}`,ans,null,[ans+1,Math.max(0,ans-1),k]];},1,1);
+      addC(2,"find2","Tìm thành phần chưa biết","Tìm số chưa biết:",(l)=>{const a=r(10,80),b=r(1,20),c=a+b;return [`${a} + ${_} = ${c}`,b,null,[a,c-b+1,c]];},1,1);
+      addC(2,"fast2","Tính nhanh","Tính thuận tiện:",(l)=>{const a=r(10,50),b=r(1,20);return [`${a} + ${b} + ${10-b} = ${_}`,a+10,null,[a+b,a+20,a+9]];},1,1);
+      addC(2,"pattern2","Quy luật","Điền số:",(l)=>{const a=r(5,30),d=p([2,5,10]),v=[a,a+d,a+2*d,a+3*d,a+4*d],i=r(1,3),ans=v[i];v[i]=_;return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];},1,1);
+      addC(2,"word2","Toán có lời văn","Giải bài toán một bước:",(l)=>{const A=nm(2),a=r(20,80),b=r(2,a),add=p([0,1]),ans=add?a+b:a-b;return [`${A} có ${a} quyển vở, ${add?"mua thêm":"cho đi"} ${b} quyển. Hỏi ${add?"có tất cả":"còn lại"} bao nhiêu quyển?`,ans+" quyển",null,[(add?a+b:a-b)+1,Math.max(0,ans-1),a]];},1,1);
+      addC(2,"geom2","Hình học và đo lường","Tính độ dài đơn giản:",(l)=>{const a=r(2,9),b=r(2,9);return [`Một đường gấp khúc gồm hai đoạn dài ${a} cm và ${b} cm. Độ dài đường gấp khúc là?`,`${a+b} cm`,null,[`${a+b+1} cm`,`${Math.abs(a-b)} cm`,`${a*b} cm`]];},1,1);
+      addC(2,"stats2","Thống kê, biểu đồ đơn giản","Đọc bảng số liệu:",(l)=>{const a=r(5,20),b=r(5,20),c=r(5,20),sum=a+b+c;return [`Ba ngày cửa hàng bán ${a}, ${b}, ${c} chiếc bút. Cả ba ngày bán bao nhiêu chiếc?`,sum,null,[sum+1,sum-1,Math.max(a,b,c)]];},1,1);
+      addC(2,"think2","Toán tư duy","Suy luận:",(l)=>{const a=r(10,30),b=r(2,9),ans=a-b;return [`Số ${a} lớn hơn một số ${b} đơn vị. Số đó là?`,ans,null,[a+b, a-b+1,b]];},1,1);
+      addC(2,"hsg2","Đề thi học sinh giỏi","Thử thách trong phạm vi lớp 2:",(l)=>{const a=r(10,40),b=r(2,9),ans=a+b;return [`Tìm số bé hơn ${ans} đúng ${b} đơn vị.`,a,null,[a+1,a-b,ans-b+1]];},1,1);
+      addC(2,"olym2","Đề thi Violympic","Thử thách số học:",(l)=>{const a=r(10,40),d=p([2,5,10]),ans=a+4*d;return [`${a}, ${a+d}, ${a+2*d}, ${a+3*d}, … Số thứ 5 là?`,ans,null,[ans+d,ans-d,a+3*d]];},1,1);
+      addC(2,"custom2","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(100,900),b=r(10,90),ans=a-b;return [`${a} − ${b} = …`,ans,null,[ans-1,ans+1,a+b]];},1,1);
+
+      // LỚP 3: số đến 100000; 4 phép tính, biểu thức; tìm thành phần chưa biết;
+      // phân số trực quan; diện tích cm²; biểu đồ/bảng số liệu; bài toán đến 2 bước.
+      addC(3,"num3","Số đến 100000, so sánh và làm tròn","Tính/so sánh:",(l)=>{const a=r(10000,99999),b=r(10000,99999);return [`Số lớn hơn trong ${a} và ${b} là?`,Math.max(a,b),null,[Math.min(a,b),a+b,Math.abs(a-b)]];},1,1);
+      addC(3,"calc3","Cộng, trừ, nhân, chia","Tính:",(l)=>{const a=r(20,300),b=r(2,9),ans=a*b;return [`${a} × ${b} = ${_}`,ans,null,[ans+b,ans-b,a+b]];},1,1);
+      addC(3,"expr3","Biểu thức số","Tính giá trị biểu thức:",(l)=>{const a=r(5,30),b=r(2,9),c=r(2,9),ans=a+b*c;return [`${a} + ${b} × ${c} = ${_}`,ans,null,[ (a+b)*c,a+b+c,a*b+c]];},1,1);
+      addC(3,"find3","Tìm số chưa biết","Tìm số chưa biết:",(l)=>{const a=r(10,80),b=r(10,40),x=a+b;return [`${_} − ${b} = ${x-b}`,x,null,[x-1,x+1,b]];},1,1);
+      addC(3,"fast3","Tính nhanh","Tính hợp lí:",(l)=>{const a=r(10,80),b=r(1,9);return [`${a} × ${b} + ${a} × ${10-b} = ${_}`,a*10,null,[a*b,a*10+b,a*(10-b)]];},1,1);
+      addC(3,"think3","Toán tư duy","Suy luận:",(l)=>{const a=r(10,50),b=r(2,9),c=a*b;return [`Một số nhân với ${b} được ${c}. Số đó là?`,a,null,[a+b,a-b,c]];},1,1);
+      addC(3,"pattern3","Quy luật","Điền số:",(l)=>{const a=r(100,500),d=p([10,100,1000]),v=[a,a+d,a+2*d,a+3*d,a+4*d],i=r(1,3),ans=v[i];v[i]=_;return [v.join(", "),ans,null,[ans+d,ans-d,a+d]];},1,1);
+      addC(3,"word3","Toán có lời văn nâng cao","Giải bài toán hai bước:",(l)=>{const a=r(20,80),b=r(2,9),c=r(5,20),ans=a*b+c;return [`Một thùng có ${a} lít dầu. Có ${b} thùng như vậy và thêm ${c} lít. Có tất cả bao nhiêu lít?`,ans+" lít",null,[a*(b+c),a*b-c,a+b+c]];},1,1);
+      addC(3,"frac3","Phân số (trực quan)","Nhận biết phân số:",(l)=>{const d=p([2,3,4,5,6,8]),n=r(1,d-1);return [`Một hình được chia thành ${d} phần bằng nhau, tô màu ${n} phần. Phân số chỉ phần đã tô là?`,F(n,d),null,[F(n+1,d),F(n,d+1),F(d,n)]];},1,1);
+      addC(3,"geom3","Hình học","Chu vi, diện tích hình chữ nhật/hình vuông:",(l)=>{const a=r(4,20),b=r(2,a),ans=a*b;return [`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Diện tích là?`,`${ans} cm²`,null,[`${2*(a+b)} cm²`,`${a+b} cm²`,`${ans+a} cm²`]];},1,1);
+      addC(3,"stats3","Thống kê, biểu đồ","Đọc bảng số liệu:",(l)=>{const a=r(10,40),b=r(10,40),c=r(10,40),ans=a+b+c;return [`Ba lớp thu gom lần lượt ${a}, ${b}, ${c} kg giấy. Tổng số là?`,`${ans} kg`,null,[`${ans+10} kg`,`${ans-10} kg`,`${Math.max(a,b,c)} kg`]];},1,1);
+      addC(3,"hsg3","Đề thi học sinh giỏi","Vận dụng kiến thức lớp 3:",(l)=>{const a=r(10,30),b=r(2,9),ans=a*b;return [`Một số gấp ${b} lần ${a}. Số đó là?`,ans,null,[a+b,a*b+b,ans-b]];},1,1);
+      addC(3,"olym3c","Đề thi Violympic","Thử thách lớp 3:",(l)=>{const a=r(20,80),d=p([3,5,10]),ans=a+5*d;return [`${a}, ${a+d}, ${a+2*d}, ${a+3*d}, … Số thứ 6 là?`,ans,null,[ans+d,ans-d,a+4*d]];},1,1);
+      addC(3,"custom3c","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(1000,9000),b=r(100,900),ans=a+b;return [`${a} + ${b} = …`,ans,null,[ans-1,ans+1,a-b]];},1,1);
+
+      // LỚP 4: số tự nhiên lớn; 4 phép tính; phân số và phép tính với phân số;
+      // góc, hình chữ nhật/hình vuông; diện tích; biểu đồ cột; bài toán nhiều bước.
+      addC(4,"num4","Số tự nhiên và làm tròn","Tính/so sánh:",(l)=>{const a=r(100000,999999),b=r(100000,999999);return [`Số bé hơn trong ${N(a)} và ${N(b)} là?`,Math.min(a,b),null,[Math.max(a,b),a+b,Math.abs(a-b)]];},1,1);
+      addC(4,"calc4","Bốn phép tính","Tính:",(l)=>{const a=r(1000,9000),b=r(100,900),ans=a+b;return [`${N(a)} + ${N(b)} = ${_}`,N(ans),null,[N(ans+100),N(ans-100),N(a-b)]];},1,1);
+      addC(4,"find4","Tìm thành phần chưa biết","Tìm số chưa biết:",(l)=>{const x=r(20,200),b=r(10,80),a=x+b;return [`${N(a)} − ${_} = ${b}`,x,null,[x+1,x-1,b]];},1,1);
+      addC(4,"fast4","Tính nhanh","Tính hợp lí:",(l)=>{const a=r(20,80),b=100-a;return [`${a} × 25 + ${b} × 25 = ${_}`,2500,null,[2400,2600,a+b]];},1,1);
+      addC(4,"frac4","Phân số","Tính với phân số:",(l)=>{const d=p([4,6,8,10]),a=r(1,d-1),b=r(1,d-a);return [`${F(a,d)} + ${F(b,d)} = ${_}`,F(a+b,d),null,[F(a,d),F(Math.abs(a-b),d),F(a+b+1,d)]];},1,1);
+      addC(4,"think4","Toán tư duy","Suy luận:",(l)=>{const a=r(20,80),b=r(10,30),sum=a+b,diff=a-b;return [`Tổng hai số là ${sum}, hiệu là ${diff}. Số lớn là?`,a,null,[b,sum,diff]];},1,1);
+      addC(4,"pattern4","Quy luật","Điền số:",(l)=>{const a=r(100,500),d=p([25,50,100]),v=[a,a+d,a+2*d,a+3*d,a+4*d],i=r(1,3),ans=v[i];v[i]=_;return [v.map(N).join(", "),ans,null,[ans+d,ans-d,a+d]];},1,1);
+      addC(4,"word4","Toán có lời văn nâng cao","Giải bài toán nhiều bước:",(l)=>{const a=r(100,300),b=r(20,80),c=r(2,4),ans=a+b*c;return [`Kho có ${a} kg hàng, nhập thêm ${c} bao, mỗi bao ${b} kg. Có tất cả bao nhiêu kg?`,`${ans} kg`,null,[`${ans+b} kg`,`${a+b+c} kg`,`${a*c+b} kg`]];},1,1);
+      addC(4,"geom4","Hình học nâng cao","Tính diện tích:",(l)=>{const a=r(8,20),b=r(3,a-1),ans=a*b;return [`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Diện tích là?`,`${ans} cm²`,null,[`${2*(a+b)} cm²`,`${a+b} cm²`,`${ans+b} cm²`]];},1,1);
+      addC(4,"stats4","Thống kê, biểu đồ","Đọc biểu đồ cột dạng số liệu:",(l)=>{let a,b,c;do{a=r(20,60);b=r(20,60);c=r(20,60);}while(new Set([a,b,c]).size<3);const ans=Math.max(a,b,c);return [`Số cây ba lớp trồng được: 4A ${a}, 4B ${b}, 4C ${c}. Lớp trồng nhiều nhất là?`,["4A","4B","4C"][[a,b,c].indexOf(ans)],null,["4A","4B","4C","Ba lớp bằng nhau"]];},1,1);
+      addC(4,"hsg4","Đề thi học sinh giỏi","Vận dụng kiến thức lớp 4:",(l)=>{const a=r(10,30),b=r(2,9),q=Math.floor(a/b),ans=a%b;return [`Khi chia ${a} cho ${b}, số dư là?`,ans,null,[q,Math.max(0,ans-1),b]];},1,1);
+      addC(4,"olym4c","Đề thi Violympic","Thử thách lớp 4:",(l)=>{const a=r(20,80),d=p([4,5,10]),ans=a+6*d;return [`${a}, ${a+d}, ${a+2*d}, … Số thứ 7 là?`,ans,null,[ans+d,ans-d,a+5*d]];},1,1);
+      addC(4,"custom4c","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{const a=r(1000,9000),b=r(100,900),ans=a-b;return [`${N(a)} − ${N(b)} = …`,N(ans),null,[N(ans-1),N(ans+1),N(a+b)]];},1,1);
+
+      // LỚP 5: NGÂN HÀNG BIẾN THỂ - cùng kiến thức nhưng thay đổi cách đặt vấn đề,
+      // để học sinh phải đọc hiểu và suy luận thay vì học thuộc một khuôn giải.
+      const qv = (arr, l=1) => arr[(Math.random()*arr.length)|0](l);
+      const opts = (ans, more) => {
+        const a=[ans,...more], out=[];
+        for(const x of a) if(x!==ans && !out.includes(x)) out.push(x);
+        return [String(ans), ...out.slice(0,3)];
+      };
+      const pctText = (n) => `${n}%`;
+
+      addC(5,"num5","Số tự nhiên, phân số - nhiều kiểu câu","Tính / suy luận:",(l)=>qv([
+        ()=>{const a=r(10000,90000),b=r(1000,9000),ans=a-b;return [`${N(a)} − ${N(b)} = ${_}`,N(ans),null,[N(ans+100),N(ans-100),N(a+b)]];},
+        ()=>{const a=r(20000,70000),b=r(1000,9000),ans=a+b;return [`Hiệu của hai số là ${N(a)}. Số bé là ${N(b)}. Số lớn là?`,N(a+b),null,[N(a-b),N(a),N(b+a+100)]];},
+        ()=>{const a=r(10000,50000),b=r(1000,9000),ans=a-b;return [`Một số là ${N(a)}. Khi bớt số đó đi ${N(b)} thì được số nào?`,N(ans),null,[N(a+b),N(b),N(ans+1000)]];}
+      ],l),1,1);
+
+      addC(5,"frac5","Phân số - 3 kiểu tư duy","Phân số:",(l)=>qv([
+        ()=>{const a=p([[1,2],[2,3],[3,4],[2,5]]),b=p([[1,3],[1,4],[1,5]]),n=a[0]*b[1]+b[0]*a[1],d=a[1]*b[1],ans=F(n,d);return [`${F(a[0],a[1])} + ${F(b[0],b[1])} = ${_}`,ans,null,[F(n+1,d),F(Math.abs(a[0]*b[1]-b[0]*a[1]),d),F(a[0],a[1])]];},
+        ()=>{const d=p([4,5,6,8,10]),a=r(1,d-1),b=r(1,d-a),ans=F(a+b,d);return [`Một đoạn đường dài ${d} phần bằng nhau. Đã đi ${F(a,d)}, sau đó đi thêm ${F(b,d)}. Đã đi tất cả bao nhiêu phần?`,ans,null,[F(a,d),F(b,d),F(d-a-b,d)]];},
+        ()=>{const a=p([[1,2],[1,3],[1,4],[2,5]]),b=p([[1,2],[1,3],[1,5]]),n=a[0]*b[1]-b[0]*a[1],d=a[1]*b[1];return [`${F(a[0],a[1])} − ${F(b[0],b[1])} = ${_}`,F(Math.abs(n),d),null,[F(a[0]+b[0],d),F(Math.abs(n)+1,d),F(a[0],a[1])]];}
+      ],l),1,1);
+
+      addC(5,"decimal5","Số thập phân - nhiều kiểu câu","Tính / so sánh:",(l)=>qv([
+        ()=>{const a=r(10,999)/100,b=r(10,999)/100,ans=Math.round((a+b)*100)/100;return [`${D(a)} + ${D(b)} = ${_}`,D(ans),null,[D(ans+0.1),D(ans-0.1),D(a*b)]];},
+        ()=>{const a=r(100,999)/100,b=r(10,99)/100,ans=Math.round((a-b)*100)/100;return [`${D(a)} − ${D(b)} = ${_}`,D(ans),null,[D(a+b),D(ans+0.1),D(ans-0.1)]];},
+        ()=>{const a=r(10,99)/10,b=r(10,99)/100;return [`Số nào lớn hơn: ${D(a)} hay ${D(b)}?`,D(Math.max(a,b)),null,[D(Math.min(a,b)),D(a+b),D(Math.abs(a-b))]];}
+      ],l),1,1);
+
+      addC(5,"decimalAdv5","Số thập phân nâng cao - đổi cách hỏi","Tính hợp lí / kiểm tra:",(l)=>qv([
+        ()=>{const a=r(1,9)/10,b=100-a,ans=100;return [`${D(a)} + ${D(b)} = ${_}`,D(ans),null,[D(100-a/10),D(99),D(a+b+1)]];},
+        ()=>{const a=r(1,9)/10,b=r(1,9)/100,c=r(1,9)/10,ans=Math.round((a+b+c)*100)/100;return [`Tính hợp lí: ${D(a)} + ${D(b)} + ${D(c)} = ${_}`,D(ans),null,[D(ans+0.01),D(ans-0.01),D(a+b*c)]];},
+        ()=>{const a=r(10,50)/10,b=r(10,50)/10,ans=Math.round((a+b)*10)/10;return [`Một bạn tính ${D(a)} + ${D(b)} = ${D(ans+0.1)}. Kết quả đúng là?`,D(ans),null,[D(ans+0.1),D(ans-0.1),D(a*b)]];}
+      ],l),1,1);
+
+      addC(5,"percent5","Tỉ số phần trăm - nhiều kiểu câu","Giải bài toán phần trăm:",(l)=>qv([
+        ()=>{const total=p([100,200,400,500]),pct=p([10,20,25,30,40]),ans=total*pct/100;return [`${pctText(pct)} của ${total} là?`,ans,null,[total-pct,ans+10,total*pct]];},
+        ()=>{const total=p([200,400,500,800]),pct=p([10,20,25,30]),ans=total*pct/100;return [`Một cửa hàng giảm giá ${pctText(pct)} cho món hàng giá ${total} nghìn đồng. Số tiền được giảm là bao nhiêu?`,ans+" nghìn đồng",null,[(total-ans)+" nghìn đồng",(ans+10)+" nghìn đồng",(total*pct)+" nghìn đồng"]];},
+        ()=>{const total=p([200,300,400,500]),part=p([40,60,80,100]),pct=part/total*100;return [`Một lớp có ${total} học sinh, trong đó ${part} bạn tham gia câu lạc bộ. Số học sinh tham gia chiếm bao nhiêu phần trăm?`,pctText(pct),null,[pctText(pct+5),pctText(pct-5),pctText(100-pct)]];}
+      ],l),1,1);
+
+      addC(5,"ratio5","Tỉ số - 12 kiểu đặt vấn đề","Tìm số / suy luận:",(l)=>qv([
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Hai số có tổng ${sum} và tỉ số số lớn : số bé = ${k} : 1. Số bé là?`,u,null,[u*k,sum-u,u+1]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Hai số có tổng ${sum}. Số lớn gấp ${k} lần số bé. Số lớn là?`,u*k,null,[u,sum-u,u*k+1]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Số bé bằng 1/${k} số lớn. Biết tổng hai số là ${sum}. Hai số đó là?`,`${u} và ${u*k}`,null,[`${u+1} và ${u*k-1}`,`${u-1} và ${u*k+1}`,`${sum-u} và ${u}`]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Một giỏ có ${sum} quả gồm táo và cam. Số táo bằng ${k} lần số cam. Có bao nhiêu quả cam?`,u,null,[u*k,sum-u,u+1]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20);return [`Hai số có tỉ số ${k}:1. Biết số bé là ${u}. Tổng hai số là?`,u*(k+1),null,[u*k,u+k,u*(k-1)]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),big=u*k;return [`Hiệu của hai số là ${big-u}. Số lớn gấp ${k} lần số bé. Số bé là?`,u,null,[big,u+1,big-u]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),big=u*k;return [`Hiệu hai số là ${big-u}. Số bé là ${u}. Số lớn là?`,big,null,[big-u,u+k,big+u]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Bạn Minh nói: “Tổng là ${sum}, tỉ số là ${k}:1 nên số bé là ${u*k}”. Bạn Minh đúng hay sai?`,"Sai",null,["Đúng","Chưa đủ dữ kiện","Hai số bằng nhau"]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Cặp số nào thỏa mãn tổng ${sum} và tỉ số số lớn : số bé = ${k}:1?`,`${u} và ${u*k}`,null,[`${u+1} và ${u*k}`,`${u} và ${u*k+1}`,`${sum-u} và ${u}`]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1),newSum=sum+8;return [`Hai số có tỉ số ${k}:1 và tổng ${sum}. Nếu tăng số bé thêm 8 thì tổng mới là?`,newSum,null,[sum+8*k,sum+4,sum-8]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Điền vào chỗ trống: Tổng hai số là ${sum}; số bé : số lớn = 1 : ${_}. Biết số bé là ${u}.`,k,null,[k+1,k-1,u]];},
+        ()=>{const k=p([2,3,4]),u=r(5,20),sum=u*(k+1);return [`Hai số có tổng ${sum}. Nếu số lớn là ${u*k}, số bé là?`,u,null,[u*k,sum-u,u+1]];}
+      ],l),1,1);
+
+      addC(5,"find5","Tìm x - đổi hình thức","Tìm số chưa biết:",(l)=>qv([
+        ()=>{const x=r(10,80),a=r(1,9),b=x*a;return [`x × ${a} = ${b}`,x,null,[x+1,x-1,b/a+1]];},
+        ()=>{const x=r(10,80),a=r(1,9),b=x*a;return [`${b} : ${a} = x`,x,null,[x+1,x-1,b-a]];},
+        ()=>{const x=r(10,80),a=r(1,9),b=x+a;return [`x + ${a} = ${b}. Giá trị của x là?`,x,null,[x+a,b-a+1,x+1]];}
+      ],l),1,1);
+
+      addC(5,"fast5","Tính nhanh - không chỉ tính trực tiếp","Tính hợp lí:",(l)=>qv([
+        ()=>{const a=r(20,80),b=100-a;return [`${a} × 25 + ${b} × 25 = ${_}`,2500,null,[2400,2600,a+b]];},
+        ()=>{const a=r(10,90),b=100-a;return [`${a} + ${b} + 37 = ${_}`,137,null,[100,137+a,137-1]];},
+        ()=>{const a=r(10,90),b=100-a;return [`${a} × 7 + ${b} × 7 = ${_}`,700,null,[700+a,700-b,140]];}
+      ],l),1,1);
+
+      addC(5,"think5","Toán tư duy - suy luận","Suy luận:",(l)=>qv([
+        ()=>{const a=r(20,60),b=r(10,30),sum=a+b,diff=a-b;return [`Hai số có tổng ${sum}, hiệu ${diff}. Số bé là?`,b,null,[a,sum,diff]];},
+        ()=>{const a=r(20,60),b=r(10,30),sum=a+b;return [`Hai số có tổng ${sum}. Số lớn hơn số bé ${a-b} đơn vị. Số lớn là?`,a,null,[b,sum,a+b]];},
+        ()=>{const a=r(10,40),b=r(2,9),c=a*b;return [`Một số nhân với ${b} được ${c}. Nếu số đó tăng 1 thì tích mới là?`,c+b,null,[c+1,a+b,c-b]];}
+      ],l),1,1);
+
+      addC(5,"pattern5","Quy luật - nhiều kiểu quy luật","Tìm số / quy luật:",(l)=>qv([
+        ()=>{const a=r(1,9),d=p([0.5,1,2]),v=[a,a+d,a+2*d,a+3*d,a+4*d],i=r(1,3),ans=v[i];v[i]=_;return [v.map(D).join(", "),D(ans),null,[D(ans+d),D(ans-d),D(a+d)]];},
+        ()=>{const a=r(2,10),d=p([2,5,10]),v=[a,a+d,a+2*d,a+3*d],ans=a+4*d;return [`${v.join(", ")}, … Số tiếp theo là?`,ans,null,[ans+d,ans-d,a+3*d]];},
+        ()=>{const a=r(5,20),d=p([2,3,5]),v=[a,a+d,a+2*d,a+3*d,a+4*d],ans=v[3];return [`Trong dãy ${v.map(String).join(", ")}, số nào đứng ở vị trí thứ 4?`,ans,null,[v[2],v[4],a+d]];}
+      ],l),1,1);
+
+      addC(5,"word5","Toán có lời văn - đổi bối cảnh","Giải bài toán:",(l)=>qv([
+        ()=>{const total=p([200,400,500]),pct=p([10,20,25]),ans=total*(1-pct/100);return [`Một cửa hàng có ${total} kg hàng, bán ${pct}% số hàng. Còn lại bao nhiêu ki-lô-gam?`,`${D(ans)} kg`,null,[`${D(total*pct/100)} kg`,`${D(total*(1+pct/100))} kg`,`${D(total-pct)} kg`]];},
+        ()=>{const a=r(20,80),b=r(2,9),c=r(5,20),ans=a*b+c;return [`Có ${b} hộp, mỗi hộp ${a} chiếc bút và thêm ${c} chiếc ở ngoài. Có tất cả bao nhiêu chiếc?`,ans+" chiếc",null,[(a+c)*b+" chiếc",(a*b-c)+" chiếc",(a+b+c)+" chiếc"]];},
+        ()=>{const a=r(100,300),pct=p([10,20,25]),ans=a*(1-pct/100);return [`Một chiếc áo giá ${a} nghìn đồng được giảm ${pct}%. Giá sau khi giảm là?`,`${D(ans)} nghìn đồng`,null,[`${D(a*pct/100)} nghìn đồng`,`${D(a+pct)} nghìn đồng`,`${D(ans+10)} nghìn đồng`]];}
+      ],l),1,1);
+
+      addC(5,"geom5","Hình học - đổi dữ kiện cần tìm","Hình học:",(l)=>qv([
+        ()=>{const r0=r(2,10),ans=3.14*r0*r0;return [`Hình tròn bán kính ${r0} cm, lấy π = 3,14. Diện tích là?`,`${D(ans)} cm²`,null,[`${D(2*3.14*r0)} cm²`,`${D(3.14*r0)} cm²`,`${D(ans+3.14*r0)} cm²`]];},
+        ()=>{const a=r(8,20),b=r(3,a-1),ans=2*(a+b);return [`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Chu vi là?`,`${ans} cm`,null,[`${a*b} cm`,`${a+b} cm`,`${2*a+b} cm`]];},
+        ()=>{const a=r(8,20),b=r(3,a-1),ans=a*b;return [`Một hình chữ nhật có diện tích ${ans} cm² và chiều dài ${a} cm. Chiều rộng là?`,`${b} cm`,null,[`${a} cm`,`${ans-b} cm`,`${b+1} cm`]];}
+      ],l),1,1);
+
+      addC(5,"motion5","Chuyển động đều - đổi đại lượng cần tìm","Chuyển động:",(l)=>qv([
+        ()=>{const v=p([30,40,50,60]),t=p([2,3,4]),ans=v*t;return [`Một xe đi với vận tốc ${v} km/giờ trong ${t} giờ. Quãng đường đi được là?`,`${ans} km`,null,[`${ans+v} km`,`${v+t} km`,`${ans-t} km`]];},
+        ()=>{const v=p([30,40,50,60]),t=p([2,3,4]),s=v*t;return [`Một xe đi ${s} km trong ${t} giờ. Vận tốc trung bình là?`,`${v} km/giờ`,null,[`${s+t} km/giờ`,`${v+t} km/giờ`,`${s-v} km/giờ`]];},
+        ()=>{const v=p([30,40,50,60]),t=p([2,3,4]),s=v*t;return [`Một xe đi với vận tốc ${v} km/giờ, quãng đường dài ${s} km. Xe đi hết quãng đường trong bao lâu?`,`${t} giờ`,null,[`${t+1} giờ`,`${v} giờ`,`${s/v+1} giờ`]];}
+      ],l),1,1);
+
+      addC(5,"stats5","Thống kê, biểu đồ - đọc rồi suy luận","Đọc số liệu:",(l)=>qv([
+        ()=>{const total=200,pct=p([20,25,30,40]),ans=total*pct/100;return [`Một nhóm có ${total} học sinh, ${pct}% chọn môn A. Có bao nhiêu học sinh chọn môn A?`,ans,null,[ans+10,ans-10,total-pct]];},
+        ()=>{let a,b,c;do{a=r(20,60);b=r(20,60);c=r(20,60);}while((a+b+c)%3!==0);const ans=a+b+c;return [`Ba lớp lần lượt trồng ${a}, ${b}, ${c} cây. Trung bình mỗi lớp trồng bao nhiêu cây?`,ans/3,null,[(ans/3)+1,(ans/3)-1,Math.max(a,b,c)]];},
+        ()=>{let a,b,c;do{a=r(20,60);b=r(20,60);c=r(20,60);}while(new Set([a,b,c]).size<3);const mx=Math.max(a,b,c);return [`Số liệu: A ${a}, B ${b}, C ${c}. Lớp có số liệu lớn nhất là?`,["A","B","C"][a===mx?0:b===mx?1:2],null,["A","B","C","Ba lớp bằng nhau"]];}
+      ],l),1,1);
+
+      // Hai module thử thách cũng dùng biến thể để không trở thành "một khuôn khó hơn".
+      addC(5,"hsg5","Đề thi học sinh giỏi - biến thể","Vận dụng kiến thức lớp 5:",(l)=>qv([
+        ()=>{const a=r(10,30),b=r(2,9),c=a*b;return [`Một số nhân với ${b} bằng ${c}. Số đó là?`,a,null,[a+b,a-b,c]];},
+        ()=>{const a=r(10,30),b=r(2,9),c=a*b;return [`Tích của hai số là ${c}. Một thừa số là ${b}. Thừa số còn lại là?`,a,null,[a+b,a-b,c-b]];},
+        ()=>{const a=r(10,30),b=r(2,9),c=a*b;return [`Nếu số ${a} được tăng thêm 1 thì tích với ${b} tăng thêm bao nhiêu?`,b,null,[a,b+1,c+b]];}
+      ],l),1,1);
+      addC(5,"olym5c","Đề thi Violympic - biến thể","Thử thách lớp 5:",(l)=>qv([
+        ()=>{const a=r(10,50),d=p([5,10,15]),ans=a+7*d;return [`${a}, ${a+d}, ${a+2*d}, … Số thứ 8 là?`,ans,null,[ans+d,ans-d,a+6*d]];},
+        ()=>{const a=r(10,50),d=p([5,10,15]),ans=a+5*d;return [`Dãy số bắt đầu từ ${a}, mỗi lần tăng ${d}. Số thứ 6 là?`,ans,null,[ans+d,ans-d,a+6*d]];},
+        ()=>{const a=r(10,50),d=p([5,10,15]),v=[a,a+d,a+2*d,a+3*d];return [`Số nào cần điền vào chỗ trống: ${v.join(", ")}, □ ?`,a+4*d,null,[a+3*d,a+5*d,a+d]];}
+      ],l),1,1);
+      addC(5,"custom5c","Tạo đề theo cấu trúc riêng - biến thể","Theo cấu trúc đã nhập:",(l)=>qv([
+        ()=>{const a=r(10,90)/10,b=r(10,90)/10,ans=Math.round((a+b)*10)/10;return [`${D(a)} + ${D(b)} = …`,D(ans),null,[D(ans+0.1),D(ans-0.1),D(a*b)]];},
+        ()=>{const a=r(10,90)/10,b=r(10,90)/10,ans=Math.round((a-b)*10)/10;if(a<b)return [`${D(b)} − ${D(a)} = …`,D(-ans),null,[D(b+a),D(Math.abs(ans)),D(ans+0.1)]];return [`${D(a)} − ${D(b)} = …`,D(ans),null,[D(ans+0.1),D(ans-0.1),D(a+b)]];},
+        ()=>{const a=r(10,90)/10,b=r(10,90)/10,ans=Math.round(a*b*100)/100;return [`${D(a)} × ${D(b)} = …`,D(ans),null,[D(a+b),D(ans+0.1),D(Math.abs(a-b))]];}
+      ],l),1,1);
+
+      /* ---------- NGÂN HÀNG TƯ DUY ĐA DẠNG: đổi "ý tưởng bài toán", không chỉ đổi số ----------
+       * Mỗi lớp có 5 dạng mới (25 dạng), dùng đúng kiến thức nền của lớp đó.
+       * Các câu đều có đáp án xác định để vẫn tương thích với trắc nghiệm + đáp án tự động.
+       */
+      const brain = (g,id,name,t,gen,w=1) => addExtra(g,id,"🧠 "+name,t,gen,w);
+      const choice = (q,ans,opts,why=null) => [q,ans,why,opts];
+
+      // LỚP 1 — trực quan, đếm, cộng/trừ, so sánh, quy luật, vị trí.
+      brain(1,"err1","Ai làm đúng?", "Quan sát cách làm và chọn bạn đúng:",(l)=>{
+        const a=r(3,15),b=r(1,Math.min(8,a)),ans=a+b,good=pickName(1),bad=good==="An"?"Bình":"An";
+        return choice(`${good} nói: ${a} + ${b} = ${ans}. ${bad} nói: ${a} + ${b} = ${ans+1}. Ai nói đúng?`,good,[good,bad,"Cả hai","Không ai"]);
+      });
+      brain(1,"rev1","Suy ngược", "Tìm số ban đầu:",(l)=>{
+        const start=r(5,30),add=r(1,10),end=start+add;
+        return choice(`Một số được thêm ${add} thì thành ${end}. Số ban đầu là số nào?`,start,[start,start+add,start-add,end]);
+      });
+      brain(1,"cond1","Số thỏa điều kiện", "Chọn số phù hợp:",(l)=>{
+        const a=r(10,40),b=r(2,8),lo=a-b,hi=a+b;
+        const opts=[lo-1,lo,hi,hi+1]; const ans=lo;
+        return choice(`Số nào vừa lớn hơn ${lo-1} vừa không lớn hơn ${lo}?`,ans,opts);
+      });
+      brain(1,"order1","Xếp thứ tự", "Sắp xếp các số:",(l)=>{
+        const a=r(1,20),b=a+r(1,8),c=b+r(1,8); const ans=`${a}, ${b}, ${c}`;
+        return choice(`Từ bé đến lớn: ${c}, ${a}, ${b} là thứ tự nào?`,ans,[ans,`${a}, ${c}, ${b}`,`${b}, ${a}, ${c}`,`${c}, ${b}, ${a}`]);
+      });
+      brain(1,"pos1","Bản đồ ô vuông", "Quan sát vị trí:",(l)=>{
+        const x=r(1,4),y=r(1,4),dir=x===1?"sang phải":x===4?"sang trái":p(["sang phải","sang trái"]), nx=dir==="sang phải"?x+1:x-1;
+        const ans=nx;
+        return choice(`Một con vật đang ở ô số ${x}. Nó đi 1 ô ${dir}. Nó đến ô số mấy?`,ans,[ans,ans+1,ans-1,y]);
+      });
+
+      // LỚP 2 — phép tính, nhân/chia, tiền/độ dài, dữ liệu đơn giản.
+      brain(2,"err2","Bắt lỗi phép tính", "Tìm phép tính sai:",(l)=>{
+        const a=r(20,90),b=r(2,9),good=a+b,bad=good+1;
+        return choice(`Bạn An: ${a}+${b}=${good}. Bạn Bình: ${a}+${b}=${bad}. Ai tính sai?`,"Bình",["An","Bình","Cả hai","Không ai"]);
+      });
+      brain(2,"miss2","Đoán câu hỏi còn thiếu", "Chọn câu hỏi phù hợp:",(l)=>{
+        const a=r(3,8),b=r(2,8),t=a*b;
+        return choice(`Một cửa hàng có ${a} hộp, mỗi hộp ${b} chiếc. Cuối bài đáp án là ${t} chiếc. Câu hỏi nào phù hợp nhất?`,`Có tất cả bao nhiêu chiếc?`,["Có tất cả bao nhiêu chiếc?",`Có ${t} hộp?`,`Mỗi hộp có bao nhiêu chiếc?`,`Cửa hàng có mấy loại hộp?`]);
+      });
+      brain(2,"twoway2","Hai cách — cùng một đáp án", "Chọn đáp án:",(l)=>{
+        const a=r(3,9),b=r(2,6),c=r(1,5),ans=a*b+c;
+        return choice(`Có ${a} túi, mỗi túi ${b} viên và thêm ${c} viên. Biểu thức nào cho đúng kết quả?`,ans,[a*b+c,a*(b+c),a+b*c,(a+c)*b]);
+      });
+      brain(2,"money2","Mua vừa đủ", "Tư duy tiền:",(l)=>{
+        const price=p([10,20,25,50]),n=r(2,5),total=price*n;
+        return choice(`Một món đồ giá ${price} nghìn đồng. Mua ${n} món cần ít nhất bao nhiêu nghìn đồng?`,total,[total,total+price,total-price,price+n]);
+      });
+      brain(2,"table2","Đọc bảng dữ liệu", "Đọc và suy luận:",(l)=>{
+        const a=r(3,9),b=r(3,9),c=r(3,9),mx=Math.max(a,b,c),ans=["Thứ Hai","Thứ Ba","Thứ Tư"][[a,b,c].indexOf(mx)];
+        return choice(`Số sách đọc: Thứ Hai ${a}, Thứ Ba ${b}, Thứ Tư ${c}. Ngày nào đọc nhiều nhất?`,ans,["Thứ Hai","Thứ Ba","Thứ Tư","Cả ba ngày"]);
+      });
+
+      // LỚP 3 — nhân/chia, biểu thức, đo lường, diện tích, phân số trực quan.
+      brain(3,"err3","Bắt lỗi lời giải", "Chọn lời giải sai:",(l)=>{
+        const a=r(12,30),b=p([2,3,4]),good=a*b,bad=a+b;
+        return choice(`Bài: ${a} nhóm, mỗi nhóm ${b} đồ vật. An tính ${a}×${b}=${good}; Bình tính ${a}+${b}=${bad}. Ai sai?`,"Bình",["An","Bình","Cả hai","Không ai"]);
+      });
+      brain(3,"rev3","Bài toán ngược", "Tìm dữ kiện ban đầu:",(l)=>{
+        const a=r(5,20),b=r(2,8),c=a*b;
+        return choice(`Một số nhân ${b} được ${c}. Số ban đầu là?`,a,[a,a+b,a*b,b]);
+      });
+      brain(3,"choose3","Một bài — nhiều thông tin", "Chọn thông tin cần thiết:",(l)=>{
+        const a=r(4,12),b=r(2,8),ans=a*b;
+        return choice(`Có ${a} hộp, mỗi hộp ${b} bút. Biết cửa hàng mở lúc 7 giờ. Muốn tính số bút cần dùng dữ kiện nào?`,`Số hộp và số bút mỗi hộp`,["Số hộp và số bút mỗi hộp","Giờ mở cửa","Tên cửa hàng","Ngày trong tuần"]);
+      });
+      brain(3,"unit3","Đổi đơn vị bằng suy luận", "Chọn đáp án đúng:",(l)=>{
+        const m=r(2,9),cm=m*100;
+        return choice(`${m} m = ? cm`,cm,[cm,cm+10,cm-10,m*10]);
+      });
+      brain(3,"frac3","Phân số của một nhóm", "Tư duy phân số:",(l)=>{
+        const den=p([2,3,4]),q=r(2,6),total=den*q,ans=total/den;
+        return choice(`Có ${total} quả. Lấy 1/${den} số quả. Lấy được bao nhiêu quả?`,ans,[ans,ans+den,ans-1,q+1]);
+      });
+
+      // LỚP 4 — số lớn, phân số, trung bình, tỉ số, chữ số, hình học.
+      brain(4,"err4","Bắt lỗi phân số", "Ai biến đổi đúng?",(l)=>{
+        const a=p([2,3,4]),b=p([2,3,4]);
+        if(a===b)return choice(`So sánh ${a}/${a} và 1: nhận xét nào đúng?`,`Hai số bằng nhau`,["Hai số bằng nhau","Phân số lớn hơn 1","Phân số nhỏ hơn 1","Không so sánh được"]);
+        const left=`${a}/${b}`; const right=a>b?"lớn hơn 1":"nhỏ hơn 1";
+        return choice(`Phân số ${left} so với 1 là?`,right,["lớn hơn 1","nhỏ hơn 1","bằng 1","không xác định"]);
+      });
+      brain(4,"avg4","Trung bình bị che", "Tìm số còn thiếu:",(l)=>{
+        const a=r(10,30),b=r(10,30),avg=r(10,30),c=3*avg-a-b;
+        if(c<1||c>50) throw Error("c");
+        return choice(`Ba số có trung bình cộng là ${avg}. Hai số là ${a} và ${b}. Số còn lại là?`,c,[c,c+1,c-1,avg]);
+      });
+      brain(4,"ratio4","Tỉ số bằng hình dung", "Suy luận tỉ số:",(l)=>{
+        const k=p([2,3,4]),a=k*r(2,6),b=r(2,6),bb=b*k;
+        return choice(`Số A gấp ${k} lần số B. Nếu A = ${a} thì B bằng?`,a/k,[a/k,a-k,a+k,bb]);
+      });
+      brain(4,"digit4","Chữ số bí mật", "Tìm số theo điều kiện:",(l)=>{
+        const tens=r(2,8),ones=r(1,8),n=10*tens+ones;
+        return choice(`Số có hai chữ số, hàng chục là ${tens}, hàng đơn vị là ${ones}. Số đó là?`,n,[n,n+10,n-1,tens+ones]);
+      });
+      brain(4,"geom4","Cùng diện tích, khác hình", "So sánh hình:",(l)=>{
+        const a=r(3,10),b=r(2,8),area=a*b;
+        return choice(`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Hình khác có cùng diện tích ${area} cm². Diện tích của hình chữ nhật ban đầu là?`,area,[area,area+a,area-b,a+b]);
+      });
+
+      // LỚP 5 — thập phân, phần trăm, chuyển động, thể tích, dữ liệu và tối ưu đơn giản.
+      brain(5,"err5","Bắt lỗi số thập phân", "Chọn bạn tính đúng:",(l)=>{
+        const a=p([1.2,2.5,3.4,4.6]),b=p([0.3,0.4,0.5]),good=Math.round((a+b)*10)/10,bad=Math.round((a+b+0.1)*10)/10;
+        return choice(`${a} + ${b}: An được ${D(good)}, Bình được ${D(bad)}. Ai đúng?`,"An",["An","Bình","Cả hai","Không ai"]);
+      });
+      brain(5,"rev5","Đảo ngược phần trăm", "Tìm số ban đầu:",(l)=>{
+        const base=p([100,200,300,400,500]),pct=p([10,20,25,50]),part=base*pct/100;
+        return choice(`${pct}% của một số là ${part}. Số đó là?`,base,[base,part,base+part,base-part]);
+      });
+      brain(5,"opt5","Chọn phương án tiết kiệm", "Tư duy tối ưu:",(l)=>{
+        const a=r(2,5),b=r(2,5),single=10,pack=single*2-5,need=a*2+b*2;
+        return choice(`Mua ${a} cặp bút. Có thể mua từng chiếc giá ${single} nghìn hoặc hộp 2 chiếc giá ${pack} nghìn. Cách mua rẻ hơn là?`,"Mua hộp 2 chiếc",["Mua hộp 2 chiếc","Mua từng chiếc","Hai cách luôn bằng nhau","Không đủ dữ kiện"]);
+      });
+      brain(5,"data5","Đọc dữ liệu rồi tính ngược", "Suy luận từ bảng:",(l)=>{
+        const total=r(40,90),pct=p([20,25,50]),part=total*pct/100;
+        return choice(`Một lớp có ${total} bạn, ${pct}% tham gia câu lạc bộ. Có bao nhiêu bạn tham gia?`,part,[part,part+1,part-1,total-pct]);
+      });
+      brain(5,"motion5b","Đổi cách hỏi chuyển động", "Tìm thời gian:",(l)=>{
+        const v=p([30,40,50,60]),t=p([2,3,4]),s=v*t;
+        return choice(`Một xe đi ${s} km với vận tốc ${v} km/giờ. Xe đi trong bao lâu?`,t,[t,t+1,v,s]);
+      });
+
+      // Các module "HSG/Violympic" vẫn bị khóa trong phạm vi kiến thức của chính lớp đó.
+      M.filter(m => /^(hsg|olym)/.test(m.id)).forEach(m => m.h = 1);
+      M.forEach(m => { if (m.h) m.w = 2; });
 
       const sel = {};
       M.forEach((m) => (sel[m.id] = { on: false, l: 1, n: 5, mc: 0 }));
@@ -2689,6 +3185,7 @@
           )
           .join("");
         $("mods").innerHTML =
+          `<div class="curriculum-note"><b>Khung lớp ${G}:</b> chỉ sinh câu hỏi trong phạm vi kiến thức của lớp ${G}; các dạng chưa thuộc lớp này sẽ không xuất hiện.</div>` +
           M.filter((m) => m.g == G && !m.h)
             .map(modHtml)
             .join("") +
@@ -2697,8 +3194,10 @@
             .map(modHtml)
             .join("");
         const k = M.filter((m) => sel[m.id].on);
-        $("cnt").textContent =
-          `Đã chọn ${k.length} module · ${k.reduce((a, m) => a + sel[m.id].n, 0)} câu`;
+        const sp=structurePlan(G);
+        $("cnt").textContent = sp
+          ? `Cấu trúc riêng: ${sp.reduce((a,z)=>a+z.n,0)} câu · ${sp.length} phần`
+          : `Đã chọn ${k.length} module · ${k.reduce((a, m) => a + sel[m.id].n, 0)} câu`;
       }
       function all(v) {
         M.filter((m) => m.g == G).forEach((m) => (sel[m.id].on = !!v));
@@ -2723,10 +3222,11 @@
         },
         NL = { 1: 3, 3: 6 };
       function gen() {
-        const A = M.filter((m) => sel[m.id].on);
-        if (!A.length) return toast("Hãy tích chọn ít nhất một module");
-        const nmc = A.filter((m) => sel[m.id].mc).length,
-          B = [...A.filter((m) => sel[m.id].mc), ...A.filter((m) => !sel[m.id].mc)],
+        const plan = structurePlan(G);
+        const A = plan ? plan.map(z=>z.m) : M.filter((m) => sel[m.id].on);
+        if (!A.length) return toast(plan ? "Không nhận diện được cấu trúc. Hãy dùng tên dạng bài gợi ý." : "Hãy tích chọn ít nhất một module");
+        const nmc = A.filter((m) => plan ? false : sel[m.id].mc).length,
+          B = plan ? plan.map(z=>z.m) : [...A.filter((m) => sel[m.id].mc), ...A.filter((m) => !sel[m.id].mc)],
           n = B.length,
           bs = Math.floor(40 / n) / 4,
           gs = [...new Set(A.map((m) => m.g))];
@@ -2739,11 +3239,13 @@
           key: $("key").checked,
           both: nmc > 0 && nmc < n,
           secs: B.map((m, i) => {
-            const s = sel[m.id],
-              mc = !!s.mc,
+            const planItem = plan ? plan.find(z=>z.m.id===m.id) : null;
+            const s = sel[m.id] || {l:1,n:1,mc:0},
+              mc = plan ? false : !!s.mc,
               seen = new Set(),
               it = [];
-            for (let k = 0; k < s.n * 40 && it.length < s.n; k++) {
+            const wanted = planItem ? planItem.n : s.n;
+            for (let k = 0; k < wanted * 40 && it.length < wanted; k++) {
               let x;
               try {
                 x = m.gen(s.l);
