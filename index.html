@@ -1,0 +1,3076 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Tạo đề Toán Tiểu học</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+    <style>
+      :root {
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        --bg: #f3f6ff;
+        --cd: #fff;
+        --tx: #1f2a44;
+        --mu: #6b7794;
+        --bd: #e0e6f6;
+        --pr: #4f6bff;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #12162a;
+          --cd: #1b2140;
+          --tx: #e8ecff;
+          --mu: #9aa5cc;
+          --bd: #2c3560;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #12162a;
+        --cd: #1b2140;
+        --tx: #e8ecff;
+        --mu: #9aa5cc;
+        --bd: #2c3560;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font-family: Nunito, system-ui, sans-serif;
+      }
+      header {
+        background: linear-gradient(120deg, #4f6bff, #8b5cf6 60%, #ec4899);
+        color: #fff;
+        padding: 26px 20px;
+        text-align: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: clamp(22px, 4vw, 32px);
+        font-weight: 800;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.9;
+      }
+      main {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+        gap: 16px;
+      }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: var(--cd);
+        border: 1px solid var(--bd);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: 0 4px 14px rgba(60, 80, 160, 0.07);
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .tab {
+        flex: 1;
+        min-width: 64px;
+        border: 2px solid var(--bd);
+        background: var(--cd);
+        color: var(--tx);
+        border-radius: 12px;
+        padding: 9px 6px;
+        font:
+          800 15px Nunito,
+          sans-serif;
+        cursor: pointer;
+      }
+      .tab.on {
+        background: var(--c);
+        border-color: var(--c);
+        color: #fff;
+      }
+      .mod {
+        border: 2px solid var(--bd);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        transition: 0.15s;
+      }
+      .mod.on {
+        border-color: var(--c);
+        background: color-mix(in srgb, var(--c) 9%, transparent);
+      }
+      .mod label b {
+        margin-left: 6px;
+        font-weight: 800;
+      }
+      .mod small {
+        color: var(--mu);
+        display: block;
+        margin-top: 4px;
+      }
+      .ctl {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--mu);
+      }
+      .seg {
+        display: inline-flex;
+        border: 1px solid var(--bd);
+        border-radius: 9px;
+        overflow: hidden;
+      }
+      .seg button {
+        border: 0;
+        background: transparent;
+        color: var(--tx);
+        padding: 5px 12px;
+        font:
+          700 13px Nunito,
+          sans-serif;
+        cursor: pointer;
+      }
+      .seg button.a {
+        background: var(--c);
+        color: #fff;
+      }
+      input[type="number"],
+      input[type="text"] {
+        border: 1px solid var(--bd);
+        background: var(--bg);
+        color: var(--tx);
+        border-radius: 8px;
+        padding: 6px 8px;
+        font: inherit;
+      }
+      input[type="number"] {
+        width: 56px;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--c, var(--pr));
+        vertical-align: middle;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 11px 16px;
+        font:
+          800 15px Nunito,
+          sans-serif;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(120deg, #4f6bff, #8b5cf6);
+      }
+      .btn.g {
+        background: var(--cd);
+        color: var(--tx);
+        border: 2px solid var(--bd);
+      }
+      .btn.big {
+        width: 100%;
+        font-size: 17px;
+        padding: 14px;
+      }
+      .pv {
+        overflow-x: auto;
+        background: #dfe5f5;
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .empty {
+        color: var(--mu);
+        text-align: center;
+        padding: 40px 10px;
+      }
+      #paper {
+        width: 190mm;
+        min-height: 200mm;
+        margin: 0 auto;
+        background: #fff;
+        color: #111;
+        padding: 6mm 4mm;
+        font:
+          16px/1.5 "Times New Roman",
+          serif;
+      }
+      #paper h1 {
+        text-align: center;
+        font-size: 22px;
+        margin: 0 0 6px;
+      }
+      #paper h2 {
+        text-align: center;
+        margin: 0 0 10px;
+      }
+      #paper .nm {
+        margin: 0 0 12px;
+      }
+      #paper h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+      }
+      #paper h3 em {
+        font-weight: 400;
+        color: #666;
+        font-size: 13px;
+      }
+      .qs {
+        columns: 2;
+        column-gap: 24px;
+      }
+      .qs > div {
+        break-inside: avoid;
+        padding: 5px 0;
+      }
+      .qs.w {
+        columns: 1;
+      }
+      .qs.w > div {
+        padding: 5px 0 26px;
+      }
+      .ans {
+        page-break-before: always;
+        padding-top: 6px;
+      }
+      .ans p {
+        margin: 6px 0;
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        background: #1f2a44;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 99px;
+        opacity: 0;
+        transition: 0.2s;
+        pointer-events: none;
+        z-index: 9;
+      }
+      #toast.s {
+        opacity: 1;
+      }
+      #paper table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .hd td {
+        vertical-align: top;
+        text-align: center;
+        font-size: 15px;
+        width: 50%;
+      }
+      .bx {
+        margin: 8px 0 10px;
+      }
+      .bx td {
+        border: 1px solid #111;
+        padding: 6px 8px;
+        vertical-align: top;
+        height: 24mm;
+        font-size: 15px;
+      }
+      #paper h3 em {
+        color: #111;
+        font-weight: 700;
+        font-size: 16px;
+        font-style: normal;
+      }
+      .qs.w > div {
+        padding: 6px 0 12px;
+      }
+      .sp1 > div {
+        padding-bottom: 14px;
+      }
+      .sp2 > div {
+        padding-bottom: 38px;
+      }
+      .qi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .fg {
+        flex: none;
+      }
+      .ln {
+        display: flex;
+        align-items: flex-end;
+        height: 8mm;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .ln .dt {
+        flex: 1;
+        overflow: hidden;
+        letter-spacing: 3px;
+        color: #333;
+        margin-left: 4px;
+        line-height: 1.1;
+      }
+      .fr {
+        display: inline-flex;
+        flex-direction: column;
+        vertical-align: middle;
+        text-align: center;
+        margin: 0 3px;
+        line-height: 1.2;
+        font-size: 0.95em;
+      }
+      .fr > i {
+        font-style: normal;
+        padding: 0 3px;
+      }
+      .fr > i:first-child {
+        border-bottom: 1.5px solid #111;
+      }
+      .qs.mq {
+        columns: 1;
+      }
+      .qs.mq > div {
+        padding: 4px 0 8px;
+      }
+      .op {
+        display: grid;
+        gap: 2px 10px;
+        margin-top: 3px;
+        padding-left: 6px;
+      }
+      .op.c4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .op.c2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .op.c1 {
+        grid-template-columns: 1fr;
+      }
+      #paper h3.pt {
+        text-align: center;
+        font-size: 17px;
+        margin: 18px 0 4px;
+      }
+      #paper .hn {
+        font-weight: 400;
+        font-style: italic;
+        color: #555;
+        font-size: 14px;
+      }
+      .hh {
+        margin: 14px 0 8px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(120deg, #f59e0b, #ec4899);
+      }
+      .end {
+        text-align: center;
+        margin-top: 14px;
+        font-style: italic;
+      }
+      label.f {
+        display: block;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🧮 Tạo đề Toán Tiểu học</h1>
+      <p>Chọn lớp → tích module → chọn mức độ (đến HSG Quốc gia) và dạng tự luận / trắc nghiệm → tải Word / PDF</p>
+    </header>
+    <main>
+      <section>
+        <div class="card">
+          <div class="tabs" id="tabs"></div>
+          <div id="mods"></div>
+          <div class="row">
+            <button class="btn g" onclick="all(1)">Chọn tất cả lớp này</button
+            ><button class="btn g" onclick="all(0)">Bỏ chọn</button
+            >
+          </div>
+          <div class="row">
+            <button class="btn g" onclick="setMode(0)">✍️ Cả lớp: tự luận</button
+            ><button class="btn g" onclick="setMode(1)">🔘 Cả lớp: trắc nghiệm</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 12px">
+          <label class="f"
+            >Tên trường<input
+              type="text"
+              id="sc"
+              value="TRƯỜNG TIỂU HỌC ....................."
+          /></label>
+          <label class="f"
+            >Tiêu đề đề bài<input
+              type="text"
+              id="ti"
+              value="ĐỀ KIỂM TRA MÔN TOÁN"
+          /></label>
+          <label class="f"
+            >Thời gian làm bài<input type="text" id="tm" value="40 phút"
+          /></label>
+          <div class="row">
+            <label
+              ><input type="checkbox" id="sp" checked /> Chừa chỗ trình bày lời
+              giải</label
+            >
+          </div>
+          <div class="row" style="align-items: center">
+            <label
+              ><input type="checkbox" id="key" checked /> Kèm trang đáp
+              án</label
+            ><span id="cnt" style="color: var(--mu)"></span>
+          </div>
+          <div class="row">
+            <button class="btn big" onclick="gen()">✨ Tạo đề</button>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="row" style="margin: 0 0 10px">
+          <button class="btn" onclick="docxSave()">⬇ Tải DOCX</button
+          ><button class="btn" onclick="pdfSave()">⬇ Tải PDF</button
+          ><button class="btn g" onclick="gen()">🔄 Đề mới</button>
+        </div>
+        <div class="pv">
+          <div id="paper">
+            <div class="empty">
+              Chưa có đề. Hãy tích chọn module ở bên trái rồi bấm “Tạo đề”.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="toast"></div>
+    <script>
+      const $ = (i) => document.getElementById(i),
+        r = (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+        p = (a) => a[r(0, a.length - 1)],
+        gc = (a, b) => (b ? gc(b, a % b) : a),
+        F = (n, d) => {
+          const k = gc(n, d);
+          n /= k;
+          d /= k;
+          return d == 1 ? "" + n : "⟦" + n + "|" + d + "⟧";
+        },
+        D = (x) => String(+(+x).toFixed(4)).replace(".", ","),
+        N = (n) =>
+          n < 1e4 ? "" + n : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."),
+        _ = "……",
+        L = "abcdefghij",
+        col = ["", "#ff7a59", "#e6a100", "#21b573", "#2f8cff", "#a259ff"];
+      /* ---------- Phân số, trắc nghiệm, bẫy đáp án ---------- */
+      const FR = (n, d) => `⟦${n}|${d}⟧`,
+        FRD = /⟦([^|⟧]*)\|([^⟧]*)⟧/g,
+        eh = (s) =>
+          s.replace(
+            /[&<>]/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+          ),
+        H = (s) =>
+          eh(String(s)).replace(
+            FRD,
+            (m, a, b) => `<span class="fr"><i>${a}</i><i>${b}</i></span>`,
+          ),
+        shuf = (a) => {
+          a = a.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = r(0, i);
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        },
+        RXN = /⟦(\d+)\|(\d+)⟧|\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?/g,
+        toks = (s) => {
+          const a = [];
+          let m;
+          RXN.lastIndex = 0;
+          while ((m = RXN.exec(s)))
+            a.push(
+              m[1]
+                ? { f: 1, n: +m[1], d: +m[2], v: +m[1] / +m[2], i: m.index, l: m[0].length }
+                : {
+                    v: +m[0].replace(/\./g, "").replace(",", "."),
+                    dec: (m[0].split(",")[1] || "").length,
+                    i: m.index,
+                    l: m[0].length,
+                  },
+            );
+          return a;
+        },
+        fmtV = (v) => {
+          if (!isFinite(v) || v < 0) return null;
+          v = Math.round(v * 1e4) / 1e4;
+          return Number.isInteger(v) ? (v >= 1e4 ? N(v) : "" + v) : D(v);
+        },
+        like = (s, vals) => {
+          const t = toks(s);
+          let o = "",
+            q = 0;
+          t.forEach((k, i) => {
+            o += s.slice(q, k.i);
+            q = k.i + k.l;
+            const v = vals[i];
+            if (v == null) o += s.slice(k.i, k.i + k.l);
+            else if (typeof v == "string") o += v;
+            else {
+              const f = fmtV(v);
+              if (f == null) throw 0;
+              o += f;
+            }
+          });
+          return o + s.slice(q);
+        },
+        ckey = (s) =>
+          String(s).replace(RXN, "#") +
+          "|" +
+          toks(String(s))
+            .map((k) => Math.round(k.v * 1e6))
+            .join(","),
+        gmut = (ans, g, sc) => {
+          const t = toks(ans),
+            c = [];
+          t.forEach((k, i) => {
+            const put = (v, w) => {
+              try {
+                if (!k.f && !k.dec && !Number.isInteger(v)) return;
+                const z = [];
+                z[i] = v;
+                c.push([like(ans, z), w + Math.random() * 0.9]);
+              } catch (e) {}
+            };
+            if (k.f) {
+              const rd = (n, d) => {
+                const q = gc(n, d);
+                return F(n / q, d / q);
+              };
+              [
+                [k.n + 1, k.d],
+                [k.n, k.d + 1],
+                [Math.max(1, k.n - 1), k.d],
+                [k.n, Math.max(2, k.d - 1)],
+                [k.d, k.n],
+                [k.n + 1, k.d + 1],
+              ].forEach((z, j) => put(rd(z[0], z[1]), 1 + j * 0.2));
+            } else {
+              const u = Math.pow(10, -k.dec),
+                x = k.v,
+                sd = String(Math.round(x / u));
+              put(x + u, 1);
+              put(x - u, 1);
+              put(x + 2 * u, 2);
+              put(x - 2 * u, 2);
+              if (x >= 15 * u) {
+                put(x + 10 * u, 1.5);
+                put(x - 10 * u, 1.5);
+              }
+              if (x >= 200 * u) {
+                put(x + 100 * u, 2.5);
+                put(x - 100 * u, 2.5);
+              }
+              if (sd.length > 1) {
+                const j = r(0, sd.length - 2),
+                  a = sd.split("");
+                [a[j], a[j + 1]] = [a[j + 1], a[j]];
+                if (a[0] != "0") put(+a.join("") * u, 1.7);
+              }
+              if (g >= 3 || k.dec || sc) {
+                put(x * 10, sc ? 1.2 : 2.2);
+                if (x > 0) put(x / 10, sc ? 1.2 : 2.2);
+                if (sc) put(x * 100, 1.6);
+              }
+              if (x >= 4) {
+                put(x * 2, 3);
+                put(x / 2, 3);
+              }
+              if (k.dec) {
+                put(x + 1, 1.2);
+                put(x - 1, 1.2);
+              }
+            }
+          });
+          return c;
+        },
+        SGN = [">", "<", "="];
+      function mkOpts(x, g, sc) {
+        const ans = String(x[1]);
+        let o;
+        if (SGN.includes(ans)) o = SGN;
+        else {
+          const seen = new Set([ckey(ans)]),
+            out = [],
+            hasF = toks(ans).some((k) => k.f),
+            add1 = (s) => {
+              if (s == null || out.length >= 3) return;
+              s = String(s);
+              if (!hasF && !ans.includes(",") && s.includes(",")) return;
+              const k = ckey(s);
+              if (seen.has(k)) return;
+              seen.add(k);
+              out.push(s);
+            };
+          shuf(x[3] || []).forEach((t) => {
+            try {
+              add1(
+                typeof t == "number"
+                  ? like(ans, [t])
+                  : Array.isArray(t)
+                    ? like(ans, t)
+                    : t,
+              );
+            } catch (e) {}
+          });
+          if (out.length < 3)
+            gmut(ans, g, sc)
+              .sort((a, b) => a[1] - b[1])
+              .forEach((z) => add1(z[0]));
+          if (out.length < 3 && toks(ans).length)
+            [3, -3, 4, -4, 5, 6, 7].forEach((d) => {
+              try {
+                add1(like(ans, [toks(ans)[0].v + d]));
+              } catch (e) {}
+            });
+          o = shuf([ans, ...out]);
+        }
+        x.o = o;
+        x.c = o.indexOf(ans);
+        return x;
+      }
+
+      const M = [],
+        add = (g, id, name, t, gen, w) => M.push({ g, id, name, t, gen, w });
+      add(1, "c1", "Phép cộng (phạm vi 10, 20, 100)", "Tính:", (l) => {
+        const m = [10, 20, 100][l - 1],
+          a = r(1, m - 1),
+          b = r(0, m - a); return [`${a} + ${b} = ${_}`, a + b, null, [Math.abs(a - b), a + b + 1, a + b - 1]];
+      });
+      add(1, "t1", "Phép trừ (phạm vi 10, 20, 100)", "Tính:", (l) => {
+        const m = [10, 20, 100][l - 1],
+          a = r(2, m),
+          b = r(0, a); return [`${a} − ${b} = ${_}`, a - b, null, [a + b, a - b + 1, a - b - 1]];
+      });
+      add(1, "s1", "So sánh số", "Điền dấu >, <, = vào chỗ chấm:", (l) => {
+        let x, y, q;
+        if (l < 3) {
+          const m = l == 1 ? 10 : 99;
+          x = r(0, m);
+          y = r(0, m);
+          q = `${x} ${_} ${y}`;
+        } else {
+          const a = r(1, 9),
+            b = r(1, 9);
+          x = a + b;
+          y = r(5, 20);
+          q = `${a} + ${b} ${_} ${y}`;
+        }
+        return [q, x > y ? ">" : x < y ? "<" : "="];
+      });
+      add(
+        1,
+        "d1",
+        "Dãy số, số còn thiếu",
+        "Điền số thích hợp vào chỗ chấm:",
+        (l) => {
+          const s = l == 1 ? 1 : l == 2 ? p([1, 2]) : p([5, 10]),
+            a = l == 1 ? r(0, 5) : l == 2 ? r(0, 10) : s * r(0, 6),
+            h = r(1, 3),
+            v = [0, 1, 2, 3, 4].map((i) => a + i * s),
+            x = v[h];
+          v[h] = _;
+          return [v.join(", "), x];
+        },
+      );
+      add(
+        2,
+        "c2",
+        "Cộng, trừ trong phạm vi 100 (không nhớ / có nhớ)",
+        "Tính:",
+        (l) => {
+          for (;;) {
+            const a = r(10, 99),
+              b = r(10, 99),
+              c = r(5, 60),
+              o = r(0, 1);
+            if (l == 3) {
+              if (a + b <= 100 && c < a + b)
+                return [`${a} + ${b} − ${c} = ${_}`, a + b - c];
+              continue;
+            }
+            const k = o ? a % 10 < b % 10 : (a % 10) + (b % 10) > 9;
+            if (k != (l == 2)) continue;
+            if (o) {
+              if (a > b) return [`${a} − ${b} = ${_}`, a - b];
+            } else if (a + b <= 100) return [`${a} + ${b} = ${_}`, a + b];
+          }
+        },
+      );
+      add(2, "n2", "Bảng nhân 2–5, 6–9", "Tính:", (l) => {
+        const t = l == 1 ? r(2, 5) : r(6, 9),
+          b = r(1, 10);
+        return l == 3
+          ? p([
+              [`${_} × ${b} = ${t * b}`, t],
+              [`${t} × ${_} = ${t * b}`, b],
+            ])
+          : [`${t} × ${b} = ${_}`, t * b, null, [t * b + t, t * b - t, t * b + b, t * b - b, t + b]];
+      });
+      add(2, "q2", "Bảng chia 2–5, 6–9", "Tính:", (l) => {
+        const t = l == 1 ? r(2, 5) : r(6, 9),
+          k = r(1, 10),
+          c = r(1, 9);
+        return l == 3
+          ? [`${t * k} : ${t} + ${c} = ${_}`, k + c, null, [k, k + c + 1, k + c - 1]]
+          : [`${t * k} : ${t} = ${_}`, k, null, [k + 1, k - 1, t + k]];
+      });
+      add(
+        2,
+        "u2",
+        "Đổi đơn vị dm, cm, m",
+        "Điền số thích hợp vào chỗ chấm:",
+        (l) => {
+          const n = r(1, 9),
+            m = r(1, 9);
+          return p(
+            l == 1
+              ? [
+                  [`${n} dm = ${_} cm`, n * 10],
+                  [`${n * 10} cm = ${_} dm`, n],
+                ]
+              : l == 2
+                ? [
+                    [`${n} m = ${_} dm`, n * 10],
+                    [`${n} m = ${_} cm`, n * 100],
+                    [`${n * 100} cm = ${_} m`, n],
+                  ]
+                : [
+                    [`${n} m ${m} cm = ${_} cm`, n * 100 + m],
+                    [`${n} m ${m} dm = ${_} dm`, n * 10 + m],
+                  ],
+          );
+        },
+      );
+      add(
+        2,
+        "w2",
+        "Toán đố (một bước tính)",
+        "Giải bài toán:",
+        (l) => {
+          const a = r(11, 60),
+            b = r(2, 9),
+            k = (a % 5) + 3,
+            n = p(["Lan", "Nam", "Mai", "Hùng", "Hoa"]),
+            m = p(["Bình", "Minh", "An", "Thảo"]);
+          return p(
+            l == 1
+              ? [
+                  [
+                    `${n} có ${a} quyển vở, mẹ mua thêm ${b * 2} quyển. Hỏi ${n} có tất cả bao nhiêu quyển vở?`,
+                    `${a + b * 2} quyển`,
+                  ],
+                  [
+                    `Lớp em có ${a} bạn, hôm nay ${b} bạn nghỉ học. Hỏi lớp em có bao nhiêu bạn đi học?`,
+                    `${a - b} bạn`,
+                  ],
+                ]
+              : l == 2
+                ? [
+                    [
+                      `Mỗi hộp có ${b} cái kẹo. Hỏi ${k} hộp như vậy có bao nhiêu cái kẹo?`,
+                      `${b * k} cái`,
+                    ],
+                    [
+                      `Có ${b * k} quả cam xếp đều vào ${b} đĩa. Hỏi mỗi đĩa có bao nhiêu quả cam?`,
+                      `${k} quả`,
+                    ],
+                  ]
+                : [
+                    [
+                      `${n} có ${a + b} viên bi, nhiều hơn ${m} ${b} viên bi. Hỏi ${m} có bao nhiêu viên bi?`,
+                      `${a} viên`,
+                    ],
+                    [
+                      `Bao ngô nặng ${a} kg, bao gạo nhẹ hơn bao ngô ${b} kg. Hỏi bao gạo nặng bao nhiêu ki-lô-gam?`,
+                      `${a - b} kg`,
+                    ],
+                  ],
+          );
+        },
+        1,
+      );
+      add(3, "n3", "Nhân số nhiều chữ số với số có 1 chữ số", "Tính:", (l) => {
+        const a = [r(12, 99), r(100, 999), r(1000, 2499)][l - 1],
+          b = r(2, 9);
+        return [`${a} × ${b} = ${_}`, a * b];
+      });
+      add(
+        3,
+        "q3",
+        "Chia cho số có 1 chữ số (chia hết / có dư)",
+        "Tính:",
+        (l) => {
+          const d = r(2, 9);
+          if (l == 1) {
+            const k = r(2, Math.floor(99 / d));
+            return [`${d * k} : ${d} = ${_}`, k];
+          }
+          if (l == 2) {
+            const k = r(100, Math.floor(999 / d));
+            return [`${d * k} : ${d} = ${_}`, k];
+          }
+          const a = r(100, 999),
+            q = Math.floor(a / d),
+            m = a % d;
+          const qr = (u, v) => (v ? `${u} (dư ${v})` : `${u}`);
+          return [`${a} : ${d} = ${_}`, qr(q, m), null, m ? [qr(q, m == d - 1 ? 1 : m + 1), qr(q + 1, m), qr(q, 0), qr(q - 1, m)] : [qr(q, r(1, d - 1)), qr(q + 1, 0), qr(q - 1, 0), qr(q, 1)]];
+        },
+      );
+      add(3, "b3", "Tính giá trị biểu thức", "Tính giá trị biểu thức:", (l) => {
+        const a = r(2, 9),
+          b = r(2, 9),
+          c = r(2, 9),
+          d = r(2, 9);
+        const o =
+          l == 1
+            ? [
+                [`${a} + ${b} × ${c}`, a + b * c, [(a + b) * c, a + b * c + 1, a + b + c]],
+                [`${a * b} : ${b} + ${c}`, a + c, [a, a + c + 1, a + c - 1]],
+              ]
+            : l == 2
+              ? [
+                  [`(${a} + ${b}) × ${c}`, (a + b) * c, [a + b * c, (a + b) * c + c, (a + b) * c - c]],
+                  [`${a * b + c * d} − ${c} × ${d}`, a * b, [(a * b + c * d - c) * d, a * b + 1, a * b - 1]],
+                ]
+              : [
+                  [`${a * b} : ${b} × ${c} + ${d}`, a * c + d, [a * c + d + 1, a * c - d, a + c + d]],
+                  [`(${a * c + b * c} : ${c} − ${a}) × ${d}`, b * d, [b * d + d, b * d - d, b + d]],
+                ];
+        const x = p(o);
+        return [`${x[0]} = ${_}`, x[1], null, x[2]];
+      });
+      add(
+        3,
+        "h3",
+        "Chu vi, diện tích hình vuông, hình chữ nhật",
+        "Giải bài toán:",
+        (l) => {
+          const a = r(3, 20),
+            b = r(2, a);
+          return p(
+            l == 1
+              ? [
+                  [
+                    `Hình vuông có cạnh ${a} cm. Tính chu vi hình vuông.`, `${4 * a} cm`, null, [`${a * a} cm`, `${2 * a} cm`, `${4 * a} cm²`],
+                  ],
+                ]
+              : l == 2
+                ? [
+                    [
+                      `Hình chữ nhật có chiều dài ${a} cm, chiều rộng ${b} cm. Tính diện tích.`, `${a * b} cm²`, null, [`${2 * (a + b)} cm²`, `${a * b} cm`, `${a + b} cm²`],
+                    ],
+                    [
+                      `Hình vuông có cạnh ${a} cm. Tính diện tích.`, `${a * a} cm²`, null, [`${4 * a} cm²`, `${2 * a} cm²`, `${a * a} cm`],
+                    ],
+                  ]
+                : [
+                    [
+                      `Hình chữ nhật có chiều dài ${a} cm, chiều rộng ${b} cm. Tính chu vi và diện tích.`, `${2 * (a + b)} cm; ${a * b} cm²`, null, [`${a * b} cm; ${2 * (a + b)} cm²`, `${a + b} cm; ${a * b} cm²`, `${2 * (a + b)} cm; ${a + b} cm²`],
+                    ],
+                  ],
+          );
+        },
+        1,
+      );
+      add(
+        3,
+        "u3",
+        "Đổi đơn vị độ dài, khối lượng",
+        "Điền số thích hợp vào chỗ chấm:",
+        (l) => {
+          const n = r(2, 9),
+            m = r(2, 9);
+          return p(
+            l == 1
+              ? [
+                  [`${n} m = ${_} cm`, n * 100],
+                  [`${n} km = ${_} m`, n * 1000],
+                  [`${n} cm = ${_} mm`, n * 10],
+                ]
+              : l == 2
+                ? [
+                    [`${n} kg = ${_} g`, n * 1000],
+                    [`${n * 1000} g = ${_} kg`, n],
+                    [`${n} m ${m} dm = ${_} dm`, n * 10 + m],
+                  ]
+                : [
+                    [`${n} kg ${m * 10} g = ${_} g`, n * 1000 + m * 10],
+                    [`${n} km ${m * 100} m = ${_} m`, n * 1000 + m * 100],
+                    [`${n * 100 + m} cm = ${_} m ${_} cm`, `${n} m ${m} cm`],
+                  ],
+          );
+        },
+      );
+      add(4, "c4", "Cộng, trừ các số lớn", "Tính:", (l) => {
+        const m = [1e5, 1e6, 1e7][l - 1],
+          a = r(m / 10, m - 1),
+          b = r(m / 10, m - 1);
+        return r(0, 1)
+          ? [
+              `${N(Math.max(a, b))} − ${N(Math.min(a, b))} = ${_}`,
+              N(Math.abs(a - b)),
+            ]
+          : [`${N(a)} + ${N(b)} = ${_}`, N(a + b)];
+      });
+      add(4, "n4", "Nhân với số có 2 chữ số", "Tính:", (l) => {
+        const a = [r(12, 99), r(100, 999), r(1000, 9999)][l - 1],
+          b = r(11, 99);
+        return [`${N(a)} × ${b} = ${_}`, N(a * b), null, [N(a * (b % 10) + a * Math.floor(b / 10))]];
+      });
+      add(
+        4,
+        "q4",
+        "Chia cho số có 2 chữ số (chia hết / có dư)",
+        "Tính:",
+        (l) => {
+          const b = r(11, 99),
+            k = l == 1 ? r(10, 99) : r(100, 999),
+            m = l == 3 ? r(1, b - 1) : 0;
+          const qr = (u, v) => (v ? `${u} (dư ${v})` : `${u}`);
+          return [`${N(b * k + m)} : ${b} = ${_}`, qr(k, m), null, m ? [qr(k, m == b - 1 ? 1 : m + 1), qr(k + 1, m), qr(k, 0), qr(k - 1, m)] : [qr(k, r(1, b - 1)), qr(k + 1, 0), qr(k - 1, 0), qr(k, 1)]];
+        },
+      );
+      add(4, "p4", "Cộng, trừ phân số", "Tính (rút gọn nếu có thể):", (l) => {
+        let b = r(3, 12),
+          d = l == 1 ? b : l == 2 ? b * p([2, 3]) : r(3, 12),
+          a = r(1, b - 1),
+          c = r(1, d - 1);
+        const o = r(0, 1);
+        if (o && a * d < c * b) [a, b, c, d] = [c, d, a, b];
+        const sf = (n, dd) => (n > 0 && dd > 0 ? F(n, dd) : null);
+        return [
+          `${FR(a, b)} ${o ? "−" : "+"} ${FR(c, d)} = ${_}`,
+          o ? F(a * d - c * b, b * d) : F(a * d + c * b, b * d),
+          null,
+          o
+            ? [sf(a - c, b - d), sf(a - c, b), sf(a * d + c * b, b * d), sf(a - c, b + d)]
+            : [sf(a + c, b + d), sf(a + c, b), sf(Math.abs(a * d - c * b), b * d), sf(a * d + c * b, b + d)],
+        ];
+      });
+      add(
+        4,
+        "m4",
+        "Trung bình cộng",
+        "Giải bài toán:",
+        (l) => {
+          const n = l + 1,
+            m = [r(10, 40), r(30, 90), r(100, 500)][l - 1],
+            v = [];
+          let s = 0;
+          for (let i = 0; i < n - 1; i++) {
+            const x = r(Math.ceil(m * 0.8), Math.floor(m * 1.2));
+            v.push(x);
+            s += x;
+          }
+          v.push(m * n - s);
+          return [`Tìm số trung bình cộng của các số: ${v.join("; ")}.`, m, null, [m * n, m + 1, m - 1, m + 2]];
+        },
+        1,
+      );
+      add(
+        4,
+        "s4",
+        "Tìm hai số khi biết tổng – hiệu – tỉ",
+        "Giải bài toán:",
+        (l) => {
+          const k = r(2, 4),
+            u = r(4, 20),
+            x = r(20, 90),
+            y = r(5, x - 1);
+          return l == 1
+            ? [
+                `Tổng của hai số là ${x + y}, hiệu của hai số là ${x - y}. Tìm hai số đó.`,
+                `${x} và ${y}`, null, [[x + 1, y - 1], [x - 1, y + 1], [x + 1, y + 1]],
+              ]
+            : l == 2
+              ? [
+                  `Tổng của hai số là ${u * (k + 1)}. Số bé bằng ${FR(1, k)} số lớn. Tìm hai số đó.`,
+                  `${u * k} và ${u}`,
+                ]
+              : [
+                  `Hiệu của hai số là ${u * (k - 1)}. Số lớn gấp ${k} lần số bé. Tìm hai số đó.`,
+                  `${u * k} và ${u}`,
+                ];
+        },
+        1,
+      );
+      add(5, "d5", "Cộng, trừ số thập phân", "Tính:", (l) => {
+        const f = (k) => r(11, k == 1 ? 999 : 9999) / 10 ** k;
+        let a = f(l == 2 ? 2 : 1),
+          b = f(l == 1 ? 1 : 2);
+        const o = r(0, 1);
+        if (o && a < b) [a, b] = [b, a];
+        return [
+          `${D(a)} ${o ? "−" : "+"} ${D(b)} = ${_}`,
+          D(o ? a - b : a + b),
+        ];
+      });
+      add(5, "x5", "Nhân, chia số thập phân", "Tính:", (l) => {
+        const a = r(11, 99) / 10,
+          b = r(2, 9),
+          c = r(11, 99) / 10,
+          q = r(2, 9),
+          e = r(12, 50) / 10;
+        return l == 1
+          ? [`${D(a)} × ${b} = ${_}`, D(a * b)]
+          : l == 2
+            ? [`${D(a)} × ${D(c)} = ${_}`, D(a * c)]
+            : [`${D(q * e)} : ${D(e)} = ${_}`, q];
+      });
+      add(
+        5,
+        "t5",
+        "Tỉ số phần trăm",
+        "Giải bài toán:",
+        (l) => {
+          const b = p([5, 10, 20, 25, 50]),
+            n = r(2, 20) * 20,
+            y = p([20, 40, 100, 200]),
+            pc = r(1, 19) * 5,
+            g = r(10, 40) * 10;
+          return l == 1
+            ? [`Tìm ${b}% của ${n}.`, D((n * b) / 100), null, [n * b, n / b, (n * b) / 10]]
+            : l == 2
+              ? [`Tìm tỉ số phần trăm của ${(y * pc) / 100} và ${y}.`, `${pc}%`, null, [pc + 5, pc - 5, 100 - pc]]
+              : [
+                  `Một chiếc áo giá ${N(g * 1000)} đồng được giảm giá ${b}%. Hỏi sau khi giảm, giá chiếc áo là bao nhiêu đồng?`,
+                  `${N(g * 1000 - g * 10 * b)} đồng`, null, [g * 10 * b, g * 1000 + g * 10 * b, g * 1000 - g * b],
+                ];
+        },
+        1,
+      );
+      add(
+        5,
+        "v5",
+        "Toán chuyển động đều",
+        "Giải bài toán:",
+        (l) => {
+          const v = r(3, 16) * 5,
+            w = r(3, 16) * 5,
+            t = r(2, 6);
+          return l == 1
+            ? [
+                `Ô tô đi với vận tốc ${v} km/giờ trong ${t} giờ. Tính quãng đường ô tô đi được.`, `${v * t} km`, null, [v + t, v * t + v, v * t - v],
+              ]
+            : l == 2
+              ? [
+                  `Một người đi xe đạp với vận tốc ${v} km/giờ, đi hết quãng đường ${v * t} km. Hỏi người đó đi mất bao nhiêu giờ?`,
+                  `${t} giờ`,
+                ]
+              : [
+                  `Hai ô tô xuất phát cùng lúc từ A và B, đi ngược chiều nhau. Quãng đường AB dài ${(v + w) * t} km, vận tốc hai xe lần lượt là ${v} km/giờ và ${w} km/giờ. Hỏi sau bao lâu hai xe gặp nhau?`,
+                  `${t} giờ`,
+                ];
+        },
+        1,
+      );
+      add(
+        5,
+        "g5",
+        "Diện tích tam giác, hình thang, hình tròn",
+        "Giải bài toán:",
+        (l) => {
+          const a = r(4, 20),
+            h = r(3, 15),
+            x = r(3, 10),
+            y = x + 2 * r(1, 5),
+            z = r(2, 15);
+          return l == 1
+            ? [
+                `Tam giác có độ dài đáy ${a * 2} cm, chiều cao ${h} cm. Tính diện tích.`, `${a * h} cm²`, null, [a * h * 2, a + h, a * h + h],
+              ]
+            : l == 2
+              ? [
+                  `Hình thang có hai đáy dài ${x} cm và ${y} cm, chiều cao ${h} cm. Tính diện tích.`, `${((x + y) * h) / 2} cm²`, null, [(x + y) * h, (x * y * h) / 2, ((x + y) * h) / 2 + h],
+                ]
+              : [
+                  `Hình tròn có bán kính ${z} cm. Tính chu vi và diện tích hình tròn (π = 3,14).`, `${D(6.28 * z)} cm; ${D(3.14 * z * z)} cm²`, null, [[3.14 * z * z, 6.28 * z], [3.14 * z, 3.14 * z * z], [6.28 * z, 6.28 * z * z]],
+                ];
+        },
+        1,
+      );
+      const S = (w, h, b) =>
+          `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" font-family="Times New Roman,serif" font-size="15" fill="none" stroke="#111" stroke-width="1.6">${b}</svg>`,
+        T = (x, y, s, a = "middle") =>
+          `<text x="${x}" y="${y}" text-anchor="${a}" fill="#111" stroke="none">${s}</text>`,
+        PG = (q) => `<polygon points="${q.join(" ")}"/>`,
+        DL = (a, b) =>
+          `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke-dasharray="5 4" stroke-width="1.2"/>`,
+        RA = (x, y, u, v) =>
+          `<path d="M${x + 8 * u},${y} L${x + 8 * u},${y + 8 * v} L${x},${y + 8 * v}" stroke-width="1"/>`,
+        V = (n, q) => {
+          const cx = q.reduce((s, z) => s + z[0], 0) / q.length,
+            cy = q.reduce((s, z) => s + z[1], 0) / q.length;
+          return q
+            .map((z, i) => {
+              const dx = z[0] - cx,
+                dy = z[1] - cy,
+                d = Math.hypot(dx, dy) || 1;
+              return T(z[0] + (dx / d) * 12, z[1] + (dy / d) * 12 + 5, n[i]);
+            })
+            .join("");
+        },
+        NM = () => p(["ABCD", "MNPQ", "EFGH", "KLMN"]),
+        RC = (a, b, n) => {
+          const k = Math.min(180 / a, 100 / b),
+            w = a * k,
+            h = b * k,
+            q = [
+              [55, 15],
+              [55 + w, 15],
+              [55 + w, 15 + h],
+              [55, 15 + h],
+            ];
+          return S(
+            w + 85,
+            h + 55,
+            PG(q) +
+              RA(55, 15, 1, 1) +
+              RA(55 + w, 15, -1, 1) +
+              RA(55 + w, 15 + h, -1, -1) +
+              RA(55, 15 + h, 1, -1) +
+              V(n, q) +
+              T(55 + w / 2, h + 45, a + " cm") +
+              (a == b ? "" : T(48, 15 + h / 2 + 5, b + " cm", "end")),
+          );
+        },
+        LS = (a, b, c, d) => {
+          const k = Math.min(170 / a, 110 / b),
+            X = 55,
+            Y = 15,
+            q = [
+              [X, Y],
+              [X + (a - c) * k, Y],
+              [X + (a - c) * k, Y + d * k],
+              [X + a * k, Y + d * k],
+              [X + a * k, Y + b * k],
+              [X, Y + b * k],
+            ];
+          return S(
+            a * k + 100,
+            b * k + 55,
+            PG(q) +
+              T(X + (a * k) / 2, Y + b * k + 30, a + " cm") +
+              T(X - 7, Y + (b * k) / 2 + 5, b + " cm", "end") +
+              T(X + (a - c / 2) * k, Y + d * k - 6, c + " cm") +
+              T(X + (a - c) * k + 6, Y + (d * k) / 2 + 5, d + " cm", "start"),
+          );
+        },
+        GK = (v, n) => {
+          const q = [
+            [25, 95],
+            [95, 25],
+            [175, 85],
+            [255, 25],
+          ];
+          return S(
+            285,
+            125,
+            `<polyline points="${q.join(" ")}"/>` +
+              V(n, q) +
+              T(50, 50, v[0] + " cm", "end") +
+              T(150, 48, v[1] + " cm", "start") +
+              T(208, 40, v[2] + " cm"),
+          );
+        },
+        TC = (s, n) => {
+          const q = [
+            [20, 100],
+            [120, 15],
+            [230, 100],
+          ];
+          return S(
+            260,
+            135,
+            PG(q) +
+              V(n, q) +
+              T(52, 52, s[0] + " cm", "end") +
+              T(188, 50, s[1] + " cm", "start") +
+              T(125, 124, s[2] + " cm"),
+          );
+        },
+        QC = (s, n) => {
+          const q = [
+            [65, 25],
+            [255, 15],
+            [270, 100],
+            [50, 105],
+          ];
+          return S(
+            320,
+            135,
+            PG(q) +
+              V(n, q) +
+              T(160, 10, s[0] + " cm") +
+              T(276, 62, s[1] + " cm", "start") +
+              T(160, 124, s[2] + " cm") +
+              T(44, 70, s[3] + " cm", "end"),
+          );
+        },
+        PA = (a, hh, n) => {
+          const q = [
+            [30, 105],
+            [190, 105],
+            [230, 30],
+            [70, 30],
+          ];
+          return S(
+            260,
+            135,
+            PG(q) +
+              DL(q[3], [70, 105]) +
+              RA(70, 105, 1, -1) +
+              V(n, q) +
+              T(110, 127, a + " cm") +
+              T(76, 72, hh, "start"),
+          );
+        },
+        RB = (m, k, n) => {
+          const q = [
+            [130, 10],
+            [220, 60],
+            [130, 110],
+            [40, 60],
+          ];
+          return S(
+            260,
+            125,
+            PG(q) +
+              DL(q[0], q[2]) +
+              DL(q[1], q[3]) +
+              RA(130, 60, 1, -1) +
+              V(n, q) +
+              T(136, 92, m + " cm", "start") +
+              T(150, 53, k + " cm", "start"),
+          );
+        },
+        TR = (a, h, n) => {
+          const q = [
+            [105, 15],
+            [20, 105],
+            [215, 105],
+          ];
+          return S(
+            240,
+            135,
+            PG(q) +
+              DL(q[0], [105, 105]) +
+              RA(105, 105, 1, -1) +
+              V(n, q) +
+              T(118, 127, a + " cm") +
+              T(111, 68, h, "start"),
+          );
+        },
+        TZ = (x, y, h, n) => {
+          const q = [
+            [75, 20],
+            [165, 20],
+            [235, 105],
+            [20, 105],
+          ];
+          return S(
+            260,
+            135,
+            PG(q) +
+              DL(q[0], [75, 105]) +
+              RA(75, 105, 1, -1) +
+              V(n, q) +
+              T(120, 12, x + " cm") +
+              T(128, 127, y + " cm") +
+              T(81, 68, h + " cm", "start"),
+          );
+        },
+        CI = (z) =>
+          S(
+            170,
+            125,
+            `<circle cx="85" cy="62" r="55"/>` +
+              DL([85, 62], [140, 62]) +
+              `<circle cx="85" cy="62" r="2.5" fill="#111"/>` +
+              T(79, 78, "O", "end") +
+              T(112, 54, z + " cm"),
+          ),
+        BX = (a, b, h) =>
+          S(
+            250,
+            150,
+            `<g transform="translate(30,0)">` +
+              PG([
+                [20, 50],
+                [140, 50],
+                [140, 120],
+                [20, 120],
+              ]) +
+              PG([
+                [20, 50],
+                [60, 20],
+                [180, 20],
+                [140, 50],
+              ]) +
+              PG([
+                [140, 50],
+                [180, 20],
+                [180, 90],
+                [140, 120],
+              ]) +
+              `<path d="M20,120 L60,90 L180,90 M60,90 L60,20" stroke-dasharray="5 4" stroke-width="1.2"/>` +
+              T(80, 138, a + " cm") +
+              T(166, 116, b + " cm", "start") +
+              T(12, 90, h + " cm", "end") +
+              `</g>`,
+          );
+
+      add(
+        1,
+        "k1",
+        "Hình học: nhận biết hình (có hình vẽ)",
+        "Quan sát hình và trả lời:",
+        (l) => {
+          const sh = [
+            ["hình vuông", '<rect x="30" y="10" width="80" height="80"/>', 4],
+            ["hình tròn", '<circle cx="70" cy="50" r="42"/>', 0],
+            ["hình tam giác", '<polygon points="70,8 120,90 20,90"/>', 3],
+            [
+              "hình chữ nhật",
+              '<rect x="15" y="22" width="110" height="56"/>',
+              4,
+            ],
+          ];
+          if (l == 3) {
+            const a = r(1, 3),
+              b = r(2, 5),
+              w = 40;
+            return [
+              "Hình bên có bao nhiêu hình vuông nhỏ?",
+              a * b,
+              S(
+                b * w + 20,
+                a * w + 20,
+                Array.from(
+                  { length: a * b },
+                  (q, k) =>
+                    `<rect x="${10 + (k % b) * w}" y="${10 + Math.floor(k / b) * w}" width="${w}" height="${w}"/>`,
+                ).join(""),
+              ),
+            ];
+          }
+          const x = p(l == 2 ? [sh[0], sh[2], sh[3]] : sh);
+          return l == 1
+            ? ["Hình bên là hình gì?", x[0], S(140, 100, x[1]), sh.map((z) => z[0]).filter((z) => z != x[0])]
+            : ["Hình bên có mấy cạnh?", x[2], S(140, 100, x[1]), [0, 3, 4, 5]];
+        },
+        2,
+      );
+
+      add(
+        2,
+        "k2",
+        "Hình học: đường gấp khúc, chu vi tam giác, tứ giác (có hình vẽ)",
+        "Quan sát hình vẽ và giải bài toán:",
+        (l) => {
+          const n = NM(),
+            v = [r(2, 12), r(2, 12), r(2, 12), r(2, 12)];
+          return l == 1
+            ? [
+                `Tính độ dài đường gấp khúc ${n.slice(0, 4)}.`,
+                `${v[0] + v[1] + v[2]} cm`, GK(v, n), [v[0] + v[1] + v[2] + v[3], v[0] + v[1], v[1] + v[2]],
+              ]
+            : l == 2
+              ? [
+                  `Tính chu vi tam giác ${n.slice(0, 3)}.`,
+                  `${v[0] + v[1] + v[2]} cm`, TC(v, n.slice(0, 3)), [v[0] + v[1], v[1] + v[2], v[0] * v[1]],
+                ]
+              : [
+                  `Tính chu vi tứ giác ${n}.`,
+                  `${v[0] + v[1] + v[2] + v[3]} cm`, QC(v, n), [v[0] + v[1] + v[2], v[1] + v[2] + v[3], 2 * (v[0] + v[1])],
+                ];
+        },
+        1,
+      );
+
+      add(
+        3,
+        "f3",
+        "Hình học: chu vi, diện tích hình chữ nhật, hình vuông (có hình vẽ)",
+        "Quan sát hình vẽ và giải bài toán:",
+        (l) => {
+          const a = r(5, 15),
+            b = r(3, a - 1),
+            n = NM();
+          if (l == 1)
+            return p([
+              [
+                `Tính chu vi hình chữ nhật ${n}.`,
+                `${2 * (a + b)} cm`, RC(a, b, n), [`${a * b} cm`, `${a + b} cm`, `${2 * a + b} cm`, `${a * b} cm²`],
+              ],
+              [`Tính chu vi hình vuông ${n}.`, `${4 * a} cm`, RC(a, a, n), [`${a * a} cm`, `${2 * a} cm`, `${a * a} cm²`, `${4 * a} cm²`]],
+            ]);
+          if (l == 2)
+            return p([
+              [
+                `Tính diện tích hình chữ nhật ${n}.`,
+                `${a * b} cm²`, RC(a, b, n), [`${2 * (a + b)} cm²`, `${a * b} cm`, `${a + b} cm²`],
+              ],
+              [`Tính diện tích hình vuông ${n}.`, `${a * a} cm²`, RC(a, a, n), [`${4 * a} cm²`, `${2 * a} cm²`, `${a * a} cm`]],
+            ]);
+          const A = r(6, 12),
+            B = r(5, 10),
+            c = r(2, A - 3),
+            d = r(2, B - 3);
+          return [
+            "Tính diện tích hình bên.",
+            `${A * B - c * d} cm²`, LS(A, B, c, d), [A * B, A * B + c * d, (A - c) * (B - d)],
+          ];
+        },
+        1,
+      );
+
+      add(
+        4,
+        "f4",
+        "Hình học: hình bình hành, hình thoi (có hình vẽ)",
+        "Quan sát hình vẽ và giải bài toán:",
+        (l) => {
+          const n = NM(),
+            a = r(5, 20),
+            h = r(3, 12);
+          if (l == 1)
+            return [
+              `Tính diện tích hình bình hành ${n} trong hình vẽ.`,
+              `${a * h} cm²`, PA(a, h + " cm", n), [(a * h) / 2, a + h, 2 * (a + h)],
+            ];
+          if (l == 2) {
+            const m = r(3, 14),
+              k = 2 * r(2, 8);
+            return [
+              `Tính diện tích hình thoi ${n} trong hình vẽ.`,
+              `${(m * k) / 2} cm²`, RB(m, k, n), [m * k, m + k, (m * k) / 4],
+            ];
+          }
+          return [
+            `Hình bình hành ${n} có diện tích ${a * h} cm² và độ dài đáy ${a} cm. Tính chiều cao của hình bình hành.`,
+            `${h} cm`, PA(a, "h = ?", n), [a * h, a, a + h],
+          ];
+        },
+        1,
+      );
+
+      add(
+        5,
+        "f5",
+        "Hình học: tam giác, hình thang, hình tròn, hình hộp (có hình vẽ)",
+        "Quan sát hình vẽ và giải bài toán:",
+        (l) => {
+          const n = NM(),
+            h = r(3, 12);
+          if (l == 1) {
+            const a = 2 * r(3, 9);
+            return [
+              `Tính diện tích tam giác ${n.slice(0, 3)} trong hình vẽ.`,
+              `${(a * h) / 2} cm²`, TR(a, h + " cm", n.slice(0, 3)), [a * h, a + h, (a * h) / 4],
+            ];
+          }
+          if (l == 2) {
+            const x = r(3, 10),
+              y = x + 2 * r(1, 5);
+            return [
+              `Tính diện tích hình thang ${n} trong hình vẽ.`,
+              `${((x + y) * h) / 2} cm²`, TZ(x, y, h, n), [(x + y) * h, (x + y) / 2, x * h],
+            ];
+          }
+          const z = r(2, 12),
+            a = r(4, 12),
+            b = r(3, 9);
+          return p([
+            [
+              `Tính chu vi và diện tích hình tròn tâm O (π = 3,14).`,
+              `${D(6.28 * z)} cm; ${D(3.14 * z * z)} cm²`, CI(z), [[3.14 * z * z, 6.28 * z], [3.14 * z, 3.14 * z * z], [6.28 * z, 6.28 * z * z]],
+            ],
+            [
+              `Tính thể tích hình hộp chữ nhật trong hình vẽ.`,
+              `${a * b * h} cm³`, BX(a, b, h), [a * b, a + b + h, 2 * (a * b + b * h + a * h)],
+            ],
+          ]);
+        },
+        1,
+      );
+      
+      /* ---------- Module HSG (Nâng cao → HSG Quốc gia) ---------- */
+      const one = (a) => {
+          if (a.length != 1) throw new Error("uniq");
+          return a[0];
+        },
+        nn = () =>
+          p(["An", "Bình", "Lan", "Mai", "Nam", "Hoa", "Hùng", "Minh", "Linh", "Tú"]),
+        two = () => {
+          const a = nn();
+          let b;
+          do b = nn();
+          while (b == a);
+          return [a, b];
+        },
+        rg = (a, b) => Array.from({ length: b - a + 1 }, (q, i) => a + i),
+        apS = (a, d, n) => {
+          let s = 0;
+          for (let i = 0; i < n; i++) s += a + i * d;
+          return s;
+        },
+        fred = ([n, d]) => {
+          const k = gc(n, d);
+          return [n / k, d / k];
+        },
+        fadd = (x, y) => fred([x[0] * y[1] + y[0] * x[1], x[1] * y[1]]),
+        ff = (x) => F(x[0], x[1]),
+        lcm = (a, b) => (a * b) / gc(a, b),
+        nt = (t) => (t.length > 4 ? [...t.slice(0, 3), "…", t[t.length - 1]] : t),
+        TRI = (m) => {
+          let b = `<line x1="30" y1="115" x2="270" y2="115"/>`;
+          for (let i = 0; i <= m; i++)
+            b += `<line x1="150" y1="12" x2="${30 + (i * 240) / m}" y2="115"/>`;
+          return S(300, 135, b);
+        },
+        PT = (n) => {
+          let b = `<line x1="10" y1="30" x2="${n * 40 + 10}" y2="30"/>`;
+          for (let i = 0; i < n; i++)
+            b +=
+              `<circle cx="${25 + i * 40}" cy="30" r="3" fill="#111"/>` +
+              T(25 + i * 40, 55, "ABCDEFGHI"[i]);
+          return S(n * 40 + 30, 70, b);
+        },
+        GD = (w, h) => {
+          const c = 36;
+          let b = "";
+          for (let i = 0; i <= w; i++)
+            b += `<line x1="${10 + i * c}" y1="10" x2="${10 + i * c}" y2="${10 + h * c}"/>`;
+          for (let j = 0; j <= h; j++)
+            b += `<line x1="10" y1="${10 + j * c}" x2="${10 + w * c}" y2="${10 + j * c}"/>`;
+          return S(w * c + 20, h * c + 20, b);
+        },
+        SQC = (rr) =>
+          S(
+            200,
+            215,
+            `<rect x="20" y="25" width="160" height="160" fill="#d9d9d9"/><circle cx="100" cy="105" r="80" fill="#fff"/><circle cx="100" cy="105" r="2.5" fill="#111"/>` +
+              T(100, 17, `${2 * rr} cm`) +
+              T(108, 100, "O", "start") +
+              T(10, 22, "A") +
+              T(190, 22, "B") +
+              T(190, 205, "C") +
+              T(10, 205, "D"),
+          ),
+        CSQ = (R) =>
+          S(
+            210,
+            215,
+            `<circle cx="105" cy="105" r="80" fill="#d9d9d9"/><polygon points="105,25 185,105 105,185 25,105" fill="#fff"/><circle cx="105" cy="105" r="2.5" fill="#111"/>` +
+              DL([105, 105], [185, 105]) +
+              T(145, 98, `${R} cm`) +
+              T(105, 17, "A") +
+              T(198, 110, "B", "start") +
+              T(105, 207, "C") +
+              T(12, 110, "D", "end") +
+              T(98, 122, "O", "end"),
+          );
+
+      add(
+        1,
+        "o1",
+        "Quy luật dãy số, đếm số, tính nhanh",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const s = p([2, 3, 4, 5]),
+                      a = r(1, 6),
+                      v = rg(0, 5).map((i) => a + i * s);
+                    return [
+                      `Điền hai số tiếp theo của dãy số: ${v.slice(0, 4).join(", ")}, ${_}, ${_}.`,
+                      `${v[4]}; ${v[5]}`,
+                      null,
+                      [[v[4], v[5] + 1], [v[4] + 1, v[5] + 1], [v[3] + s + 1, v[3] + 2 * s + 2]],
+                    ];
+                  },
+                  () => {
+                    const x = r(1, 9),
+                      z = r(1, 9),
+                      q = shuf([x, 10 - x, z, 10 - z]);
+                    return [`Tính nhanh: ${q.join(" + ")} = ${_}`, 20, null, [19, 21, 10, 30]];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const a = r(1, 4),
+                        s1 = r(1, 3),
+                        b = r(10, 20),
+                        s2 = r(1, 4),
+                        v = [];
+                      for (let i = 0; i < 4; i++) v.push(a + i * s1, b + i * s2);
+                      return [
+                        `Tìm hai số thích hợp thay cho dấu chấm: ${v.slice(0, 6).join(", ")}, ${_}, ${_}.`,
+                        `${v[6]}; ${v[7]}`,
+                        null,
+                        [[v[6], v[7] + 1], [v[6] + 1, v[7]], [v[7], v[6]]],
+                      ];
+                    },
+                    () => {
+                      let c = 0;
+                      if (r(0, 1)) {
+                        const s = r(2, 9);
+                        for (let n = 10; n <= 99; n++)
+                          if (Math.floor(n / 10) + (n % 10) == s) c++;
+                        return [
+                          `Có bao nhiêu số có hai chữ số mà tổng hai chữ số của số đó bằng ${s}?`,
+                          c,
+                          null,
+                          [c + 1, c - 1, c + 2, s + 1],
+                        ];
+                      }
+                      const d = r(1, 5);
+                      for (let n = 10; n <= 99; n++)
+                        if (Math.floor(n / 10) - (n % 10) == d) c++;
+                      return [
+                        `Có bao nhiêu số có hai chữ số mà chữ số hàng chục lớn hơn chữ số hàng đơn vị ${d} đơn vị?`,
+                        c,
+                        null,
+                        [c + 1, c - 1, c + 2],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const a = r(1, 3),
+                        v = [a];
+                      for (let i = 1; i <= 6; i++) v.push(v[i - 1] + i);
+                      return [
+                        `Tìm hai số tiếp theo của dãy số: ${v.slice(0, 5).join(", ")}, ${_}, ${_}.`,
+                        `${v[5]}; ${v[6]}`,
+                        null,
+                        [[v[4] + 4, v[4] + 8], [v[4] + 5, v[4] + 10], [v[4] + 6, v[4] + 12]],
+                      ];
+                    },
+                    () => {
+                      const n = r(8, 20);
+                      let s = 0;
+                      for (let i = 1; i <= n; i++) s += i;
+                      return [
+                        `Tính nhanh: 1 + 2 + 3 + … + ${n} = ${_}`,
+                        s,
+                        null,
+                        [n * (n + 1), s - n, s + n],
+                      ];
+                    },
+                    () => {
+                      const t = r(3, 9),
+                        u = r(0, t - 2),
+                        d = t - u,
+                        s = t + u,
+                        sol = [];
+                      for (let n = 10; n <= 99; n++)
+                        if (Math.floor(n / 10) + (n % 10) == s && Math.floor(n / 10) - (n % 10) == d)
+                          sol.push(n);
+                      const x = one(sol);
+                      return [
+                        `Tìm số có hai chữ số, biết tổng hai chữ số bằng ${s} và chữ số hàng chục hơn chữ số hàng đơn vị ${d} đơn vị.`,
+                        x,
+                        null,
+                        [u * 10 + t, x + 9, x - 9],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        1,
+        "r1",
+        "Suy luận, tính ngược, khoảng cách",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const a = r(2, 9),
+                      b = r(3, 12),
+                      n = nn();
+                    let x = 0;
+                    while (x - a != b) x++;
+                    return [
+                      `${n} có một số viên bi. ${n} cho bạn ${a} viên thì còn lại ${b} viên. Hỏi lúc đầu ${n} có bao nhiêu viên bi?`,
+                      `${x} viên`,
+                      null,
+                      [Math.abs(b - a), x + 1, x - 1, b],
+                    ];
+                  },
+                  () => {
+                    const n = r(5, 12);
+                    return [
+                      `Có ${n} cây trồng thẳng hàng, hai cây liền nhau cách đều nhau. Hỏi có bao nhiêu khoảng cách giữa hai cây liền nhau?`,
+                      `${n - 1} khoảng`,
+                      null,
+                      [n, n + 1, n - 2],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const x0 = r(10, 40),
+                        a = r(5, 15),
+                        b = r(2, 9),
+                        c = x0 + a - b,
+                        n = nn();
+                      let x = 0;
+                      while (x + a - b != c) x++;
+                      return [
+                        `${n} nghĩ ra một số. Nếu thêm ${a} vào số đó rồi bớt đi ${b} thì được ${c}. Hỏi ${n} đã nghĩ ra số nào?`,
+                        x,
+                        null,
+                        [c + a - b, c - a - b, c + a + b],
+                      ];
+                    },
+                    () => {
+                      const a = r(2, 9),
+                        b = r(2, 9),
+                        n = nn();
+                      let t = 0;
+                      for (let k = 1; k < 60; k++) if (k - a + 1 == b) t = k;
+                      return [
+                        `Trong một hàng, ${n} đứng thứ ${a} tính từ đầu hàng và cũng đứng thứ ${b} tính từ cuối hàng. Hỏi hàng đó có bao nhiêu bạn?`,
+                        `${t} bạn`,
+                        null,
+                        [a + b, a + b + 1, a + b - 2, a * b],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const k = r(3, 8),
+                        t = r(2, 5);
+                      return [
+                        `Bác thợ cưa một cây gỗ thành ${k} đoạn bằng nhau, mỗi lần cưa mất ${t} phút. Hỏi bác thợ cưa xong cây gỗ hết bao nhiêu phút?`,
+                        `${(k - 1) * t} phút`,
+                        null,
+                        [k * t, (k + 1) * t, (k - 1) * t + t, (k - 2) * t],
+                      ];
+                    },
+                    () => {
+                      const n = nn(),
+                        a = r(2, 8),
+                        b = r(2, 9),
+                        c = r(1, 8),
+                        x0 = r(12, 30),
+                        d = x0 - a + b - c;
+                      const sol = [];
+                      for (let x = 1; x < 100; x++) if (x - a + b - c == d) sol.push(x);
+                      const x = one(sol);
+                      return [
+                        `${n} có một số quả bóng. ${n} cho bạn ${a} quả, sau đó được mẹ cho thêm ${b} quả, rồi lại tặng em ${c} quả thì còn lại ${d} quả. Hỏi lúc đầu ${n} có bao nhiêu quả bóng?`,
+                        `${x} quả`,
+                        null,
+                        [d + a + b + c, d - a + b - c, d + a - b - c],
+                      ];
+                    },
+                    () => {
+                      const n = r(4, 7);
+                      let c = 0;
+                      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) c++;
+                      return [
+                        `Có ${n} bạn gặp nhau, mỗi bạn bắt tay với từng bạn còn lại đúng một lần. Hỏi có tất cả bao nhiêu cái bắt tay?`,
+                        `${c} cái`,
+                        null,
+                        [n * (n - 1), n * n, c + n],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        2,
+        "o2",
+        "Tính nhanh, tổng dãy số cách đều, tìm x",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const a = r(11, 89),
+                      b = r(11, 89),
+                      q = shuf([a, 100 - a, b, 100 - b]);
+                    return [`Tính nhanh: ${q.join(" + ")} = ${_}`, q.reduce((s, z) => s + z, 0), null, [190, 210, 180, 220]];
+                  },
+                  () => {
+                    const a = r(10, 40),
+                      b = r(10, 30),
+                      c = r(5, 30);
+                    return [
+                      `Tìm x, biết: x − ${a} = ${b} + ${c}`,
+                      a + b + c,
+                      null,
+                      [b + c - a > 0 ? b + c - a : a + b, a + b + c + 10, a + b + c - 10],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const n = r(8, 15),
+                        a = r(1, 6),
+                        d = p([2, 3, 5]),
+                        s = apS(a, d, n),
+                        last = a + (n - 1) * d;
+                      return [
+                        `Tính tổng: ${nt([a, a + d, a + 2 * d, "…", last]).join(" + ")} = ${_}`,
+                        s,
+                        null,
+                        [(a + last) * n, s + a, s - last],
+                      ];
+                    },
+                    () => {
+                      let a, x, P2, b, c;
+                      for (;;) {
+                        a = r(2, 9);
+                        x = r(2, 9);
+                        P2 = a * x;
+                        const ds = rg(2, P2 - 1).filter((z) => P2 % z == 0 && z <= 12 && P2 / z <= 12);
+                        if (!ds.length) continue;
+                        b = p(ds);
+                        c = P2 / b;
+                        break;
+                      }
+                      const sol = [];
+                      for (let z = 1; z < 100; z++) if (z * a == b * c) sol.push(z);
+                      const ans = one(sol);
+                      return [`Tìm x, biết: x × ${a} = ${b} × ${c}`, ans, null, [b, c, a + ans]];
+                    },
+                  ]
+                : [
+                    () => {
+                      const n = r(30, 100);
+                      let s = 0;
+                      for (let i = 1; i <= n; i++) s += i;
+                      return [
+                        `Tính nhanh: 1 + 2 + 3 + … + ${n} = ${_}`,
+                        N(s),
+                        null,
+                        [n * (n + 1), s + n, s - n],
+                      ];
+                    },
+                    () => {
+                      const n = r(10, 40);
+                      let s = 0;
+                      for (let i = 1; i <= n; i++) s += 2 * i - 1;
+                      return [
+                        `Tính nhanh: 1 + 3 + 5 + … + ${2 * n - 1} = ${_}`,
+                        s,
+                        null,
+                        [n * (n + 1), s + n, 2 * n],
+                      ];
+                    },
+                    () => {
+                      const m = r(10, 50);
+                      let s = 0;
+                      for (let i = 2 * m; i >= 1; i--) s += i % 2 == 0 ? i : -i;
+                      return [
+                        `Tính nhanh: ${2 * m} − ${2 * m - 1} + ${2 * m - 2} − ${2 * m - 3} + … + 4 − 3 + 2 − 1 = ${_}`,
+                        s,
+                        null,
+                        [2 * m, m + 1, m - 1, 2 * m - 1],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        2,
+        "r2",
+        "Toán đố nâng cao, tuổi, đếm hình",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const [A, B] = two(),
+                      a = r(12, 40),
+                      b = r(3, 15),
+                      more = r(0, 1),
+                      s = a + a + (more ? b : -b);
+                    return [
+                      `${A} có ${a} bông hoa. ${B} có ${more ? "nhiều" : "ít"} hơn ${A} ${b} bông hoa. Hỏi cả hai bạn có tất cả bao nhiêu bông hoa?`,
+                      `${s} bông`,
+                      null,
+                      [a + b, 2 * a, 2 * a + (more ? -b : b), 2 * a + 2 * b],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const a = r(8, 15),
+                        b = r(3, a - 2),
+                        k = r(2, 8);
+                      return [
+                        `Hiện nay anh ${a} tuổi, em ${b} tuổi. Hỏi sau ${k} năm nữa tổng số tuổi của hai anh em là bao nhiêu?`,
+                        `${a + b + 2 * k} tuổi`,
+                        null,
+                        [a + b + k, a + b, a + b + 3 * k],
+                      ];
+                    },
+                    () => {
+                      const c = r(6, 12),
+                        M2 = c + r(22, 30),
+                        m = r(2, 5);
+                      return [
+                        `Năm nay mẹ ${M2} tuổi, con ${c} tuổi. Hỏi cách đây ${m} năm, mẹ hơn con bao nhiêu tuổi?`,
+                        `${M2 - c} tuổi`,
+                        null,
+                        [M2 - c + m, M2 - c - m, M2 - m, c - m],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const m = r(3, 7);
+                      let c = 0;
+                      for (let i = 0; i <= m; i++) for (let j = i + 1; j <= m; j++) c++;
+                      return [
+                        `Hình bên có tất cả bao nhiêu hình tam giác?`,
+                        c,
+                        TRI(m),
+                        [m, c + m, c - 1, 2 * m],
+                      ];
+                    },
+                    () => {
+                      const n = r(5, 9);
+                      let c = 0;
+                      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) c++;
+                      return [
+                        `Trên đường thẳng cho ${n} điểm phân biệt như hình vẽ. Hỏi có tất cả bao nhiêu đoạn thẳng có hai đầu là hai trong các điểm đó?`,
+                        c,
+                        PT(n),
+                        [n, n * (n - 1), c + n, c - 1],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        3,
+        "o3",
+        "Tính nhanh, tìm x, đếm số",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const T2 = p([10, 100]),
+                      a = r(12, 99),
+                      b = r(1, T2 - 1),
+                      c = T2 - b;
+                    return [
+                      `Tính nhanh: ${a} × ${b} + ${a} × ${c} = ${_}`,
+                      N(a * b + a * c),
+                      null,
+                      [a * T2 + a, a * T2 - a, a * b + c],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const n = r(15, 60);
+                      let s = 0;
+                      for (let i = 1; i <= n; i++) s += 2 * i - 1;
+                      return [
+                        `Tính nhanh: 1 + 3 + 5 + … + ${2 * n - 1} = ${_}`,
+                        s,
+                        null,
+                        [n * (n + 1), s + n, 2 * n],
+                      ];
+                    },
+                    () => {
+                      const x0 = r(5, 60),
+                        a = r(3, 20),
+                        b = r(2, 9),
+                        c = (x0 + a) * b;
+                      const sol = [];
+                      for (let x = 1; x < 200; x++) if ((x + a) * b == c) sol.push(x);
+                      const x = one(sol);
+                      return [`Tìm x, biết: (x + ${a}) × ${b} = ${c}`, x, null, [c / b + a, c / b, c - a]];
+                    },
+                    () => {
+                      const n = r(50, 200);
+                      let s = 0;
+                      for (let i = 1; i <= n; i++) s += i;
+                      return [
+                        `Tính nhanh: 1 + 2 + 3 + … + ${n} = ${_}`,
+                        N(s),
+                        null,
+                        [n * (n + 1), s + n, s - n],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const k = p([4, 6, 7, 8, 9, 11, 12, 13, 15]);
+                      let c = 0;
+                      for (let n = 100; n <= 999; n++) if (n % k == 0) c++;
+                      return [
+                        `Có bao nhiêu số có ba chữ số chia hết cho ${k}?`,
+                        c,
+                        null,
+                        [Math.floor(999 / k), Math.floor(900 / k), c + 1],
+                      ];
+                    },
+                    () => {
+                      const s = r(3, 8);
+                      let c = 0;
+                      for (let n = 100; n <= 999; n++)
+                        if (Math.floor(n / 100) + (Math.floor(n / 10) % 10) + (n % 10) == s) c++;
+                      return [
+                        `Có bao nhiêu số có ba chữ số mà tổng ba chữ số của số đó bằng ${s}?`,
+                        c,
+                        null,
+                        [c + 1, c - 1, c + 2],
+                      ];
+                    },
+                    () => {
+                      const [a, b] = p([[3, 4], [4, 5], [3, 5], [5, 6], [4, 7], [6, 7], [5, 7]]),
+                        L2 = lcm(a, b);
+                      let x = 100;
+                      while (!(x % a == a - 1 && x % b == b - 1)) x++;
+                      return [
+                        `Tìm số tự nhiên nhỏ nhất có ba chữ số, biết rằng số đó chia cho ${a} dư ${a - 1} và chia cho ${b} dư ${b - 1}.`,
+                        x,
+                        null,
+                        [L2 - 1, x + L2, x - L2],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        3,
+        "r3",
+        "Toán đố điển hình: tuổi, trồng cây, gà chó, thừa thiếu",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const a = r(5, 12),
+                      k = r(3, 5);
+                    return [
+                      `Năm nay con ${a} tuổi, tuổi mẹ gấp ${k} lần tuổi con. Hỏi mẹ hơn con bao nhiêu tuổi?`,
+                      `${k * a - a} tuổi`,
+                      null,
+                      [k * a, a, (k + 1) * a],
+                    ];
+                  },
+                  () => {
+                    const d = r(2, 6),
+                      q = r(6, 25);
+                    return [
+                      `Người ta trồng cây thành một hàng thẳng trên đoạn đường dài ${d * q} m, cây nọ cách cây kia ${d} m, trồng cả hai đầu đường. Hỏi cần trồng bao nhiêu cây?`,
+                      `${q + 1} cây`,
+                      null,
+                      [q, q + 2, q - 1],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const x0 = r(5, 50),
+                        a = r(2, 9),
+                        b = r(3, 20),
+                        c = x0 * a + b;
+                      const sol = [];
+                      for (let x = 1; x < 500; x++) if (x * a + b == c) sol.push(x);
+                      const x = one(sol);
+                      return [
+                        `Một số nhân với ${a} rồi cộng ${b} thì được ${c}. Tìm số đó.`,
+                        x,
+                        null,
+                        [c / a - b, (c + b) / a, c - b - a, c - a],
+                      ];
+                    },
+                    () => {
+                      const d = r(2, 6),
+                        q = r(6, 25);
+                      return [
+                        `Hai bên một con đường dài ${d * q} m, người ta trồng cây, mỗi bên hai cây liền nhau cách nhau ${d} m và trồng cả hai đầu. Hỏi trồng tất cả bao nhiêu cây?`,
+                        `${2 * (q + 1)} cây`,
+                        null,
+                        [q + 1, 2 * q, 2 * q + 1, 2 * (q + 2)],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const g = r(5, 25),
+                        c = r(3, 15),
+                        T2 = g + c,
+                        U = 2 * g + 4 * c,
+                        sol = [];
+                      for (let x = 0; x <= T2; x++) if (2 * x + 4 * (T2 - x) == U) sol.push(x);
+                      const x = one(sol);
+                      return [
+                        `Vừa gà vừa chó có ${T2} con, đếm được ${U} chân. Hỏi có bao nhiêu con gà, bao nhiêu con chó?`,
+                        `${x} gà; ${T2 - x} chó`,
+                        null,
+                        [[T2 - x, x], [x + 1, T2 - x - 1], [x - 1, T2 - x + 1]],
+                      ];
+                    },
+                    () => {
+                      const a = r(2, 6),
+                        dd = r(1, 3),
+                        b = a + dd,
+                        n0 = r(4, 15),
+                        r1 = r(1, dd * n0 - 1),
+                        r2 = dd * n0 - r1,
+                        K = a * n0 + r1,
+                        sol = [];
+                      for (let n = 1; n < 200; n++) if (a * n + r1 == b * n - r2) sol.push(n);
+                      const n = one(sol);
+                      return [
+                        `Chia đều số kẹo cho các bạn. Nếu mỗi bạn nhận ${a} cái thì thừa ${r1} cái, nếu mỗi bạn nhận ${b} cái thì thiếu ${r2} cái. Hỏi có bao nhiêu bạn, bao nhiêu cái kẹo?`,
+                        `${n} bạn; ${a * n + r1} cái kẹo`,
+                        null,
+                        [[n + 1, a * (n + 1) + r1], [n - 1, a * (n - 1) + r1], [n + 1, b * (n + 1) - r2]],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        4,
+        "o4",
+        "Số học nâng cao: tính nhanh, dãy số, chữ số, chia dư",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const [a1, b1] = p([[25, 4], [125, 8], [5, 20], [50, 2], [250, 4]]),
+                      a = r(13, 99);
+                    return [
+                      `Tính nhanh: ${a1} × ${a} × ${b1} = ${_}`,
+                      N(a1 * a * b1),
+                      null,
+                      [a1 * b1 + a, a * a1 * b1 + a],
+                    ];
+                  },
+                  () => {
+                    const a = r(12, 88),
+                      c = 100 - a,
+                      b = r(13, 99);
+                    return [
+                      `Tính nhanh: ${a} × ${b} + ${c} × ${b} = ${_}`,
+                      N(a * b + c * b),
+                      null,
+                      [b * 10, b * 1000, a * b + c],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const n = r(20, 60),
+                        a = r(1, 8),
+                        d = r(2, 6),
+                        s = apS(a, d, n),
+                        last = a + (n - 1) * d;
+                      return [
+                        `Tính tổng: ${nt([a, a + d, a + 2 * d, "…", last]).join(" + ")} = ${_}`,
+                        N(s),
+                        null,
+                        [(a + last) * n, s + last, s - last],
+                      ];
+                    },
+                    () => {
+                      const n = r(100, 999);
+                      let c = 0;
+                      for (let i = 1; i <= n; i++) c += String(i).length;
+                      return [
+                        `Để viết dãy các số tự nhiên liên tiếp từ 1 đến ${n} cần dùng tất cả bao nhiêu chữ số?`,
+                        N(c),
+                        null,
+                        [3 * n, c - 3, c + 3, n],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const k = r(100, 300);
+                      let s = "";
+                      for (let i = 1; s.length < k + 4; i++) s += i;
+                      const dg = (z) => +s[z - 1];
+                      return [
+                        `Cho dãy số viết liên tiếp các số tự nhiên bắt đầu từ 1: ${s.slice(0, 15)}… Hỏi chữ số thứ ${k} của dãy là chữ số nào?`,
+                        dg(k),
+                        null,
+                        [dg(k + 1), dg(k - 1), dg(k + 2), dg(k - 2), dg(k + 3)],
+                      ];
+                    },
+                    () => {
+                      const N0 = r(10, 99),
+                        d = r(1, 9),
+                        dl = 9 * N0 + d,
+                        sol = [];
+                      for (let z = 10; z <= 99; z++) if (9 * z + d == dl) sol.push(z);
+                      const x = one(sol);
+                      return [
+                        `Khi viết thêm chữ số ${d} vào bên phải một số có hai chữ số thì được số mới lớn hơn số ban đầu ${dl} đơn vị. Tìm số có hai chữ số đó.`,
+                        x,
+                        null,
+                        [Math.floor(dl / 10), dl - d, x + 1, x - 1],
+                      ];
+                    },
+                    () => {
+                      const [a, b, c] = p([[3, 4, 5], [4, 5, 6], [3, 5, 7], [5, 6, 7], [3, 4, 7]]),
+                        L2 = lcm(lcm(a, b), c);
+                      let x = 1000;
+                      while (!(x % a == a - 1 && x % b == b - 1 && x % c == c - 1)) x++;
+                      return [
+                        `Tìm số tự nhiên nhỏ nhất có bốn chữ số, biết rằng số đó chia cho ${a} dư ${a - 1}, chia cho ${b} dư ${b - 1} và chia cho ${c} dư ${c - 1}.`,
+                        N(x),
+                        null,
+                        [L2 - 1, x + L2, x - L2],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        4,
+        "r4",
+        "Toán đố nâng cao: gà chó, tuổi, chuyển thùng, đếm hình",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const T2 = r(12, 40),
+                      x0 = r(3, T2 - 3);
+                    const cx = p([
+                      { q: (t, u) => `Vừa gà vừa thỏ có ${t} con, đếm được ${u} chân. Hỏi có bao nhiêu con gà, bao nhiêu con thỏ?`, fa: 2, fb: 4, a: "gà", b: "thỏ" },
+                      { q: (t, u) => `Một cửa hàng có ${t} chiếc xe gồm xe đạp và xe ba bánh, đếm được tất cả ${u} bánh xe. Hỏi cửa hàng có bao nhiêu xe đạp, bao nhiêu xe ba bánh?`, fa: 2, fb: 3, a: "xe đạp", b: "xe ba bánh" },
+                    ]);
+                    const U = cx.fa * x0 + cx.fb * (T2 - x0),
+                      sol = [];
+                    for (let x = 0; x <= T2; x++) if (cx.fa * x + cx.fb * (T2 - x) == U) sol.push(x);
+                    const x = one(sol);
+                    return [
+                      cx.q(T2, U),
+                      `${x} ${cx.a}; ${T2 - x} ${cx.b}`,
+                      null,
+                      [[T2 - x, x], [x + 1, T2 - x - 1], [x - 1, T2 - x + 1]],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      let k, u, m;
+                      do {
+                        k = r(3, 5);
+                        u = r(5, 14);
+                        m = r(2, 6);
+                      } while ((k - 1) * u < 20 || (k - 1) * u > 40);
+                      const c0 = u + m,
+                        M2 = k * u + m,
+                        T2 = c0 + M2,
+                        sol = [];
+                      for (let c = m + 1; c < T2; c++) {
+                        const Mm = T2 - c;
+                        if (Mm - m == k * (c - m)) sol.push(Mm);
+                      }
+                      const ans = one(sol);
+                      return [
+                        `Hiện nay tổng số tuổi của hai mẹ con là ${T2} tuổi. Cách đây ${m} năm, tuổi mẹ gấp ${k} lần tuổi con. Tính tuổi của mẹ hiện nay.`,
+                        `${ans} tuổi`,
+                        null,
+                        [ans + m, ans - m, T2 - ans, ans + 1],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const k = r(2, 4),
+                        u = r(5, 20),
+                        S2 = u * (k + 1),
+                        a = r(2, Math.min(k * u - 2, u + 6)),
+                        sol = [];
+                      for (let x = 1; x < S2; x++) {
+                        const y = S2 - x;
+                        if (x - a > 0 && y + a == k * (x - a)) sol.push(x);
+                      }
+                      const x = one(sol);
+                      return [
+                        `Hai thùng dầu chứa tất cả ${S2} lít. Nếu chuyển ${a} lít từ thùng thứ nhất sang thùng thứ hai thì lượng dầu ở thùng thứ hai gấp ${k} lần lượng dầu ở thùng thứ nhất. Hỏi lúc đầu mỗi thùng chứa bao nhiêu lít dầu?`,
+                        `${x} lít; ${S2 - x} lít`,
+                        null,
+                        [[S2 - x, x], [u, k * u], [x + a, S2 - x - a]],
+                      ];
+                    },
+                    () => {
+                      const w = r(3, 5),
+                        h = r(2, 4);
+                      const sq = p([0, 1]);
+                      let c = 0;
+                      if (sq) {
+                        for (let s = 1; s <= Math.min(w, h); s++) c += (w - s + 1) * (h - s + 1);
+                        let c1 = w * h + (w - 1) * (h - 1);
+                        return [
+                          `Hình bên gồm ${w} × ${h} ô vuông nhỏ bằng nhau. Hỏi trong hình có tất cả bao nhiêu hình vuông (mọi kích thước)?`,
+                          c,
+                          GD(w, h),
+                          [w * h, c1, c + 1, c - 1],
+                        ];
+                      }
+                      for (let x1 = 0; x1 <= w; x1++)
+                        for (let x2 = x1 + 1; x2 <= w; x2++)
+                          for (let y1 = 0; y1 <= h; y1++)
+                            for (let y2 = y1 + 1; y2 <= h; y2++) c++;
+                      return [
+                        `Hình bên gồm ${w} × ${h} ô vuông nhỏ bằng nhau. Hỏi trong hình có tất cả bao nhiêu hình chữ nhật (kể cả hình vuông)?`,
+                        c,
+                        GD(w, h),
+                        [w * h, c + 1, c - 1, (w * (w + 1)) / 2 + (h * (h + 1)) / 2],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      add(
+        5,
+        "o5",
+        "Phân số, số thập phân nâng cao",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const n = r(3, 5);
+                    let s = [0, 1];
+                    for (let i = 1; i <= n; i++) s = fadd(s, [1, i * (i + 1)]);
+                    return [
+                      `Tính: ${rg(1, n).map((i) => FR(1, `${i}×${i + 1}`)).join(" + ")} = ${_}`,
+                      ff(s),
+                      null,
+                      [F(n, n + 2), F(n - 1, n), F(n + 1, n + 2), F(1, n + 1)],
+                    ];
+                  },
+                  () => {
+                    const [av, c] = p([[2.5, 4], [0.25, 4], [1.25, 8], [0.125, 8], [1.5, 2], [0.5, 2]]),
+                      y = r(11, 99);
+                    if (y % 10 == 0) throw new Error("skip");
+                    return [
+                      `Tính nhanh: ${D(av)} × ${D(y / 10)} × ${c} = ${_}`,
+                      D(Math.round(av * c * y) / 10),
+                      null,
+                      [(av * c * y) / 100, av * c * y, av * c + y / 10],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const a = r(2, 5),
+                        b = a + r(4, 8);
+                      let s = [0, 1];
+                      for (let i = a; i <= b; i++) s = fadd(s, [1, i * (i + 1)]);
+                      const tm = rg(a, b).map((i) => FR(1, `${i}×${i + 1}`));
+                      return [
+                        `Tính: ${nt(tm).join(" + ")} = ${_}`,
+                        ff(s),
+                        null,
+                        [F(b + 1 - a, b + 1), F(b - a, a * b), F(1, a * (b + 1)), F(b - a + 1, b)],
+                      ];
+                    },
+                    () => {
+                      let a, b, c, d, e, f;
+                      do {
+                        a = r(1, 5);
+                        b = r(2, 7);
+                        c = r(1, 5);
+                        d = r(2, 7);
+                        e = r(1, 5);
+                        f = r(2, 7);
+                      } while (gc(a, b) != 1 || gc(c, d) != 1 || gc(e, f) != 1 || a >= b * 2 || e == f);
+                      const X = fred([(e * d + c * f) * b, f * d * a]);
+                      // kiểm tra ngược: X × a/b − c/d = e/f
+                      if ((X[0] * a * d - c * X[1] * b) * f != e * (X[1] * b * d)) throw new Error("chk");
+                      const sf = (n, dd) => (n > 0 && dd > 0 ? F(n, dd) : null);
+                      return [
+                        `Tìm x, biết: x × ${FR(a, b)} − ${FR(c, d)} = ${FR(e, f)}`,
+                        ff(X),
+                        null,
+                        [
+                          e * d - c * f > 0 ? ff(fred([(e * d - c * f) * b, f * d * a])) : null,
+                          ff(fred([(e * d + c * f) * a, f * d * b])),
+                          ff(fred([e * b, f * a])),
+                          sf((e * d + c * f) * b, f * d),
+                        ],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      const n = r(4, 9),
+                        tm = rg(1, n).map((i) => FR(1, `${2 * i - 1}×${2 * i + 1}`));
+                      let s = [0, 1];
+                      for (let i = 1; i <= n; i++) s = fadd(s, [1, (2 * i - 1) * (2 * i + 1)]);
+                      return [
+                        `Tính: ${nt(tm).join(" + ")} = ${_}`,
+                        ff(s),
+                        null,
+                        [F(n, 2 * n - 1), F(n + 1, 2 * n + 1), F(n, 2 * n + 2), F(1, 2 * n + 1)],
+                      ];
+                    },
+                    () => {
+                      const [a, b] = p([[1, 7], [3, 7], [5, 7], [2, 13], [5, 13], [1, 17], [4, 11], [7, 13], [2, 7]]),
+                        n = r(50, 2026),
+                        dgt = (k) => {
+                          let rem = a % b,
+                            dd = 0;
+                          for (let i = 1; i <= k; i++) {
+                            rem *= 10;
+                            dd = Math.floor(rem / b);
+                            rem %= b;
+                          }
+                          return dd;
+                        };
+                      return [
+                        `Viết phân số ${FR(a, b)} thành số thập phân (thương của phép chia ${a} : ${b}), ta được một số thập phân vô hạn tuần hoàn. Hỏi chữ số thứ ${n} sau dấu phẩy của số đó là chữ số nào?`,
+                        dgt(n),
+                        null,
+                        [dgt(n + 1), dgt(n - 1), dgt(n + 2), dgt(n - 2), dgt(n + 3)],
+                      ];
+                    },
+                    () => {
+                      const [c, d] = p([[1, 2], [2, 3], [3, 4], [4, 5], [3, 5], [5, 6], [2, 5]]),
+                        x0 = r(2, 20),
+                        t = Math.ceil((x0 + 1) / c) + r(0, 3),
+                        a = c * t - x0,
+                        b = d * t - x0,
+                        sol = [];
+                      for (let x = 1; x < 500; x++) if ((a + x) * d == (b + x) * c) sol.push(x);
+                      const x = one(sol);
+                      return [
+                        `Cần phải cộng thêm vào cả tử số và mẫu số của phân số ${FR(a, b)} cùng một số tự nhiên nào để được phân số mới có giá trị bằng ${FR(c, d)}?`,
+                        x,
+                        null,
+                        [b - a, x + 1, x - 1, a],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+
+      const PW = [],
+        PW3 = [];
+      for (let a = 4; a <= 60; a++)
+        for (let b = a + 1; b <= 60; b++) if ((a * b) % (a + b) == 0) PW.push([a, b]);
+      for (let a = 4; a <= 60; a++)
+        for (let b = a; b <= 60; b++)
+          for (let c = b; c <= 60; c++)
+            if (!(a == b && b == c) && (a * b * c) % (a * b + b * c + a * c) == 0)
+              PW3.push([a, b, c]);
+      add(
+        5,
+        "r5",
+        "Toán đố nâng cao: công việc chung, dòng nước, phần trăm, hình học",
+        "Giải các bài toán sau:",
+        (l) =>
+          p(
+            l == 1
+              ? [
+                  () => {
+                    const [a, b] = p(PW),
+                      [A, B] = two();
+                    const s = fadd([1, a], [1, b]);
+                    if (s[0] != 1) throw new Error("int");
+                    const d = s[1];
+                    return [
+                      `Một mình ${A} làm xong một công việc trong ${a} ngày, một mình ${B} làm xong công việc đó trong ${b} ngày. Nếu hai bạn cùng làm thì sau bao nhiêu ngày xong công việc?`,
+                      `${d} ngày`,
+                      null,
+                      [(a + b) / 2, d + 1, d - 1, b - a],
+                    ];
+                  },
+                ]
+              : l == 2
+                ? [
+                    () => {
+                      const [a, b, c] = shuf(p(PW3));
+                      const s = fadd(fadd([1, a], [1, b]), [1, c]);
+                      if (s[0] != 1) throw new Error("int");
+                      const d = s[1];
+                      return [
+                        `Vòi thứ nhất chảy một mình thì đầy bể sau ${a} giờ, vòi thứ hai sau ${b} giờ, vòi thứ ba sau ${c} giờ. Nếu mở cả ba vòi cùng lúc thì sau bao lâu bể đầy?`,
+                        `${d} giờ`,
+                        null,
+                        [(a + b + c) / 3, d + 1, d - 1, d * 2],
+                      ];
+                    },
+                    () => {
+                      const pcs = [10, 20, 25, 30, 40, 50],
+                        a = p(pcs),
+                        b = p(pcs.filter((z) => (a * z) % 100 == 0));
+                      const rest = (100 * (100 - a) * (100 - b)) / 10000,
+                        t = 100 - rest;
+                      return [
+                        `Một cửa hàng giảm giá ${a}% so với giá niêm yết, sau đó giảm thêm ${b}% so với giá đã giảm. Hỏi so với giá niêm yết ban đầu, cửa hàng đã giảm tất cả bao nhiêu phần trăm?`,
+                        `${t}%`,
+                        null,
+                        [a + b, (a + b) / 2, a + b - 5, a + b + 5],
+                      ];
+                    },
+                    () => {
+                      const a = p([10, 20, 25, 40, 50]),
+                        V = r(10, 90) * 10000,
+                        S2 = (V * (100 + a)) / 100;
+                      const V2 = (S2 * 100) / (100 + a);
+                      if (V2 != V) throw new Error("v");
+                      return [
+                        `Một người bán hàng lãi ${a}% so với giá vốn. Biết giá bán là ${N(S2)} đồng, tính giá vốn của lô hàng đó.`,
+                        `${N(V)} đồng`,
+                        null,
+                        [S2 - (S2 * a) / 100, (S2 * (100 - a)) / 100, S2 - a * 1000, Math.round((S2 * 100) / (100 - a))],
+                      ];
+                    },
+                  ]
+                : [
+                    () => {
+                      let vn, vc, L2;
+                      for (let g = 0; g < 500; g++) {
+                        vn = r(2, 6);
+                        vc = r(vn + 3, 30);
+                        L2 = lcm(vc + vn, vc - vn);
+                        if (L2 <= 150) break;
+                      }
+                      if (L2 > 150) throw new Error("L");
+                      const S2 = L2 * r(1, 2),
+                        t1 = S2 / (vc + vn),
+                        t2 = S2 / (vc - vn),
+                        sol = [];
+                      for (let z = 1; z <= 2000; z++) if (z * (t2 - t1) == 2 * vn * t1 * t2) sol.push(z);
+                      const ans = one(sol);
+                      if (ans != S2) throw new Error("S");
+                      return [
+                        `Một ca nô xuôi dòng từ A đến B hết ${t1} giờ và ngược dòng từ B về A hết ${t2} giờ. Biết vận tốc dòng nước là ${vn} km/giờ. Tính khoảng cách giữa hai bến A và B.`,
+                        `${ans} km`,
+                        null,
+                        [vn * t1 * t2, (t1 + t2) * vn, ans + vn, ans * 2],
+                      ];
+                    },
+                    () => {
+                      if (r(0, 1)) {
+                        const rr = r(2, 10);
+                        return [
+                          `Hình vuông ABCD có cạnh ${2 * rr} cm, bên trong có hình tròn tâm O tiếp xúc với bốn cạnh của hình vuông. Tính diện tích phần tô đậm (phần hình vuông nằm ngoài hình tròn), lấy π = 3,14.`,
+                          `${D((400 * rr * rr - 314 * rr * rr) / 100)} cm²`,
+                          SQC(rr),
+                          [3.14 * rr * rr, 4 * rr * rr + 3.14 * rr * rr, 4 * rr * rr - 6.28 * rr],
+                        ];
+                      }
+                      const R = r(2, 10);
+                      return [
+                        `Hình tròn tâm O có bán kính ${R} cm, bên trong có hình vuông ABCD nội tiếp (bốn đỉnh nằm trên đường tròn). Tính diện tích phần tô đậm (phần hình tròn nằm ngoài hình vuông), lấy π = 3,14.`,
+                        `${D((314 * R * R - 200 * R * R) / 100)} cm²`,
+                        CSQ(R),
+                        [3.14 * R * R, 3.14 * R * R + 2 * R * R, 4 * R * R - 3.14 * R * R, 2 * R * R],
+                      ];
+                    },
+                  ],
+          )(),
+        3,
+      );
+      ["o1", "r1", "o2", "r2", "o3", "r3", "o4", "r4", "o5", "r5"].forEach(
+        (id) => (M.find((m) => m.id == id).h = 1),
+      );
+      ["u2", "u3", "x5", "d5"].forEach((id) => (M.find((m) => m.id == id).sc = 1));
+
+      const sel = {};
+      M.forEach((m) => (sel[m.id] = { on: false, l: 1, n: 5, mc: 0 }));
+      let G = 1,
+        P = null;
+      const LB = ["Dễ", "Vừa", "Khó"],
+        LH = ["Nâng cao", "HSG Tỉnh", "HSG Quốc gia"],
+        LT = "ABCD";
+      function modHtml(m) {
+        const s = sel[m.id],
+          lb = m.h ? LH : LB;
+        return `<div class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.id}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.id}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class=seg>${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.id}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=10 value=${s.n} onchange="sel['${m.id}'].n=Math.min(10,Math.max(1,+this.value||1))"></label></div></div>`;
+      }
+      function render() {
+        $("tabs").innerHTML = [1, 2, 3, 4, 5]
+          .map(
+            (g) =>
+              `<button class="tab ${g == G ? "on" : ""}" style="--c:${col[g]}" onclick="G=${g};render()">Lớp ${g}</button>`,
+          )
+          .join("");
+        $("mods").innerHTML =
+          M.filter((m) => m.g == G && !m.h)
+            .map(modHtml)
+            .join("") +
+          `<div class="hh">🏆 Học sinh giỏi: Nâng cao → HSG Tỉnh → HSG Quốc gia</div>` +
+          M.filter((m) => m.g == G && m.h)
+            .map(modHtml)
+            .join("");
+        const k = M.filter((m) => sel[m.id].on);
+        $("cnt").textContent =
+          `Đã chọn ${k.length} module · ${k.reduce((a, m) => a + sel[m.id].n, 0)} câu`;
+      }
+      function all(v) {
+        M.filter((m) => m.g == G).forEach((m) => (sel[m.id].on = !!v));
+        render();
+      }
+      function setMode(v) {
+        M.filter((m) => m.g == G).forEach((m) => (sel[m.id].mc = v));
+        render();
+      }
+      function toast(s) {
+        const t = $("toast");
+        t.textContent = s;
+        t.classList.add("s");
+        setTimeout(() => t.classList.remove("s"), 2200);
+      }
+      const dts = ".".repeat(400),
+        dl = (t) => `<div class=ln><span>${t}</span><span class=dt>${dts}</span></div>`,
+        vis = (s) => String(s).replace(FRD, "xxx").length,
+        oc = (x) => {
+          const mx = Math.max(...x.o.map(vis));
+          return mx <= 12 ? "c4" : mx <= 30 ? "c2" : "c1";
+        },
+        NL = { 1: 3, 3: 6 };
+      function gen() {
+        const A = M.filter((m) => sel[m.id].on);
+        if (!A.length) return toast("Hãy tích chọn ít nhất một module");
+        const nmc = A.filter((m) => sel[m.id].mc).length,
+          B = [...A.filter((m) => sel[m.id].mc), ...A.filter((m) => !sel[m.id].mc)],
+          n = B.length,
+          bs = Math.floor(40 / n) / 4,
+          gs = [...new Set(A.map((m) => m.g))];
+        P = {
+          title: $("ti").value || "ĐỀ KIỂM TRA MÔN TOÁN",
+          school: $("sc").value,
+          time: $("tm").value,
+          lop: gs.length == 1 ? gs[0] : "……",
+          sp: $("sp").checked,
+          key: $("key").checked,
+          both: nmc > 0 && nmc < n,
+          secs: B.map((m, i) => {
+            const s = sel[m.id],
+              mc = !!s.mc,
+              seen = new Set(),
+              it = [];
+            for (let k = 0; k < s.n * 40 && it.length < s.n; k++) {
+              let x;
+              try {
+                x = m.gen(s.l);
+                if (mc) mkOpts(x, m.g, m.sc);
+              } catch (e) {
+                continue;
+              }
+              const h = x[0] + x[1] + (x[2] || "");
+              if (!seen.has(h)) {
+                seen.add(h);
+                it.push(x);
+              }
+            }
+            return { m, l: s.l, mc, it, pt: i < n - 1 ? bs : 10 - bs * (n - 1) };
+          }),
+        };
+        const fg = (x) => (x[2] ? `<span class=fg>${x[2]}</span>` : ""),
+          item = (s, x, j) =>
+            s.mc
+              ? `<div class=mc><div class=qi><span><b>Câu ${j + 1}.</b> ${H(x[0])}</span>${fg(x)}</div><div class="op ${oc(x)}">${x.o.map((v, i) => `<span><b>${LT[i]}.</b> ${H(v)}</span>`).join("")}</div></div>`
+              : `<div><div class=qi><span>${L[j]}) ${H(x[0])}</span>${fg(x)}</div>${P.sp && NL[s.m.w] ? dl("").repeat(NL[s.m.w]) + dl("Đáp số: ") : ""}${P.sp && s.m.w == 2 ? dl("Trả lời: ") : ""}</div>`;
+        $("paper").innerHTML =
+          `<table class=hd><tr><td><b>${eh(P.school)}</b></td><td><b>${eh(P.title)}</b><br>Môn: Toán – Lớp ${P.lop}<br><i>Thời gian làm bài: ${eh(P.time)}</i></td></tr></table>\n<table class=bx><tr><td style="width:46%">Họ và tên: ......................<br><br>Lớp: ........ Số báo danh: ........</td><td style="width:14%;text-align:center"><b>Điểm</b></td><td><b>Nhận xét của giáo viên</b></td></tr></table>` +
+          P.secs
+            .map(
+              (s, i) =>
+                (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc))
+                  ? `<h3 class=pt>${s.mc ? "Phần I. Trắc nghiệm" : "Phần II. Tự luận"}</h3>`
+                  : "") +
+                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(s.m.t)}${s.mc ? ' <span class=hn>(Khoanh vào chữ cái đặt trước đáp án đúng)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
+            )
+            .join("") +
+          `<div class=end>— Hết —</div>` +
+          (P.key
+            ? `<div class=ans><h2>ĐÁP ÁN VÀ BIỂU ĐIỂM</h2>${P.secs.map((s, i) => `<p><b>Bài ${i + 1} (${D(s.pt)} điểm):</b> ${s.it.map((x, j) => (s.mc ? `Câu ${j + 1}: ${LT[x.c]} (${H(x[1])})` : `${L[j]}) ${H(x[1])}`)).join(" &nbsp; ; &nbsp; ")}</p>`).join("")}</div>`
+            : "");
+      }
+      async function save(b, n) {
+        try {
+          const d = window.claude && (await claude.use("downloads"));
+          if (d) {
+            await d.save({ filename: n, data: b });
+            return;
+          }
+        } catch (e) {
+          if (e && e.code == "declined") return;
+        }
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = n;
+        a.click();
+      }
+      const png = (s) =>
+        new Promise((ok) => {
+          const [, w, h] = s.match(/width="(\d+)" height="(\d+)"/),
+            i = new Image();
+          i.onload = () => {
+            const c = document.createElement("canvas");
+            c.width = w * 2;
+            c.height = h * 2;
+            const x = c.getContext("2d");
+            x.fillStyle = "#fff";
+            x.fillRect(0, 0, c.width, c.height);
+            x.drawImage(i, 0, 0, c.width, c.height);
+            c.toBlob(async (b) => ok(new Uint8Array(await b.arrayBuffer())));
+          };
+          i.onerror = () => ok(null);
+          i.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+        });
+      async function docxSave() {
+        if (!P) return toast("Hãy tạo đề trước");
+        if (!window.docx) return toast("Chưa tải được thư viện DOCX");
+        const {
+            Document,
+            Packer,
+            Paragraph,
+            TextRun,
+            AlignmentType,
+            Table,
+            TableRow,
+            TableCell,
+            WidthType,
+            BorderStyle,
+            ImageRun,
+            HeightRule,
+            TabStopType,
+            LeaderType,
+            Tab,
+            Math: DM,
+            MathRun,
+            MathFraction,
+          } = docx,
+          C = AlignmentType.CENTER,
+          TW = 9638,
+          FN = "Times New Roman",
+          run = (s, o = {}) => new TextRun({ text: s, font: FN, size: 26, ...o }),
+          tab = () => new TextRun({ children: [new Tab()], font: FN, size: 26 }),
+          rr = (s, o = {}) => {
+            s = String(s);
+            const out = [];
+            let last = 0;
+            for (const m of s.matchAll(FRD)) {
+              if (m.index > last) out.push(run(s.slice(last, m.index), o));
+              out.push(
+                new DM({
+                  children: [
+                    new MathFraction({
+                      numerator: [new MathRun(m[1])],
+                      denominator: [new MathRun(m[2])],
+                    }),
+                  ],
+                }),
+              );
+              last = m.index + m[0].length;
+            }
+            if (last < s.length) out.push(run(s.slice(last), o));
+            return out;
+          },
+          t = (s, o = {}) => new Paragraph({ ...o.p, children: rr(s, o.r) }),
+          ln = (s) =>
+            new Paragraph({
+              spacing: { before: 200 },
+              tabStops: [{ type: TabStopType.RIGHT, position: TW, leader: LeaderType.DOT }],
+              children: [...(s ? [run(s + " ")] : []), tab()],
+            }),
+          opRow = (vals, from, cols) =>
+            new Paragraph({
+              spacing: { after: 60 },
+              tabStops: Array.from({ length: cols - 1 }, (q, i) => ({
+                type: TabStopType.LEFT,
+                position: Math.round((TW * (i + 1)) / cols),
+              })),
+              children: vals.flatMap((v, i) => [
+                ...(i ? [tab()] : []),
+                run(LT[from + i] + ". ", { bold: true }),
+                ...rr(v),
+              ]),
+            }),
+          nb = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+          nob = { top: nb, bottom: nb, left: nb, right: nb },
+          cell = (ps, w, b) =>
+            new TableCell({
+              width: { size: w, type: WidthType.PERCENTAGE },
+              borders: b,
+              children: ps,
+            }),
+          hd = new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  cell([t(P.school, { r: { bold: true } })], 50, nob),
+                  cell(
+                    [
+                      t(P.title, { p: { alignment: C }, r: { bold: true } }),
+                      t(`Môn: Toán – Lớp ${P.lop}`, { p: { alignment: C } }),
+                      t(`Thời gian làm bài: ${P.time}`, {
+                        p: { alignment: C },
+                        r: { italics: true },
+                      }),
+                    ],
+                    50,
+                    nob,
+                  ),
+                ],
+              }),
+            ],
+          }),
+          bx = new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                height: { value: 1300, rule: HeightRule.ATLEAST },
+                children: [
+                  cell(
+                    [
+                      t("Họ và tên: ......................"),
+                      t("Lớp: ........ SBD: ........"),
+                    ],
+                    46,
+                  ),
+                  cell([t("Điểm", { p: { alignment: C }, r: { bold: true } })], 14),
+                  cell([t("Nhận xét của giáo viên", { r: { bold: true } })], 40),
+                ],
+              }),
+            ],
+          }),
+          c = [hd, t(""), bx];
+        for (const [i, s] of P.secs.entries()) {
+          if (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc)))
+            c.push(
+              t(s.mc ? "PHẦN I. TRẮC NGHIỆM" : "PHẦN II. TỰ LUẬN", {
+                p: { alignment: C, spacing: { before: 280, after: 60 }, keepNext: true },
+                r: { bold: true },
+              }),
+            );
+          c.push(
+            t(
+              `Bài ${i + 1} (${D(s.pt)} điểm). ${s.m.t}${s.mc ? " (Khoanh vào chữ cái đặt trước đáp án đúng)" : ""}`,
+              {
+                r: { bold: true },
+                p: { spacing: { before: 240, after: 100 }, keepNext: true },
+              },
+            ),
+          );
+          for (const [j, x] of s.it.entries()) {
+            const q = s.mc
+              ? new Paragraph({
+                  keepNext: true,
+                  spacing: { after: 60 },
+                  children: [run(`Câu ${j + 1}. `, { bold: true }), ...rr(x[0])],
+                })
+              : t(`${L[j]}) ${x[0]}`, {
+                  p: {
+                    spacing: {
+                      before: s.m.w ? 140 : 0,
+                      after: s.m.w ? 80 : P.sp ? (s.m.g >= 3 ? 900 : 300) : 180,
+                    },
+                  },
+                });
+            c.push(q);
+            if (x[2]) {
+              const [, w, h] = x[2].match(/width="(\d+)" height="(\d+)"/),
+                d = await png(x[2]);
+              if (d)
+                c.push(
+                  new Paragraph({
+                    alignment: C,
+                    keepNext: !!s.mc,
+                    children: [
+                      new ImageRun({
+                        data: d,
+                        transformation: { width: +w, height: +h },
+                      }),
+                    ],
+                  }),
+                );
+            }
+            if (s.mc) {
+              const cl = oc(x),
+                cols = cl == "c4" ? 4 : cl == "c2" ? 2 : 1;
+              for (let k = 0; k < x.o.length; k += cols)
+                c.push(opRow(x.o.slice(k, k + cols), k, cols));
+              c.push(t("", { p: { spacing: { after: 60 } } }));
+            } else if (P.sp) {
+              if (NL[s.m.w]) {
+                for (let k = 0; k < NL[s.m.w]; k++) c.push(ln());
+                c.push(ln("Đáp số:"));
+              } else if (s.m.w == 2) c.push(ln("Trả lời:"));
+            }
+          }
+        }
+        c.push(
+          t("— Hết —", {
+            p: { alignment: C, spacing: { before: 300 } },
+            r: { italics: true },
+          }),
+        );
+        if (P.key) {
+          c.push(
+            t("ĐÁP ÁN VÀ BIỂU ĐIỂM", {
+              p: {
+                pageBreakBefore: true,
+                alignment: C,
+                spacing: { after: 200 },
+              },
+              r: { bold: true, size: 32 },
+            }),
+          );
+          P.secs.forEach((s, i) =>
+            c.push(
+              t(
+                `Bài ${i + 1} (${D(s.pt)} điểm): ` +
+                  s.it
+                    .map((x, j) =>
+                      s.mc ? `Câu ${j + 1}: ${LT[x.c]} (${x[1]})` : `${L[j]}) ${x[1]}`,
+                    )
+                    .join(";   "),
+                { p: { spacing: { after: 120 } } },
+              ),
+            ),
+          );
+        }
+        save(
+          await Packer.toBlob(
+            new Document({
+              sections: [
+                {
+                  properties: {
+                    page: { margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } },
+                  },
+                  children: c,
+                },
+              ],
+            }),
+          ),
+          "de-toan.docx",
+        );
+      }
+      async function pdfSave() {
+        if (!P) return toast("Hãy tạo đề trước");
+        toast("Đang tạo PDF…");
+        if (!window.html2pdf)
+          await new Promise((ok, no) => {
+            const s = document.createElement("script");
+            s.src =
+              "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+            s.onload = ok;
+            s.onerror = no;
+            document.head.appendChild(s);
+          }).catch(() => 0);
+        if (!window.html2pdf) return toast("Chưa tải được thư viện PDF");
+        save(
+          await html2pdf()
+            .set({
+              margin: 10,
+              image: { type: "jpeg", quality: 0.95 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: "mm", format: "a4" },
+              pagebreak: { mode: ["css", "legacy"], avoid: ["h3", ".qs>div", ".mc"] },
+            })
+            .from($("paper"))
+            .outputPdf("blob"),
+          "de-toan.pdf",
+        );
+      }
+      render();
+    </script>
+  </body>
+</html>
