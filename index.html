@@ -527,10 +527,18 @@ Phần III - 2 bài toán có lời văn"></textarea>
             >
           </div>
           <div class="careful-box">
-            <label><input type="checkbox" id="careful" checked />
-              <b>🧠 Rèn tư duy & cẩn thận</b>
-            </label>
-            <small>Câu hỏi luân phiên cách đặt vấn đề: tính trực tiếp, kiểm tra một đáp án sai, đối chiếu lời giải và lọc dữ kiện phụ. Học sinh phải đọc kỹ rồi mới làm, thay vì nhìn mẫu là biết ngay cách giải.</small>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <label><input type="checkbox" id="careful" checked /> <b>🧠 Ngân hàng tư duy sâu</b></label>
+              <label style="font-size:13px;color:var(--mu)">Mức độ
+                <select id="thinkDepth" style="border:1px solid var(--bd);border-radius:8px;padding:5px 8px;background:var(--bg);color:var(--tx);font:inherit">
+                  <option value="1">Đa dạng</option>
+                  <option value="2">Tư duy tăng cường</option>
+                  <option value="3" selected>Tư duy sâu</option>
+                </select>
+              </label>
+            </div>
+            <small>Không chỉ đổi số. Mỗi mạch kiến thức có nhiều lõi bài toán và nhiều cách hỏi: phát hiện lỗi, suy ngược, so sánh, khoanh vùng kết quả, chọn thông tin, đối chiếu hai cách làm, đánh giá tính hợp lí…</small>
+            <div id="bankCoverage" class="hint" style="margin-top:6px">🧠 Ngân hàng được tạo tự động theo đúng mạch kiến thức.</div>
           </div>
           <div class="row answer-info" style="align-items:center;justify-content:space-between;gap:10px">
             <span style="color:var(--mu)">🔐 Đáp án được tách riêng để không bị lộ khi phát đề.</span>
@@ -3239,16 +3247,19 @@ Phần III - 2 bài toán có lời văn"></textarea>
       M.forEach(m => { if (m.h) m.w = 2; });
 
       const sel = {};
-      M.forEach((m) => (sel[m.id] = { on: false, l: 1, n: 5, mc: 0 }));
+      M.forEach((m, i) => {
+        m.uid = `${m.g}_${m.id}_${i}`;
+        sel[m.uid] = { on: false, l: 1, n: 5, mc: 0 };
+      });
       let G = 1,
         P = null;
       const LB = ["Dễ", "Vừa", "Khó"],
         LH = ["Nâng cao", "HSG Tỉnh", "HSG Quốc gia"],
         LT = "ABCD";
       function modHtml(m) {
-        const s = sel[m.id],
+        const s = sel[m.uid],
           lb = m.h ? LH : LB;
-        return `<div class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.id}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.id}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class=seg>${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.id}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.id}'].n=Math.min(50,Math.max(1,+this.value||1))"></label></div></div>`;
+        return `<div class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.uid}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.uid}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class=seg>${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.uid}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.uid}'].n=Math.min(50,Math.max(1,+this.value||1))"></label></div></div>`;
       }
       function render() {
         $("tabs").innerHTML = [1, 2, 3, 4, 5]
@@ -3266,17 +3277,18 @@ Phần III - 2 bài toán có lời văn"></textarea>
           M.filter((m) => m.g == G && m.h)
             .map(modHtml)
             .join("");
-        const k = M.filter((m) => sel[m.id].on);
+        const k = M.filter((m) => sel[m.uid].on);
         const sp=structurePlan(G);
         const totalSelected = sp
           ? sp.reduce((a,z)=>a+z.n,0)
-          : k.reduce((a, m) => a + sel[m.id].n, 0);
+          : k.reduce((a, m) => a + sel[m.uid].n, 0);
         $("cnt").textContent = sp
           ? `Cấu trúc riêng: ${totalSelected} câu · ${sp.length} phần`
           : `Đã chọn ${k.length} module · ${totalSelected} câu · tối đa 50 câu/module`;
+        if($("bankCoverage")) $("bankCoverage").textContent = bankCoverageText();
       }
       function setMode(v) {
-        M.filter((m) => m.g == G).forEach((m) => (sel[m.id].mc = v));
+        M.filter((m) => m.g == G).forEach((m) => (sel[m.uid].mc = v));
         render();
       }
       function toast(s) {
@@ -3294,43 +3306,491 @@ Phần III - 2 bài toán có lời văn"></textarea>
         },
         NL = { 1: 3, 3: 6 };
       /* ================================================================
-         BỘ MÁY RÈN ĐỌC KỸ / CHỐNG "NHÌN MẪU LÀ BIẾT CÁCH LÀM"
-         - Mỗi câu không chỉ đổi số mà còn luân phiên cách đặt vấn đề.
-         - Vẫn giữ nguyên kiến thức và đáp án toán học của generator gốc.
+         NGÂN HÀNG TƯ DUY CHUYÊN SÂU
+         - Không chỉ đổi số: đổi mục tiêu tư duy, góc nhìn và hình thức hỏi.
+         - Mỗi mạch có 10 lõi bài toán + 12 "vỏ tư duy" => tối đa 120 kiểu phối hợp.
+         - Tham số ngẫu nhiên + chống trùng giúp tạo hàng trăm/hàng nghìn phiên bản.
+         - Chỉ sử dụng kiến thức thuộc đúng khối đang chọn.
          ================================================================ */
+      const qmake = (q, ans, opts = [], meta = {}) => {
+          const x = [q, ans, null, opts];
+          x.meta = meta;
+          return x;
+        },
+        inv = (v) => (typeof v === "number" ? v : +String(v).replace(/\./g, "").replace(",", ".").replace(/[^0-9-+.]/g, "")),
+        safeNum = (v) => {
+          const z = inv(v);
+          return Number.isFinite(z) ? z : null;
+        },
+        wrongNum = (v, step = 1) => {
+          const n = safeNum(v);
+          if (n == null) return null;
+          const s = Math.abs(n) >= 100 ? Math.max(1, Math.round(Math.abs(n) / 100)) : Math.max(1, step);
+          return n + (Math.random() < .5 ? s : -s);
+        },
+        fmtAns = (v) => (typeof v === "number" ? fmtV(v) ?? String(v) : String(v)),
+        relation = (a, b) => a > b ? ">" : a < b ? "<" : "=",
+        band10 = (n) => {
+          const x = Math.floor(n / 10) * 10;
+          return `${x} đến ${x + 9}`;
+        },
+        band100 = (n) => {
+          const x = Math.floor(n / 100) * 100;
+          return `${x} đến ${x + 99}`;
+        },
+        uniqOpts = (ans, opts = []) => {
+          const seen = new Set(), out = [];
+          [ans, ...opts].forEach((v) => {
+            const k = String(v);
+            if (!seen.has(k)) { seen.add(k); out.push(v); }
+          });
+          return out.filter(v => v !== undefined && v !== null).slice(0, 4);
+        };
+
+      const numLimit = (g, l) => ({
+        1: [10, 20, 100],
+        2: [100, 500, 1000],
+        3: [1000, 10000, 100000],
+        4: [10000, 100000, 1000000],
+        5: [100000, 1000000, 10000000]
+      }[g] || [100, 1000, 10000])[l - 1];
+
+      const strandOf = (m) => {
+        const id = String(m.id), n = String(m.name).toLowerCase();
+        const is = (...xs) => xs.includes(id);
+        if (is("v5","motion5") || /chuyển động/.test(n)) return "motion";
+        if (is("d5","x5","decimal5","decimalAdv5","decimalx5e","custom5c") || /số thập phân/.test(n)) return "decimal";
+        if (is("t5","percent5") || /phần trăm/.test(n)) return "percent";
+        if (is("s4","ratio5") || /tỉ số|tỷ số/.test(n)) return "ratio";
+        if (is("p4","frac3","frac4","frac5","fracx3","fracx4","fracx5e") || /phân số/.test(n)) return "fraction";
+        if (/stats|thống kê|biểu đồ/.test(id + " " + n)) return "stats";
+        if (/k1|k2|f3|f4|f5|h3|g5|geom/.test(id) || /hình học|chu vi|diện tích|hình tròn|hình thang|hình bình hành|hình thoi|thể tích/.test(n)) return "geometry";
+        if (/pattern|quy luật|dãy số/.test(id + " " + n) || id === "d1") return "pattern";
+        if (/find|tìm x|tìm số|thành phần chưa biết/.test(id + " " + n)) return "unknown";
+        if (/expr|biểu thức/.test(id + " " + n) || id === "b3") return "expression";
+        if (/muldiv/.test(id) || /bảng nhân|bảng chia|nhân số|chia cho|nhân với|chia \w|nhân, chia/.test(n) || is("n2","q2","n3","q3","n4","q4")) return "muldiv";
+        if (/đổi đơn vị|đo lường/.test(n) || is("u2","u3")) return "measure";
+        if (/addsub/.test(id) || /phép cộng|phép trừ|cộng, trừ|bốn phép tính/.test(n) || is("c1","t1","c2","c4","calc3","calc4","addsub1","addsub2")) return "addsub";
+        if (/number|num|so sánh|số và|số tự nhiên|cấu tạo/.test(id + " " + n)) return "number";
+        if (/word|lời văn|toán đố/.test(id + " " + n) || is("w2")) return "word";
+        if (/fast|tính nhanh|mental/.test(id + " " + n)) return "arithmetic";
+        return "logic";
+      };
+      M.forEach(m => m.strand = strandOf(m));
+
+      const TB = {};
+      const bank = (strand, ...fns) => TB[strand] = fns;
+
+      /* ---------- SỐ / SO SÁNH ---------- */
+      bank("number",
+        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-2,999999)),b=r(1,Math.min(m-a,999999));return qmake(`Một số lớn hơn ${a} đúng ${b} đơn vị. Số đó là?`,a+b,[a+b+1,a+b-1,a+b*2]);},
+        (g,l)=>{const m=numLimit(g,l),a=r(2,Math.min(9,Math.max(2,Math.floor(m/10)))),b=r(1,Math.max(1,a-1)),ans=a*10+b;return qmake(`Số có hàng chục là ${a} và hàng đơn vị là ${b} là số nào?`,ans,[ans+10,ans-1,a+b]);},
+        (g,l)=>{const m=numLimit(g,l),a=r(10,Math.min(m-10,99999)),b=r(1,9),ans=a+b;return qmake(`Số nào đứng ngay sau ${a}?`,ans,[a-b,a+10,ans+1]);},
+        (g,l)=>{const m=numLimit(g,l),a=r(10,Math.min(m-1,99999)),b=r(1,9),ans=a-b;return qmake(`Số nào đứng ngay trước ${a}?`,ans,[a+b,a-10,ans-1]);},
+        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-1,99999)),b=r(1,Math.min(m-1,99999));return qmake(`Không cần tính hiệu. Số nào lớn hơn? ${a} hay ${b}?`,relation(a,b),[">","<","="]);},
+        (g,l)=>{const a=r(1,9),b=r(0,9),c=r(0,9),ans=a*100+b*10+c;return qmake(`Dùng các chữ số ${a}, ${b}, ${c}, mỗi chữ số dùng một lần. Số có hàng trăm là ${a} và lớn nhất có thể là?`,ans,[a*100+b*10+c,a*100+c*10+b,c*100+b*10+a]);},
+        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-20,99999)),lo=a+8,hi=a+20,ans=lo;return qmake(`Số nào vừa lớn hơn ${lo-1} vừa không lớn hơn ${lo}?`,ans,[lo-1,lo,hi,hi+1]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),c=r(2,9),ans=Math.max(a,b,c);return qmake(`Ba số là ${a}, ${b}, ${c}. Số lớn nhất là?`,ans,[a,b,c].filter(x=>x!==ans).concat(ans));},
+        (g,l)=>{const a=r(11,88),d=r(2,9),b=a+d,ans=b-a;return qmake(`Không cần tìm hai số. Khoảng cách giữa ${a} và ${b} là bao nhiêu?`,ans,[a+b,a-d,ans+1]);},
+        (g,l)=>{const a=r(1,9),b=r(1,9),c=r(1,9),ans=a*100+b*10+c;return qmake(`Trong số ${ans}, chữ số ở hàng chục có giá trị là bao nhiêu?`,b*10,[b,b*10,b+10,b]);}
+      );
+
+      /* ---------- CỘNG / TRỪ ---------- */
+      bank("addsub",
+        (g,l)=>{const m=numLimit(g,l),a=r(10,Math.min(m-1,99999)),b=r(1,Math.min(Math.floor(a/2),9999)),ans=a+b;return qmake(`${a} + ${b} = ?`,ans,[ans-1,ans+1,a-b]);},
+        (g,l)=>{const a=r(20,999),b=r(1,Math.floor(a/2)),ans=a-b;return qmake(`${a} − ${b} = ?`,ans,[a+b,ans-1,ans+1]);},
+        (g,l)=>{const a=r(10,80),b=r(1,20),ans=a+b;return qmake(`Điền số: □ + ${b} = ${ans}. Không cần thử nhiều lần, số trong ô là?`,a,[a+1,a-1,b]);},
+        (g,l)=>{const a=r(10,80),b=r(1,20),ans=a-b;return qmake(`${ans} + ${b} = ${a}. Số còn thiếu là?`,ans,[ans+1,ans-1,b]);},
+        (g,l)=>{const a=r(20,90),b=r(1,20),ans=a-b;return qmake(`Một bạn viết ${a} − ${b} = ${ans+1}. Kết quả của bạn ấy sai hay đúng?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(20,90),b=r(10,50),c=r(1,20),ans=a-b+c;return qmake(`${a} − ${b} + ${c} = ?`,ans,[a-(b+c),a+b+c,ans+1]);},
+        (g,l)=>{const a=r(10,80),b=r(10,80),c=r(1,20),x=a+b;return qmake(`Biết ${a}+${b}=${x}. Nếu số hạng thứ hai tăng thêm ${c}, tổng mới là?`,x+c,[x-c,x+c+1,x+b]);},
+        (g,l)=>{const a=r(30,90),b=r(10,29),ans=a-b;return qmake(`Kết quả của phép tính ${a} − ${b} chắc chắn nằm gần số nào nhất?`,Math.round(ans/10)*10,[ans-10,Math.round(ans/10)*10,ans+10,ans]);},
+        (g,l)=>{const a=r(10,40),b=r(5,20),c=r(5,20),ans=a+b;return qmake(`Bài toán có ${a} quả, thêm ${b} quả; thông tin “có ${c} chiếc hộp” không dùng. Cần tính gì?`,ans,[ans+c,a+b-c,a+b+c]);},
+        (g,l)=>{const a=r(20,80),b=r(1,20),ans=a-b;return qmake(`Số lớn là ${a}, số bé kém số lớn ${b}. Số bé là?`,ans,[a+b,a-b+1,b]);}
+      );
+
+      /* ---------- NHÂN / CHIA ---------- */
+      bank("muldiv",
+        (g,l)=>{const a=r(2,9),b=r(2,20),ans=a*b;return qmake(`${a} × ${b} = ?`,ans,[ans+a,ans+b,ans-1]);},
+        (g,l)=>{const a=r(2,9),b=r(2,20),ans=a*b;return qmake(`□ × ${a} = ${ans}. Số trong ô là?`,b,[b+1,b-1,a]);},
+        (g,l)=>{const a=r(2,9),b=r(2,20),ans=a*b;return qmake(`${ans} : ${a} = ?`,b,[b+1,b-1,a]);},
+        (g,l)=>{const a=r(2,9),b=r(2,20),ans=a*b;return qmake(`Một bạn viết ${ans} : ${a} = ${b+1}. Bạn ấy sai hay đúng?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(2,8),b=r(2,9),c=r(1,5),ans=a*b+c;return qmake(`${a} nhóm, mỗi nhóm ${b} đồ vật và thêm ${c} đồ vật. Tất cả có?`,ans,[a*(b+c),a+b*c,ans+c]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a*b;return qmake(`Biết ${a} × ${b} = ${ans}. Nếu ${a} tăng 1 thì tích tăng thêm bao nhiêu?`,b,[1,a+b,ans+b]);},
+        (g,l)=>{const d=r(2,9),q=r(3,20),rem=r(1,d-1),n=d*q+rem;return qmake(`${n} chia cho ${d} được thương và dư. Phần dư là?`,rem,[0,rem+1,d-1]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),p1=a*b,p2=(a+1)*b;return qmake(`Tích nào lớn hơn: ${a}×${b} hay ${a+1}×${b}?`,relation(p1,p2),[">","<","="]);},
+        (g,l)=>{const a=r(2,8),b=r(2,9),ans=a*b;return qmake(`Một phép nhân có tích ${ans}, một thừa số là ${a}. Thừa số còn lại là?`,b,[a,b+1,ans-a]);},
+        (g,l)=>{const a=r(2,8),b=r(2,9),ans=a*b;return qmake(`Số nào sau đây không thể là kết quả của ${a} × một số tự nhiên?`,ans+1,[ans+1,ans,ans+a,ans*2]);}
+      );
+
+      /* ---------- TÌM X / THÀNH PHẦN CHƯA BIẾT ---------- */
+      bank("unknown",
+        (g,l)=>{const b=r(2,20),x=r(5,50),a=x+b;return qmake(`x + ${b} = ${a}. Giá trị của x là?`,x,[x+1,x-1,b]);},
+        (g,l)=>{const b=r(2,20),x=r(5,50),a=x-b;return qmake(`x − ${b} = ${a}. Giá trị của x là?`,x,[x+1,x-1,b]);},
+        (g,l)=>{const b=r(2,20),x=r(5,30),a=x*b;return qmake(`x × ${b} = ${a}. x bằng?`,x,[x+1,x-1,b]);},
+        (g,l)=>{const b=r(2,20),x=r(5,50),a=x*b;return qmake(`${a} : ${b} = x. x bằng?`,x,[x+1,x-1,b]);},
+        (g,l)=>{const x=r(10,90),b=r(1,9),a=x+b;return qmake(`Bạn Minh tìm x từ x + ${b} = ${a} và ghi x = ${x+1}. Kết luận?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const x=r(10,90),b=r(1,9),a=x+b;return qmake(`Giá trị nào làm cho x + ${b} = ${a} đúng?`,x,[x+1,x-1,a]);},
+        (g,l)=>{const x=r(10,90),b=r(1,9),a=x-b;return qmake(`Biết x − ${b} = ${a}. Không cần tính nhiều bước, x là?`,x,[a,a+b+1,x-1]);},
+        (g,l)=>{const x=r(2,12),b=r(2,9),a=x*b;return qmake(`Có ${a} chiếc được chia đều thành ${b} phần. Mỗi phần chính là x. x bằng?`,x,[x+1,x-1,a-b]);},
+        (g,l)=>{const x=r(10,50),d=r(2,8),a=x+d,b=x-d;return qmake(`Số x cách ${a} đúng ${d} đơn vị. Đồng thời x nhỏ hơn ${a}. x là?`,x,[a,a-d,a+d,b]);},
+        (g,l)=>{const x=r(10,70),b=r(2,9),a=x*b;return qmake(`Nếu x = ${x} thì x × ${b} = ${a}. Mệnh đề nào đúng?`,"Đúng",["Đúng","Sai"]);}
+      );
+
+      /* ---------- BIỂU THỨC / TÍNH NHANH ---------- */
+      bank("expression",
+        (g,l)=>{const a=r(2,9),b=r(2,9),c=r(2,9),ans=a+b*c;return qmake(`${a} + ${b} × ${c} = ?`,ans,[(a+b)*c,ans+1,a+b+c]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),c=r(2,9),ans=(a+b)*c;return qmake(`(${a}+${b}) × ${c} = ?`,ans,[a+b*c,ans+c,ans-1]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),c=r(2,9),ans=a*b+c;return qmake(`Biết ${a}×${b}=${a*b}. Sau đó cộng ${c}. Kết quả cuối cùng?`,ans,[a*(b+c),a+b+c,ans+c]);},
+        (g,l)=>{const a=r(10,50),b=100-a,c=r(2,9),ans=(a+b)*c;return qmake(`${a}×${c} + ${b}×${c} = ?`,ans,[a+b*c,100+c,ans-c]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a*b;return qmake(`Một bạn tính ${a}×${b} = ${ans+1}. Bạn ấy sai hay đúng?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a*b;return qmake(`Không cần nhân lại toàn bộ. Nếu ${a}×${b}=${ans}, thì ${a}×${b}+${a} bằng?`,ans+a,[ans+b,ans+1,a*b+a]);},
+        (g,l)=>{const a=r(10,90),b=100-a,ans=a+b+25;return qmake(`Tính nhanh: ${a}+${b}+25. Nên ghép hai số nào trước?`,` ${a} và ${b}`.trim(),[` ${a} và ${b}`.trim(),`${a} và 25`,` ${b} và 25`.trim()]);},
+        (g,l)=>{const a=r(10,50),b=r(2,9),ans=a*b;return qmake(`Kết quả của ${a}×${b} gần với số nào nhất?`,Math.round(ans/10)*10,[Math.round((ans-5)/10)*10,Math.round(ans/10)*10,Math.round((ans+5)/10)*10]);},
+        (g,l)=>{const a=r(10,50),b=r(2,8),ans=a*b;return qmake(`Biết tích là ${ans}. Số nào sau đây chắc chắn là một thừa số của tích?`,a,[a,b,ans+1,a+1]);},
+        (g,l)=>{const a=r(10,50),b=r(1,9),ans=a+b;return qmake(`Nếu thay ${a} bằng ${a+1} trong phép cộng với ${b}, kết quả thay đổi bao nhiêu?`,1,[0,1,b,ans]);}
+      );
+
+      /* ---------- QUY LUẬT ---------- */
+      bank("pattern",
+        (g,l)=>{const a=r(1,20),d=p([1,2,3,5,10]),v=[a,a+d,a+2*d,a+3*d,a+4*d],ans=v[r(0,3)];return qmake(`Dãy ${v.map(String).join(", ")}. Nếu bỏ một số ở giữa, số phù hợp là?`,ans,[ans+d,ans-d,a+5*d]);},
+        (g,l)=>{const a=r(1,20),d=r(1,9),n=r(5,9),ans=a+(n-1)*d;return qmake(`Dãy bắt đầu ${a}, mỗi bước tăng ${d}. Số thứ ${n} là?`,ans,[ans+d,ans-d,a+n*d]);},
+        (g,l)=>{const a=r(5,40),d=r(2,8),v=[a,a+d,a+2*d,a+3*d];return qmake(`${v.join(", ")}, … Số tiếp theo là?`,a+4*d,[a+3*d,a+5*d,a+d]);},
+        (g,l)=>{const a=r(2,20),d=r(1,5),v=[a,a+d,a+2*d,a+3*d,a+4*d].reverse();return qmake(`Dãy đang đi ngược: ${v.join(", ")}. Số tiếp theo là?`,a-d,[a,a+d,a-2*d]);},
+        (g,l)=>{const a=r(1,9),b=r(1,9),v=[a,a+b,a,a+b,a],ans=b;return qmake(`Dãy lặp ${v.join(", …")}. Số ở vị trí tiếp theo là?`,a,[a+b,b,a+1]);},
+        (g,l)=>{const a=r(1,10),d=r(1,5),e=r(1,5),v=[a,a+d,a+d+e,a+2*d+e,a+2*d+2*e];return qmake(`Quy luật tăng lần lượt ${d} rồi ${e}. Số tiếp theo sau ${v[4]} là?`,v[4]+d,[v[4]+e,v[4]+d+e,v[4]+2*d]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),v=[a,b,a+b,b+a+b,a+2*b];return qmake(`Dãy ${v.join(", ")}. Số tiếp theo theo quy luật cộng hai số trước là?`,v[3]+v[4],[v[4]+a,v[4]+b,v[3]+a]);},
+        (g,l)=>{const a=r(1,8),d=r(1,4),v=[a,a+d,a+2*d,a+3*d,a+4*d];return qmake(`Trong dãy ${v.join(", ")}, số nào đứng ở vị trí thứ 4?`,v[3],[v[2],v[4],a+d]);},
+        (g,l)=>{const a=r(1,20),d=r(2,8),v=[a,a+d,a+2*d,a+3*d,a+4*d];return qmake(`Muốn đi từ ${v[0]} đến ${v[4]} theo dãy trên cần bao nhiêu lần tăng thêm ${d}?`,4,[3,4,5,v[4]-v[0]]);},
+        (g,l)=>{const a=r(2,15),d=p([2,5,10]),n=r(4,7),ans=a+(n-1)*d;return qmake(`Một bạn nói số thứ ${n} là ${ans+1}. Kiểm tra lại: bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);}
+      );
+
+      /* ---------- TOÁN CÓ LỜI VĂN ---------- */
+      bank("word",
+        (g,l)=>{const a=r(10,60),b=r(2,20),ans=a+b;return qmake(`Một lớp có ${a} quyển sách, nhận thêm ${b} quyển. Có tất cả bao nhiêu quyển?`,`${ans} quyển`,[`${a-b} quyển`,`${ans+1} quyển`,`${b} quyển`]);},
+        (g,l)=>{const a=r(20,80),b=r(2,20),ans=a-b;return qmake(`Có ${a} quả, đã dùng ${b} quả. Còn lại bao nhiêu quả?`,`${ans} quả`,[`${a+b} quả`,`${ans+1} quả`,`${b} quả`]);},
+        (g,l)=>{const a=r(2,9),b=r(2,10),ans=a*b;return qmake(`${a} hộp, mỗi hộp ${b} chiếc. Hỏi tổng số chiếc?`,`Cần thực hiện ${a} × ${b}`, [`${a}+${b}`,`${a}×${b}`,`${a}-${b}`]);},
+        (g,l)=>{const a=r(3,9),b=r(4,12),ans=a*b;return qmake(`Có ${ans} chiếc chia đều vào ${a} hộp. Mỗi hộp có bao nhiêu chiếc?`,b,[b+1,b-1,a]);},
+        (g,l)=>{const a=r(20,60),b=r(5,20),ans=a-b;return qmake(`Một bạn đọc đề và dùng phép cộng cho bài: “Có ${a} cái, lấy đi ${b} cái”. Cách làm đó đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(5,20),b=r(2,8),c=r(2,10),ans=a*b+c;return qmake(`Có ${a} túi, mỗi túi ${b} vật và thêm ${c} vật rời. Số ${c} vật rời đóng vai trò gì?`,`phần thêm`,["phần thêm","số túi","số vật mỗi túi","thông tin không liên quan"]);},
+        (g,l)=>{const a=r(20,50),b=r(5,20),c=r(1,10),ans=a-b+c;return qmake(`Một kho có ${a} sản phẩm, bán ${b}, rồi nhập thêm ${c}. Cuối cùng có bao nhiêu?`,ans,[a-b-c,a+b+c,a-b]);},
+        (g,l)=>{const a=r(20,60),b=r(5,15),ans=a-b;return qmake(`Một bạn trả lời “${a+b}” cho bài có ${a} vật, lấy đi ${b} vật. Bạn ấy sai ở phép nào?`,"Phép trừ",["Phép cộng","Phép trừ","Phép nhân","Phép chia"]);},
+        (g,l)=>{const a=r(30,90),b=r(10,30),ans=a+b;return qmake(`Một bài toán hỏi số lượng sau khi thêm ${b} vào ${a}. Trước khi tính, kết quả phải lớn hơn ${a}. Khẳng định này đúng hay sai?`,"Đúng",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(20,80),b=r(2,20),ans=a-b;return qmake(`Biết còn ${ans} sau khi lấy ${b} từ một số. Số ban đầu là?`,a,[a+b,a-b,b]);}
+      );
+
+      /* ---------- ĐO LƯỜNG / ĐỔI ĐƠN VỊ ---------- */
+      bank("measure",
+        (g,l)=>{const n=r(2,9),ans=n*100;return qmake(`${n} m bằng bao nhiêu cm?`,ans,[ans/10,ans+10,n]);},
+        (g,l)=>{const n=r(2,9),ans=n*1000;return qmake(`${n} kg bằng bao nhiêu g?`,ans,[ans/10,ans+100,n*100]);},
+        (g,l)=>{const n=r(2,9),ans=n*10;return qmake(`${n} dm bằng bao nhiêu cm?`,ans,[n*100,n,n+10]);},
+        (g,l)=>{const m=r(1,9),cm=r(1,99),ans=m*100+cm;return qmake(`${m} m ${cm} cm = ? cm`,ans,[m*100+cm+10,m*100+cm-10,m+cm]);},
+        (g,l)=>{const n=r(2,9),ans=n*100;return qmake(`Bạn Mai đổi ${n} m thành ${ans+10} cm. Bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const n=r(2,9),ans=n*1000;return qmake(`Đổi ${ans} g về kg được bao nhiêu?`,n,[n/10,n+1,ans]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=(a+b)*100;return qmake(`${a} m + ${b} m = ? cm`,ans,[a+b,(a+b)*10,(a+b)*1000]);},
+        (g,l)=>{const a=r(2,9),b=r(1,8),ans=(a-b)*10;return qmake(`${a} dm dài hơn ${b} dm bao nhiêu cm?`,ans,[a-b,(a-b)*100,ans+10]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a*100+b*10;return qmake(`Số nào sau đây có thể bằng ${a} m ${b} dm đổi sang dm?`,ans,[a+b,a*10+b,a*100+b]);},
+        (g,l)=>{const n=r(2,9),ans=n*100;return qmake(`Một đoạn dài ${n} m. Số đo nào sau đây cùng độ dài?`,`${ans} cm`,[`${ans} cm`,`${n*10} cm`,`${ans/10} cm`,`${n} cm`]);}
+      );
+
+      /* ---------- HÌNH HỌC ---------- */
+      bank("geometry",
+        (g,l)=>{const a=r(3,20),ans=4*a;return qmake(`Hình vuông cạnh ${a} cm. Chu vi là?`,`${ans} cm`,[`${a*a} cm`, `${2*a} cm`,`${ans} cm`,`${a} cm`].filter(x=>!x.startsWith("$")));},
+        (g,l)=>{const a=r(3,20),b=r(2,a),ans=a*b;return qmake(`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Diện tích là?`,`${ans} cm²`,[`${2*(a+b)} cm²`,`${ans} cm²`,`${a+b} cm²`,`${a*b} cm`]);},
+        (g,l)=>{const a=r(3,20),ans=4*a;return qmake(`Một hình vuông có chu vi ${ans} cm. Cạnh dài bao nhiêu?`,`${a} cm`,[`${a+1} cm`,`${ans/2} cm`,`${a} cm`,`${4*a} cm`]);},
+        (g,l)=>{const a=r(3,20),b=r(2,a),area=a*b;return qmake(`Hình chữ nhật có diện tích ${area} cm², chiều dài ${a} cm. Chiều rộng là?`,`${b} cm`,[`${a} cm`,`${b+1} cm`,`${area} cm`,`${b} cm`]);},
+        (g,l)=>{if(g<5){const a=r(3,15),b=r(2,a),p0=2*(a+b);return qmake(`Hình chữ nhật dài ${a}, rộng ${b}. Nếu tăng chiều dài 1 cm thì chu vi tăng bao nhiêu cm?`,2,[1,2,3,p0]);} const a=r(3,12),ans=3.14*a*a;return qmake(`Hình tròn bán kính ${a} cm, π=3,14. Diện tích là?`,D(ans),[D(ans+3.14),D(2*3.14*a),D(ans/2)]);},
+        (g,l)=>{if(g>=5){const a=r(3,10),h=r(3,10),ans=a*h/2;return qmake(`Tam giác đáy ${a*2} cm, cao ${h} cm. Diện tích là?`,`${ans} cm²`,[`${a*h} cm²`,`${(a*2+h)} cm²`,`${ans+h} cm²`]);} const a=r(3,12);return qmake(`Hình vuông cạnh ${a} cm có mấy cạnh bằng nhau?`,4,[3,4,5,a]);},
+        (g,l)=>{if(g<4){const a=r(2,5),b=r(2,5);return qmake(`Hình có ${a} hàng và ${b} cột ô vuông. Có tất cả bao nhiêu ô?`,a*b,[a+b,a*b+1,a*b-1]);} const a=r(4,12),b=r(2,8),ans=2*(a+b);return qmake(`Hai hình chữ nhật có cùng chiều dài ${a} cm; một hình rộng ${b} cm. Hỏi chu vi hình đó?`,`${ans} cm`,[`${a*b} cm`,`${a+b} cm`,`${2*a+b} cm`]);},
+        (g,l)=>{const a=r(4,12),b=r(2,8),ans=a*b;return qmake(`Một bạn tính diện tích hình chữ nhật ${a}×${b} bằng ${2*(a+b)}. Bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(5,15),b=r(2,a),ans=a*b;return qmake(`Giữ chiều rộng ${b} cm, tăng chiều dài ${a} lên 1 cm. Diện tích tăng bao nhiêu cm²?`,b,[1,a,b+1]);},
+        (g,l)=>{if(g===5){const a=r(2,10),b=r(2,8),h=r(2,8),ans=a*b*h;return qmake(`Hình hộp chữ nhật dài ${a} cm, rộng ${b} cm, cao ${h} cm. Thể tích là?`,`${ans} cm³`,[`${a*b} cm³`,`${2*(a+b+h)} cm³`,`${ans+h} cm³`]);} const a=r(3,12),b=r(2,a),p0=2*(a+b);return qmake(`Hai hình có cùng chiều dài và chiều rộng như nhau. Chu vi của một hình là?`,`${p0} cm`,[`${a*b} cm`,`${a+b} cm`,`${2*a+b} cm`]);}
+      );
+
+      /* ---------- PHÂN SỐ ---------- */
+      bank("fraction",
+        (g,l)=>{const d=p([2,3,4,5,10]),q=r(2,8),total=d*q;return qmake(`Có ${total} phần bằng nhau. ${FR(1,d)} số đó là bao nhiêu?`,q,[q+1,q-1,total/d]);},
+        (g,l)=>{const a=r(1,4),b=r(2,8),ans=a/b;return qmake(`So sánh ${FR(a,b)} với ${FR(1,b)}. Phân số thứ nhất gấp mấy lần phân số thứ hai?`,a,[b,a+1,1]);},
+        (g,l)=>{const a=r(1,5),b=r(a+1,9),ans=F(a,b);return qmake(`Phân số nào đã rút gọn từ ${FR(a*2,b*2)}?`,ans,[F(a+1,b),F(a,b+1),F(a*2,b*2)]);},
+        (g,l)=>{const a=r(1,4),b=r(5,9),d=r(2,8),ans=F(a*d,b*d);return qmake(`Nhân cả tử và mẫu của ${FR(a,b)} với ${d}. Phân số mới là?`,ans,[FR(a,b),F(a+d,b+d),F(a*d,b)]);},
+        (g,l)=>{const a=r(1,4),b=r(5,9),ans=F(a,b);return qmake(`Một bạn nói ${FR(a,b)} = ${FR(a+1,b+1)}. Nhận xét nào đúng?`,a===b?"Đúng":"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const d=p([2,3,4,5]),q=r(2,7),total=d*q,part=q;return qmake(`Có ${total} viên. Phân số ${FR(1,d)} số viên là?`,`${part} viên`,[`${part+1} viên`,`${total-d} viên`,`${d} viên`]);},
+        (g,l)=>{const a=r(1,4),b=r(a+1,9),c=r(1,4),d=b,ans=F(a+c,d);return qmake(`${FR(a,b)} + ${FR(c,d)} = ?`,ans,[F(a+c,b+d),F(a*c,b*d),F(Math.abs(a-c),d)]);},
+        (g,l)=>{const a=r(1,4),b=r(5,9),c=r(1,a),ans=F(a-c,b);return qmake(`${FR(a,b)} − ${FR(c,b)} = ?`,ans,[F(a,b-c),F(a-c,b),F(a+c,b)]);},
+        (g,l)=>{const a=r(1,4),b=r(a+1,9),ans=a/b;return qmake(`Phân số ${FR(a,b)} so với 1 là?`,ans<1?"nhỏ hơn 1":ans===1?"bằng 1":"lớn hơn 1",["nhỏ hơn 1","bằng 1","lớn hơn 1"]);},
+        (g,l)=>{const a=r(2,6),b=r(2,6),ans=F(a,b);return qmake(`Nếu tử số và mẫu số cùng nhân 3 thì giá trị phân số thay đổi thế nào?`,"Không đổi",["Tăng 3 lần","Giảm 3 lần","Không đổi","Không xác định"]);}
+      );
+
+      /* ---------- SỐ THẬP PHÂN ---------- */
+      bank("decimal",
+        (g,l)=>{const a=r(11,99)/10,b=r(11,99)/10,ans=Math.round((a+b)*10)/10;return qmake(`${D(a)} + ${D(b)} = ?`,D(ans),[D(ans+0.1),D(ans-0.1),D(a*b)]);},
+        (g,l)=>{let a=r(20,99)/10,b=r(11,50)/10;if(a<b)[a,b]=[b,a];const ans=Math.round((a-b)*10)/10;return qmake(`${D(a)} − ${D(b)} = ?`,D(ans),[D(ans+0.1),D(ans-0.1),D(a+b)]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(2,9),ans=Math.round(a*b*10)/10;return qmake(`${D(a)} × ${b} = ?`,D(ans),[D(ans+0.1),D(ans-0.1),D(a+b)]);},
+        (g,l)=>{const a=r(11,99)/10,b=p([2,4,5]),ans=Math.round((a/b)*100)/100;return qmake(`${D(a)} : ${b} = ?`,D(ans),[D(ans+0.1),D(ans-0.1),D(a+b)]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(11,50)/10,ans=Math.round((a+b)*10)/10;return qmake(`Bạn An ghi ${D(ans+0.1)} cho ${D(a)}+${D(b)}. An đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(11,99)/10,ans=Math.round((a+b)*10)/10;return qmake(`Không cần tính chi tiết: ${D(a)}+${D(b)} phải lớn hơn ${D(Math.max(a,b))}. Mệnh đề đúng hay sai?`,"Đúng",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(11,99)/10,ans=Math.round((a+b)*10)/10;return qmake(`Kết quả ${D(ans)} nằm giữa hai số tròn nào gần nhất?`,`${Math.floor(ans)} và ${Math.ceil(ans)}`,[`${Math.floor(ans-1)} và ${Math.ceil(ans-1)}`,`${Math.floor(ans)} và ${Math.ceil(ans)}`,`${Math.floor(ans+1)} và ${Math.ceil(ans+1)}`]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(11,50)/10,ans=Math.round((a+b)*10)/10;return qmake(`Nếu ${D(a)} được tăng 0,1 thì tổng mới tăng bao nhiêu?`,`0,1`,["0,01","0,1","1","phụ thuộc vào số kia"]);},
+        (g,l)=>{const a=r(1,8),b=r(1,9)/10,ans=Math.round((a+b)*10)/10;return qmake(`Số nào lớn hơn ${D(a)} nhưng nhỏ hơn ${D(a+1)}?`,D(ans),[D(a-0.1),D(ans),D(a+1),D(a)]);},
+        (g,l)=>{const a=r(11,99)/10,b=r(2,9),ans=Math.round(a*b*10)/10;return qmake(`Biết ${D(a)}×${b}=${D(ans)}. Nếu đổi thứ tự hai thừa số, tích có thay đổi không?`,"Không",["Có","Không"]);}
+      );
+
+      /* ---------- PHẦN TRĂM ---------- */
+      bank("percent",
+        (g,l)=>{const base=p([100,200,400,500,800]),pct=p([10,20,25,50]),ans=base*pct/100;return qmake(`${pct}% của ${base} là?`,ans,[ans+10,ans-10,base-pct]);},
+        (g,l)=>{const base=p([100,200,400,500]),pct=p([10,20,25]),part=base*pct/100;return qmake(`${part} chiếm bao nhiêu phần trăm của ${base}?`,`${pct}%`,[`${pct+5}%`,`${pct-5}%`,`100%`]);},
+        (g,l)=>{const pct=p([10,20,25,50]),base=p([100,200,400]),part=base*pct/100;return qmake(`Một số có ${pct}% bằng ${part}. Số đó là?`,base,[part,base+part,base-part]);},
+        (g,l)=>{const base=p([200,400,600,800]),pct=p([10,20,25]),ans=base*(1-pct/100);return qmake(`Giảm ${pct}% giá ${base} nghìn đồng còn bao nhiêu?`,`${ans} nghìn đồng`,[`${base*pct/100} nghìn đồng`,`${base+pct} nghìn đồng`,`${ans} nghìn đồng`]);},
+        (g,l)=>{const base=p([200,400,600]),pct=p([10,20,25]),ans=base*(1+pct/100);return qmake(`Tăng ${pct}% từ ${base} đơn vị thì được bao nhiêu?`,ans,[base+pct,base-pct,base*pct/100]);},
+        (g,l)=>{const base=p([100,200,500]),pct=p([10,20,25]),part=base*pct/100;return qmake(`Một bạn tính ${pct}% của ${base} là ${part+10}. Bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const base=p([100,200,400]),pct=p([10,25,50]),part=base*pct/100;return qmake(`Phần ${part} trên tổng ${base} nhỏ hơn hay bằng một nửa?`,part<=base/2?"nhỏ hơn hoặc bằng một nửa":"lớn hơn một nửa",["nhỏ hơn hoặc bằng một nửa","lớn hơn một nửa"]);},
+        (g,l)=>{const base=p([200,400,600]),pct=p([10,20,25]),part=base*pct/100;return qmake(`Nếu số tiền ${base} nghìn giảm ${pct}%, số tiền giảm đi là?`,`${part} nghìn đồng`,[`${base-part} nghìn đồng`,`${part} nghìn đồng`,`${pct} nghìn đồng`]);},
+        (g,l)=>{const total=p([200,400,800]),pct=p([20,25,50]),part=total*pct/100;return qmake(`Có ${total} học sinh, ${pct}% tham gia. Có bao nhiêu em không tham gia?`,total-part,[part,total+part,total-pct]);},
+        (g,l)=>{const base=p([100,200,400]),pct=p([10,20,25]),ans=base*(1-pct/100);return qmake(`Nếu sau khi giảm ${pct}% còn ${ans}, giá ban đầu là?`,base,[ans,base+ans,base-pct]);}
+      );
+
+      /* ---------- TỈ SỐ ---------- */
+      bank("ratio",
+        (g,l)=>{const k=p([2,3,4,5]),b=r(5,20),a=k*b;return qmake(`A gấp ${k} lần B. Nếu B=${b}, A bằng?`,a,[b+k,a+k,a-k]);},
+        (g,l)=>{const k=p([2,3,4,5]),a=r(10,60),b=a/k;return qmake(`A gấp ${k} lần B. Nếu A=${a}, B bằng?`,b,[a-k,a+k,b+1]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=F(a,b);return qmake(`Tỉ số của ${a} và ${b} viết dưới dạng phân số là?`,ans,[F(b,a),F(a+b,b),F(a,b+1)]);},
+        (g,l)=>{const k=p([2,3,4]),b=r(3,15),a=k*b;return qmake(`A : B = ${k} : 1. Khi B tăng 1 thì A theo tỉ số mới là?`,`Cần biết tỉ số không đổi: A = ${k}×B`,[`A=${k}×B`,`A=B+${k}`,`A=B×1`]);},
+        (g,l)=>{const k=p([2,3,4]),b=r(5,20),a=k*b;return qmake(`A=${a}, B=${b}. Phát biểu “A gấp ${k} lần B” đúng hay sai?`,"Đúng",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(10,40),b=r(5,20),ans=a+b;return qmake(`Tổng hai số là ${ans}, tỉ số của số lớn và số bé là 2:1. Số bé có thể là?`,ans/3,[a,b,ans/2,ans/3]);},
+        (g,l)=>{const b=r(5,20),k=p([2,3,4]),a=b*k,c=r(1,5),ans=(b+c)*k;return qmake(`A gấp ${k} lần B. B tăng thêm ${c}. A mới nếu vẫn giữ tỉ số là?`,ans,[a+c,a+k*c,ans+c]);},
+        (g,l)=>{const a=r(10,30),b=a*2;return qmake(`Tỉ số A:B là 1:2. Nếu A=${a} thì B là?`,b,[a+2,a*2,a/2]);},
+        (g,l)=>{const k=p([2,3,4]),b=r(5,15),a=b*k;return qmake(`Hai số có tỉ số ${k}:1. Biết số bé ${b}. Hiệu hai số là?`,a-b,[a+b,b*k,a-b+1]);},
+        (g,l)=>{const k=p([2,3,4]),b=r(5,15),a=b*k;return qmake(`Một bạn nói A=${b}, B=${a} mà A gấp ${k} lần B. Bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);}
+      );
+
+      /* ---------- THỐNG KÊ / DỮ LIỆU ---------- */
+      bank("stats",
+        (g,l)=>{const a=r(2,20),b=r(2,20),c=r(2,20),ans=a+b+c;return qmake(`Ba ngày ghi nhận lần lượt ${a}, ${b}, ${c}. Tổng là?`,ans,[ans+1,ans-1,a*b*c]);},
+        (g,l)=>{let a,b,c;do{a=r(2,20);b=r(2,20);c=r(2,20);}while(new Set([a,b,c]).size<3);const mx=Math.max(a,b,c),idx=[a,b,c].indexOf(mx);return qmake(`Ba ngày có số liệu ${a}, ${b}, ${c}. Ngày thứ ${idx+1} có giá trị lớn nhất?`,idx+1,[1,2,3]);},
+        (g,l)=>{let a,b,c;do{a=r(2,20);b=r(2,20);c=r(2,20);}while((a+b+c)%3!==0);return qmake(`Ba lớp có ${a}, ${b}, ${c} bạn. Trung bình là?`,(a+b+c)/3,[(a+b+c)/3+1,(a+b+c)/3-1,a]);},
+        (g,l)=>{const a=r(5,20),b=r(1,5),ans=a-b;return qmake(`Số liệu A là ${a}; B ít hơn A ${b}. B bằng?`,ans,[a+b,ans+1,b]);},
+        (g,l)=>{const a=r(3,15),b=r(3,15),c=r(3,15),sum=a+b+c;return qmake(`Bảng có ba ô: ${a}, ${b}, ${c}. Nếu cần tìm tổng, thông tin nào phải dùng?`,`cả ba số`,["chỉ số lớn nhất","cả ba số","chỉ hai số đầu","không cần số nào"]);},
+        (g,l)=>{const a=r(4,15),b=r(4,15),c=r(4,15),mx=Math.max(a,b,c),ans=["A","B","C"][[a,b,c].indexOf(mx)];return qmake(`Số liệu A=${a}, B=${b}, C=${c}. Nhóm nào lớn nhất?`,ans,["A","B","C","Bằng nhau"]);},
+        (g,l)=>{const a=r(5,20),b=r(5,20),sum=a+b;return qmake(`Hai ngày tổng ${sum}; ngày thứ nhất có ${a}. Ngày thứ hai có?`,b,[a,b,sum]);},
+        (g,l)=>{const a=r(5,20),b=r(5,20),ans=Math.abs(a-b);return qmake(`Chênh lệch giữa ${a} và ${b} là?`,ans,[a+b,Math.abs(a-b),ans+1]);},
+        (g,l)=>{const a=r(2,20),b=r(2,20),c=r(2,20),mn=Math.min(a,b,c);return qmake(`Ba số ${a}, ${b}, ${c}. Số nhỏ nhất là?`,mn,[a,b,c].filter(x=>x!==mn).concat(mn));},
+        (g,l)=>{const a=r(2,20),b=r(2,20),c=r(2,20),ans=(a+b+c);return qmake(`Một bạn cộng bảng dữ liệu ${a}, ${b}, ${c} thành ${ans+1}. Kết luận?`,"Sai",["Đúng","Sai"]);}
+      );
+
+      /* ---------- CHUYỂN ĐỘNG ---------- */
+      bank("motion",
+        (g,l)=>{const v=p([20,30,40,50,60]),t=p([2,3,4]),s=v*t;return qmake(`Đi với vận tốc ${v} km/giờ trong ${t} giờ. Quãng đường là?`,`${s} km`,[`${v+t} km`,`${s+v} km`,`${s} km`]);},
+        (g,l)=>{const v=p([20,30,40,50,60]),t=p([2,3,4]),s=v*t;return qmake(`Đi ${s} km trong ${t} giờ. Vận tốc là?`,`${v} km/giờ`,[`${v+t} km/giờ`,`${s+t} km/giờ`,`${v} km/giờ`]);},
+        (g,l)=>{const v=p([20,30,40,50,60]),t=p([2,3,4]),s=v*t;return qmake(`Đi ${s} km với vận tốc ${v} km/giờ. Thời gian là?`,`${t} giờ`,[`${t+1} giờ`,`${v} giờ`,`${t} giờ`]);},
+        (g,l)=>{const v=p([20,30,40,50]),t=p([2,3,4]),s=v*t;return qmake(`Một bạn lấy s = v + t = ${v+t}. Cách tính quãng đường đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const v=p([20,30,40,50]),t=p([2,3,4]),s=v*t;return qmake(`Giữ vận tốc ${v}. Nếu thời gian tăng thêm 1 giờ, quãng đường tăng thêm?`,`${v} km`,[`${t} km`,`${v+t} km`,`${v} km`]);},
+        (g,l)=>{const v1=p([20,30,40]),v2=p([20,30,40]),t=2,s=(v1+v2)*t;return qmake(`Hai xe đi ngược chiều, vận tốc ${v1} và ${v2}, gặp sau ${t} giờ. Quãng đường ban đầu là?`,`${s} km`,[`${v1+v2} km`,`${v1*v2} km`,`${s} km`]);},
+        (g,l)=>{const v=p([30,40,50]),s=v*p([2,3,4]),t=s/v;return qmake(`Muốn đi ${s} km với ${v} km/giờ, cần thời gian bao lâu?`,`${t} giờ`,[`${t+1} giờ`,`${s} giờ`,`${t} giờ`]);},
+        (g,l)=>{const v=p([20,30,40,50]),t=p([2,3,4]),s=v*t;return qmake(`Kết quả ${s} km có lớn hơn ${v} km không?`,s>v?"Có":"Không",["Có","Không"]);},
+        (g,l)=>{const v=p([20,30,40]),t=p([2,3]),s=v*t;return qmake(`Một bạn dùng công thức t = s×v. Với s=${s}, v=${v}, bạn ấy đúng hay sai?`,"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const v=p([30,40,50]),t=p([2,3,4]),s=v*t;return qmake(`Nếu vận tốc giảm ${v/2} km/giờ mà thời gian giữ nguyên, quãng đường mới là?`,`${s/2} km`,[`${s} km`,`${s/2} km`,`${s-v/2} km`]);}
+      );
+
+      /* ---------- TƯ DUY / LOGIC CHUNG ---------- */
+      bank("logic",
+        (g,l)=>{const a=r(3,20),b=r(2,10),ans=a+b;return qmake(`Một số là ${a}, số kia hơn ${b}. Tổng hai số là?`,ans,[a+b+1,a-b,a*b]);},
+        (g,l)=>{const a=r(5,30),b=r(2,10),ans=a-b;return qmake(`Có ${a}, bớt ${b}. Câu trả lời nào hợp lí nhất?`,ans,[a+b,ans,a*b]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a*b;return qmake(`Nếu có ${a} nhóm bằng nhau, mỗi nhóm ${b}, cần phép tính nào?`,`phép nhân`,["phép cộng lặp","phép nhân","phép trừ","phép chia"]);},
+        (g,l)=>{const a=r(5,20),b=r(2,8),c=a+b;return qmake(`Kết quả cuối là ${c}; dữ kiện ban đầu là ${a} và thêm ${b}. Bài toán thuộc loại nào?`,`tìm tổng`,["tìm tổng","tìm hiệu","tìm tích","tìm thương"]);},
+        (g,l)=>{const a=r(2,9),b=r(2,9),ans=a+b;return qmake(`Một bạn đổi vị trí hai số ${a} và ${b} trong phép cộng. Kết quả có thay đổi không?`,"Không",["Có","Không"]);},
+        (g,l)=>{const a=r(10,40),b=r(1,10),ans=a+b;return qmake(`Nếu một số tăng ${b}, kết quả của “số đó + 5” tăng bao nhiêu?`,b,[5,b,b+5]);},
+        (g,l)=>{const a=r(3,12),b=r(3,12),c=r(3,12),mx=Math.max(a,b,c);return qmake(`Trong ba giá trị ${a}, ${b}, ${c}, giá trị lớn nhất là?`,mx,[a,b,c].filter(x=>x!==mx).concat(mx));},
+        (g,l)=>{const a=r(10,30),b=r(2,9),ans=a*b;return qmake(`Có ${a} nhóm ${b}. Tổng chắc chắn lớn hơn ${a}?`,ans>a?"Đúng":"Sai",["Đúng","Sai"]);},
+        (g,l)=>{const a=r(10,30),b=r(2,9),ans=a*b;return qmake(`Nếu giữ ${a} nhóm và giảm số phần mỗi nhóm đi 1, tổng mới giảm bao nhiêu?`,a,[1,a,a*b]);},
+        (g,l)=>{const a=r(10,30),b=r(2,9),ans=a*b;return qmake(`Một bạn cho rằng mọi bài có “mỗi” đều phải nhân. Nhận xét này đúng hay sai?`,"Sai",["Đúng","Sai"]);}
+      );
+
+      /* ---------- VỎ TƯ DUY: 12 CÁCH ĐẶT VẤN ĐỀ ---------- */
       const carefulExtras = {
-        1: ["Bạn ấy có một chiếc bút màu đỏ.", "Hôm nay lớp học có tiết Mĩ thuật.", "Trên bàn có một quyển vở."],
+        1: ["Trên bàn có một quyển vở.", "Hôm nay lớp có tiết Mĩ thuật.", "Bạn ấy mang theo một chiếc bút màu xanh."],
         2: ["Cửa hàng mở lúc 7 giờ.", "Hôm nay là thứ Ba.", "Chiếc cặp của bạn có màu xanh."],
         3: ["Cửa hàng đóng cửa lúc 17 giờ.", "Bạn ấy đi học bằng xe đạp.", "Hôm nay trời có nắng."],
         4: ["Hôm nay là thứ Tư.", "Bạn ấy mang theo một chiếc thước.", "Lớp có bảng mới."],
-        5: ["Nhiệt độ ngoài trời là 30°C.", "Bạn ấy dùng một chiếc bút màu xanh.", "Hôm nay là ngày nghỉ."],
+        5: ["Nhiệt độ ngoài trời là 30°C.", "Bạn ấy dùng một chiếc bút màu xanh.", "Hôm nay là ngày nghỉ."]
       };
-      const normAns = (v) => String(v).replace(FRD, "$1/$2").trim();
-      function carefulVariant(x, m, style, l) {
-        if (!x || style === 0) return x;
-        try { if (!x.o || x.o.length < 2) mkOpts(x, m.g, m.sc); } catch (e) {}
-        const ans = normAns(x[1]);
-        const wrong = (x.o || []).map(normAns).find(v => v !== ans) || (ans === "0" ? "1" : "0");
-        if (style === 1) {
-          x[0] = `Kiểm tra thật kỹ: ${x[0]} Một bạn ghi đáp án “${wrong}”. Em hãy tự kiểm tra và ghi đáp án đúng.`;
-        } else if (style === 2) {
-          x[0] = `Đối chiếu lời giải: ${x[0]} Một bạn cho rằng đáp án là “${wrong}”. Em có đồng ý không? Hãy xác định đáp án chính xác.`;
-        } else {
-          const extra = p(carefulExtras[m.g] || ["Có một thông tin phụ không cần dùng."]);
-          x[0] = `${x[0]} ${extra} Hãy bỏ qua thông tin không cần thiết và chỉ dùng dữ kiện phù hợp để trả lời.`;
+
+      const shellNames = [
+        "Tính trực tiếp",
+        "Kiểm tra đáp án",
+        "Bắt lỗi lời giải",
+        "So sánh sau khi giải",
+        "Khoanh vùng kết quả",
+        "Chọn phát biểu đúng",
+        "Chọn phép tính phù hợp",
+        "Lọc thông tin",
+        "Đối chiếu hai bạn",
+        "Suy ngược từ kết quả",
+        "Đánh giá hợp lí",
+        "Câu hỏi đảo chiều"
+      ];
+
+      function thinkingShell(x, shell, m, l) {
+        if (!x) return x;
+        const ans = x[1], ns = safeNum(ans);
+        const base = H(x[0]).replace(/<[^>]+>/g, "");
+        const wrong = mkOpts ? (x.o || []) : [];
+        const candidates = uniqOpts(ans, wrong).slice(0,4);
+        const english = String(ans).includes("⟦");
+        if (shell === 0) return x;
+        if (shell === 1) {
+          try { mkOpts(x,m.g,m.sc); } catch(e) {}
+          return x;
+        }
+        if (shell === 2) {
+          const w = candidates.find(v=>String(v)!==String(ans)) ?? wrongNum(ans) ?? "0";
+          x[0] = `${base} Một bạn ghi đáp án “${w}”. Em hãy kiểm tra: bạn ấy đúng hay sai?`;
+          x[1] = String(w) === String(ans) ? "Đúng" : "Sai";
+          x[3] = ["Đúng","Sai"];
+          return x;
+        }
+        if (shell === 3 && ns != null) {
+          const step = Math.max(1, Math.round(Math.abs(ns) / 10) || 1), b = ns + (Math.random()<.5?-step:step);
+          x[0] = `${base} Sau khi tìm được kết quả, hãy so sánh đáp số với ${fmtAns(b)}.`;
+          x[1] = relation(ns,b);
+          x[3] = [">","<","="];
+          return x;
+        }
+        if (shell === 4 && ns != null && Number.isInteger(ns) && ns >= 0) {
+          const use100 = Math.abs(ns) >= 100;
+          x[0] = `${base} Kết quả thuộc khoảng nào?`;
+          x[1] = use100 ? band100(ns) : band10(ns);
+          x[3] = use100 ? [band100(ns), band100(ns-100), band100(ns+100), band100(ns+200)] : [band10(ns), band10(ns-10), band10(ns+10), band10(ns+20)];
+          return x;
+        }
+        if (shell === 5) {
+          try { mkOpts(x,m.g,m.sc); } catch(e) {}
+          const opts = x.o || [ans, ...candidates];
+          x[0] = `${base} Khẳng định nào đúng về đáp án của bài?`;
+          x[1] = String(ans);
+          x[3] = opts;
+          return x;
+        }
+      const strandOf = (m) => {
+        const id = String(m.id), n = String(m.name).toLowerCase();
+        const is = (...xs) => xs.includes(id);
+        if (is("v5","motion5") || /chuyển động/.test(n)) return "motion";
+        if (is("d5","x5","decimal5","decimalAdv5","decimalx5e","custom5c") || /số thập phân/.test(n)) return "decimal";
+        if (is("t5","percent5") || /phần trăm/.test(n)) return "percent";
+        if (is("s4","ratio5") || /tỉ số|tỷ số/.test(n)) return "ratio";
+        if (is("p4","frac3","frac4","frac5","fracx3","fracx4","fracx5e") || /phân số/.test(n)) return "fraction";
+        if (/stats|thống kê|biểu đồ/.test(id + " " + n)) return "stats";
+        if (/k1|k2|f3|f4|f5|h3|g5|geom/.test(id) || /hình học|chu vi|diện tích|hình tròn|hình thang|hình bình hành|hình thoi|thể tích/.test(n)) return "geometry";
+        if (/pattern|quy luật|dãy số/.test(id + " " + n) || id === "d1") return "pattern";
+        if (/find|tìm x|tìm số|thành phần chưa biết/.test(id + " " + n)) return "unknown";
+        if (/expr|biểu thức/.test(id + " " + n) || id === "b3") return "expression";
+        if (/muldiv/.test(id) || /bảng nhân|bảng chia|nhân số|chia cho|nhân với|chia \w|nhân, chia/.test(n) || is("n2","q2","n3","q3","n4","q4")) return "muldiv";
+        if (/đổi đơn vị|đo lường/.test(n) || is("u2","u3")) return "measure";
+        if (/addsub/.test(id) || /phép cộng|phép trừ|cộng, trừ|bốn phép tính/.test(n) || is("c1","t1","c2","c4","calc3","calc4","addsub1","addsub2")) return "addsub";
+        if (/number|num|so sánh|số và|số tự nhiên|cấu tạo/.test(id + " " + n)) return "number";
+        if (/word|lời văn|toán đố/.test(id + " " + n) || is("w2")) return "word";
+        if (/fast|tính nhanh|mental/.test(id + " " + n)) return "arithmetic";
+        return "logic";
+      };
+
+        if (shell === 7) {
+          const extra = p(carefulExtras[m.g] || ["Trên bàn có một quyển vở.","Hôm nay trời có nắng.","Bạn ấy mang theo một chiếc thước."]);
+          x[0] = `${base} ${extra} Thông tin nào không cần dùng để giải bài?`;
+          x[1] = extra;
+          x[3] = [extra,"Dữ kiện số chính trong đề","Câu hỏi của bài","Đơn vị của đại lượng"].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4);
+          return x;
+        }
+        if (shell === 8) {
+          const w = candidates.find(v=>String(v)!==String(ans)) ?? wrongNum(ans) ?? "0";
+          const A = p(["An","Bình"]), B = A === "An" ? "Bình" : "An";
+          x[0] = `${base} ${A} trả lời “${ans}”; ${B} trả lời “${w}”. Em chọn bạn có đáp án đúng.`;
+          x[1] = A;
+          x[3] = [A,B];
+          return x;
+        }
+        if (shell === 9 && ns != null) {
+          x[0] = `${base} Biết kết quả rồi, hãy suy ngược để kiểm tra dữ kiện ban đầu có khớp không.`;
+          return x;
+        }
+        if (shell === 10 && ns != null) {
+          const cmp = Math.max(0, Math.round(ns * (Math.random()*.2 + .4)));
+          x[0] = `${base} Không cần tính lại, em dự đoán kết quả có hợp lí khi so với ${fmtAns(cmp)} không?`;
+          x[1] = ns >= cmp ? "Có" : "Không";
+          x[3] = ["Có","Không"];
+          return x;
+        }
+        if (shell === 11 && ns != null) {
+          const step = Math.abs(ns) >= 100 ? 100 : 10;
+          const rounded = Math.round(ns / step) * step;
+          x[0] = `${base} Không cần tính chính xác ngay. Ước lượng đáp số về số tròn gần nhất là?`;
+          x[1] = rounded;
+          x[3] = uniqOpts(rounded, [rounded-step, rounded+step, rounded+2*step]);
+          return x;
         }
         return x;
       }
 
+      const bankIndexes = (strand, g) => ({
+        number: g===1?[0,2,3,4,6,7,8]:null,
+        addsub: null,
+        arithmetic: null,
+        muldiv: g>=2?null:[],
+        unknown: g===1?[0,1,5,6,9]:null,
+        pattern: g===1?[0,2,7,8]:g===2?[0,1,2,3,7,8,9]:null,
+        word: g===1?[0,1,4,8,9]:null,
+        measure: g===1?[0,2,3,7,9]:g===2?[0,2,3,6,7,8,9]:null,
+        geometry: g===1?[0,2,5,6]:g===2?[0,2,5,6,9]:null,
+        stats: g<=2?[0,1,3,5,6,7,8,9]:null,
+        fraction: g>=3?null:[],
+        decimal: g===5?null:[],
+        percent: g===5?null:[],
+        ratio: g>=4?null:[],
+        motion: g===5?null:[],
+        expression: g>=3?null:[]
+      });
+
+      function variedQuestion(m, l, attempt, depth) {
+        const strand = m.strand || strandOf(m);
+        let bankFns = TB[strand] || TB.logic;
+        const idxs = bankIndexes(strand,m.g);
+        if(Array.isArray(idxs)) bankFns = idxs.map(i=>TB[strand][i]).filter(Boolean);
+        const useBank = depth >= 2 && bankFns && bankFns.length;
+        let x;
+        if (useBank && (depth >= 3 || Math.random() < .82)) {
+          const fn = bankFns[attempt % bankFns.length];
+          x = fn(m.g, l);
+          x.meta = { strand, bankIndex: attempt % bankFns.length, shell: -1 };
+          const shellPool = depth >= 3 ? [0,1,2,3,4,5,7,8,9,10,11] : [0,1,2,3,4,5,7,8];
+          const shell = shellPool[Math.floor(Math.random()*shellPool.length)];
+          x = thinkingShell(x, shell, m, l);
+          x.meta.shell = shell;
+          return x;
+        }
+        try {
+          x = m.gen(l);
+          x.meta = { strand, bankIndex: -1, shell: 0 };
+          return x;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      function bankCoverageText() {
+        const active = new Set(M.filter(m=>sel[m.uid]?.on).map(m=>m.strand || strandOf(m)));
+        const count = [...active].reduce((s,k)=>s+(TB[k]?.length||0),0);
+        return `🧠 ${count} lõi tư duy đang sẵn sàng · 12 cách đặt vấn đề · nhiều tham số ngẫu nhiên để tạo hàng trăm biến thể thực tế`;
+      }
+
       function gen() {
         const plan = structurePlan(G);
-        const A = plan ? plan.map(z=>z.m) : M.filter((m) => sel[m.id].on);
+        const A = plan ? plan.map(z=>z.m) : M.filter((m) => sel[m.uid].on);
         if (!A.length) return toast(plan ? "Không nhận diện được cấu trúc. Hãy dùng tên dạng bài gợi ý." : "Hãy tích chọn ít nhất một module");
-        const nmc = A.filter((m) => plan ? false : sel[m.id].mc).length,
-          B = plan ? plan.map(z=>z.m) : [...A.filter((m) => sel[m.id].mc), ...A.filter((m) => !sel[m.id].mc)],
+        const nmc = A.filter((m) => plan ? false : sel[m.uid].mc).length,
+          B = plan ? plan.map(z=>z.m) : [...A.filter((m) => sel[m.uid].mc), ...A.filter((m) => !sel[m.uid].mc)],
           n = B.length,
           bs = Math.floor(40 / n) / 4,
-          gs = [...new Set(A.map((m) => m.g))];
+          gs = [...new Set(A.map((m) => m.g))],
+          depth = +($('thinkDepth')?.value || 3),
+          carefulOn = $('careful')?.checked !== false;
         P = {
           title: $("ti").value || "ĐỀ KIỂM TRA MÔN TOÁN",
           school: $("sc").value,
@@ -3338,33 +3798,26 @@ Phần III - 2 bài toán có lời văn"></textarea>
           lop: gs.length == 1 ? gs[0] : "……",
           sp: $("sp").checked,
           both: nmc > 0 && nmc < n,
+          depth,
           secs: B.map((m, i) => {
             const planItem = plan ? plan.find(z=>z.m.id===m.id) : null;
-            const s = sel[m.id] || {l:1,n:1,mc:0},
+            const s = sel[m.uid] || {l:1,n:1,mc:0},
               mc = plan ? false : !!s.mc,
               seen = new Set(),
-              it = [];
-            const wanted = planItem ? planItem.n : s.n;
-            const carefulOn = $("careful")?.checked !== false;
-            for (let k = 0; k < Math.max(200, wanted * 120) && it.length < wanted; k++) {
-              let x;
+              it = [],
+              wanted = planItem ? planItem.n : s.n;
+            const maxTries = Math.max(500, wanted * (carefulOn ? 180 : 80));
+            for (let k = 0; k < maxTries && it.length < wanted; k++) {
+              let x = null;
               try {
-                x = m.gen(s.l);
-                if (carefulOn || mc) mkOpts(x, m.g, m.sc);
-                if (carefulOn) x = carefulVariant(x, m, k % 4, s.l);
+                x = carefulOn ? variedQuestion(m, s.l, k, depth) : m.gen(s.l);
+                if (!x) continue;
                 if (mc) mkOpts(x, m.g, m.sc);
-              } catch (e) {
-                continue;
-              }
+              } catch (e) { continue; }
               const h = x[0] + "||" + x[1] + "||" + (x[2] || "");
-              if (!seen.has(h)) {
-                seen.add(h);
-                it.push(x);
-              }
+              if (!seen.has(h)) { seen.add(h); it.push(x); }
             }
-            if (it.length < wanted) {
-              console.warn(`Ngân hàng ${m.id} chỉ sinh được ${it.length}/${wanted} câu khác nhau.`);
-            }
+            if (it.length < wanted) console.warn(`Ngân hàng ${m.id} chỉ sinh được ${it.length}/${wanted} câu khác nhau.`);
             return { m, l: s.l, mc, it, pt: i < n - 1 ? bs : 10 - bs * (n - 1) };
           }),
         };
@@ -3384,8 +3837,8 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(s.m.t)}${s.mc ? ' <span class=hn>(Khoanh vào chữ cái đặt trước đáp án đúng)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
             )
             .join("") +
-          `<div class=end>— Hết —</div>` +
-          "";
+          `<div class=end>— Hết —</div>`;
+        toast(`Đã tạo đề với ngân hàng tư duy · ${depth===3?"sâu":depth===2?"tăng cường":"đa dạng"}`);
       }
       async function save(b, n) {
         try {
