@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Tạo đề Toán Tiểu học</title>
+    <title>Tạo đề Toán Tiểu học · Mobile</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap"
       rel="stylesheet"
@@ -168,8 +168,15 @@
       .advanced-shell summary .adv-sub{font-weight:600;font-size:11px;color:var(--mu);margin-left:auto}
       .advanced-body{padding:0 12px 12px;border-top:1px solid var(--bd)}
       .advanced-note{margin:10px 0 2px;padding:8px 10px;border-radius:9px;background:#eef7ff;color:#475569;font-size:12px;line-height:1.45}
-      /* Bình thường học sinh chỉ thấy: chọn module + độ khó + số câu. Mở Nâng cao mới hiện kiểu tự luận/trắc nghiệm từng module. */
-      .selector-card:not(:has(#advancedPanel[open])) .module-mode-advanced{display:none}
+      /* Hình thức Tự luận / Trắc nghiệm là lựa chọn cơ bản của từng module nên luôn hiển thị. */
+      .module-choice{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+      .module-choice-label{font-size:10px;line-height:1;font-weight:800;letter-spacing:.2px;text-transform:uppercase;color:var(--mu)}
+      .module-mode-advanced{box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 6%,transparent)}
+      .module-mode-advanced button{min-width:76px}
+      .difficulty-seg button{min-width:47px}
+      .difficulty-seg button.a{box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
+      .question-count-label{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--mu)}
+      .question-count-label input{font-weight:800;color:var(--tx);text-align:center}
       @media(max-width:650px){.quick-create-bar{top:5px;gap:8px}.quick-create-copy b{font-size:12px}.quick-gen{min-width:auto;padding:8px 10px}.quick-gen-text small,.quick-gen-arrow{display:none}.quick-gen-icon{width:31px;height:31px}.advanced-shell summary .adv-sub{display:none}}
       .mod {
         border: 2px solid var(--bd);
@@ -608,20 +615,138 @@
       .solution-final{margin-top:9px;padding:8px 10px;border-radius:9px;background:#eefbf3;border:1px solid #ccefd9;font-weight:800;color:#17663d}
       .answer-export .answer-tools{display:none}.answer-export .solution-q{break-inside:avoid;border-color:#bbb}.answer-export .solution-q summary{display:block;padding:7px 0}.answer-export .solution-q summary::after{display:none}.answer-export .solution-body{display:block!important;border-top:1px solid #ddd;padding:7px 0 11px}.answer-export details:not([open])>.solution-body{display:block!important}
       @media(max-width:700px){.answer-dialog{max-height:92vh}.answer-actions .btn{flex:1}.answer-info{align-items:flex-start!important;flex-direction:column}}
+      /* ===== v11: tối ưu mobile + chế độ học sinh ===== */
+      .mobile-dock,.student-mode-bar{display:none}
+      .output-actions{align-items:stretch}
+      .student-view-btn{border-color:color-mix(in srgb,#10b981 35%,var(--bd))!important;color:#08795a!important;background:linear-gradient(180deg,#f0fdf7,var(--cd))!important}
+      .student-html-btn{border-color:color-mix(in srgb,#0ea5e9 35%,var(--bd))!important;color:#0369a1!important;background:linear-gradient(180deg,#f0f9ff,var(--cd))!important}
+      .student-mode-bar{position:fixed;top:0;left:0;right:0;z-index:120;align-items:center;justify-content:space-between;gap:10px;padding:9px max(10px,env(safe-area-inset-right)) 9px max(10px,env(safe-area-inset-left));background:rgba(255,255,255,.96);border-bottom:1px solid #dbe4f0;box-shadow:0 6px 20px rgba(15,23,42,.10);backdrop-filter:blur(12px);font-family:Nunito,system-ui,sans-serif;color:#1f2a44}
+      .student-mode-bar b{font-size:13px}.student-mode-bar span{font-size:11px;color:#64748b}.student-mode-bar .student-bar-copy{min-width:0;display:flex;flex-direction:column}.student-mode-bar .student-bar-actions{display:flex;gap:7px;flex:none}.student-mode-bar button{border:1px solid #dbe4f0;background:#fff;color:#334155;border-radius:10px;min-height:38px;padding:7px 10px;font:800 12px Nunito,sans-serif;cursor:pointer}
+      body.student-focus{background:#eef2f7;padding-top:58px}
+      body.student-focus>header,body.student-focus main>section:first-child{display:none!important}
+      body.student-focus main{display:block!important;max-width:900px;padding:10px;margin:0 auto}
+      body.student-focus main>section.card{box-shadow:none;border:0;background:transparent;padding:0}
+      body.student-focus .output-actions{display:none!important}
+      body.student-focus .student-mode-bar{display:flex}
+      body.student-focus .pv{background:transparent;padding:0;border-radius:0}
+      body.student-focus #paper{max-width:760px;box-shadow:0 8px 30px rgba(15,23,42,.10)}
+      body.student-focus .mobile-dock{display:none!important}
+
+      @media screen and (max-width:760px){
+        html{scroll-padding-top:8px;scroll-padding-bottom:86px}
+        body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+        header{padding:15px 12px 13px}
+        header h1{font-size:21px}
+        header p{font-size:12px;line-height:1.4;margin-top:4px}
+        main{display:grid!important;grid-template-columns:minmax(0,1fr)!important;max-width:none;padding:8px;gap:10px;overflow-x:hidden}
+        main>section,.card,.selector-card{min-width:0;max-width:100%}
+        .card{padding:10px;border-radius:13px;box-shadow:0 3px 10px rgba(60,80,160,.06)}
+
+        /* Chọn lớp: một hàng kéo ngang, dễ bấm bằng ngón tay. */
+        .tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;gap:7px;margin:0 -2px 10px;padding:2px 2px 5px;scrollbar-width:none}
+        .tabs::-webkit-scrollbar{display:none}
+        .tab{flex:0 0 76px;min-width:76px;min-height:44px;padding:8px 7px;scroll-snap-align:start;font-size:14px}
+        .tab .grade-badge{min-width:18px;height:18px;margin-left:3px;padding:0 4px}
+
+        /* Trên điện thoại đã có thanh Tạo đề cố định phía dưới nên thanh này chỉ giữ thông tin. */
+        .quick-create-bar{position:static;top:auto;margin-bottom:9px;padding:9px 10px;border-radius:12px;box-shadow:none}
+        .quick-create-copy b{font-size:12px;line-height:1.3}.quick-create-copy span{font-size:11px;line-height:1.35}
+        .quick-create-bar .quick-gen{display:none}
+        .selected-grades{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:3px}.selected-grades::-webkit-scrollbar{display:none}
+        .selected-grade-chip{flex:none;min-height:34px;padding:7px 10px}
+        .selected-current{font-size:11px;padding:8px}.selected-current button{min-height:30px;max-width:190px}
+        .advanced-shell summary{min-height:46px;padding:11px 12px}
+
+        /* Module thành card rõ ràng, các nút đủ lớn cho thao tác cảm ứng. */
+        .mod{padding:12px 11px;margin-bottom:9px;border-radius:13px}
+        .mod>label{display:flex;align-items:flex-start;gap:2px;line-height:1.35}
+        .mod>label input[type=checkbox]{flex:none;width:21px;height:21px;margin-top:0}
+        .mod label b{margin-left:5px;font-size:14px}
+        .ctl{display:grid;grid-template-columns:1fr;gap:9px;margin-top:10px;width:100%}
+        .module-choice{display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;gap:7px;width:100%}
+        .module-choice-label{font-size:10px}
+        .seg{display:flex;width:100%;border-radius:10px}
+        .seg button{flex:1;min-height:42px;padding:8px 6px;font-size:13px;touch-action:manipulation}
+        .module-mode-advanced button,.difficulty-seg button{min-width:0}
+        .question-count-label{display:grid;grid-template-columns:70px 74px;align-items:center;justify-content:start;width:100%}
+        .question-count-label input{width:74px;height:42px;font-size:16px}
+        input[type=checkbox]{min-width:20px;min-height:20px}
+        button,.btn{touch-action:manipulation}
+        .btn{min-height:44px;padding:10px 12px;font-size:13px}
+
+        /* Khu vực nút của đề: 2 cột thay vì một hàng dài. */
+        .output-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px!important;margin-bottom:9px!important}
+        .output-actions .btn{width:100%;margin:0;white-space:normal;line-height:1.2}
+
+        /* Bản xem trước đọc như một bài trên điện thoại thay vì tờ A4 bị co nhỏ. */
+        .pv{padding:0;background:#fff;border:1px solid #e3e8f2;border-radius:12px;overflow:hidden}
+        #paper:not(.export-paper){width:100%;min-height:0;padding:14px 12px;font-size:16px;line-height:1.55;box-shadow:none}
+        #paper:not(.export-paper) h1{font-size:20px}
+        #paper:not(.export-paper) h2{font-size:18px}
+        #paper:not(.export-paper) h3{font-size:16px;line-height:1.4;margin-top:16px}
+        #paper:not(.export-paper) .qs{columns:1!important;column-gap:0}
+        #paper:not(.export-paper) .qs>div{padding:7px 0;break-inside:auto}
+        #paper:not(.export-paper) .qs.w>div{padding-bottom:18px}
+        #paper:not(.export-paper) .op.c4,#paper:not(.export-paper) .op.c2,#paper:not(.export-paper) .op.c1{grid-template-columns:1fr;gap:5px}
+        #paper:not(.export-paper) .op span{display:block;padding:5px 7px;border-radius:7px;background:#fafafa}
+        #paper:not(.export-paper) .qi{align-items:flex-start;gap:5px}
+        #paper:not(.export-paper) .fg{max-width:42%;overflow:auto}
+        #paper:not(.export-paper) .hd,#paper:not(.export-paper) .hd tbody,#paper:not(.export-paper) .hd tr,#paper:not(.export-paper) .hd td{display:block;width:100%!important}
+        #paper:not(.export-paper) .hd td{padding:2px 0;text-align:center}
+        #paper:not(.export-paper) .hd td:first-child{font-size:13px;color:#444;margin-bottom:4px}
+        #paper:not(.export-paper) .bx,#paper:not(.export-paper) .bx tbody,#paper:not(.export-paper) .bx tr{display:block;width:100%}
+        #paper:not(.export-paper) .bx td:first-child{display:block;width:100%!important;height:auto;min-height:54px;padding:7px 8px}
+        #paper:not(.export-paper) .bx td:nth-child(2),#paper:not(.export-paper) .bx td:nth-child(3){display:none}
+        #paper:not(.export-paper) .ln{height:auto;min-height:8mm;white-space:normal}
+
+        /* Lời giải trên điện thoại mở toàn màn hình. */
+        .answer-modal{padding:0;align-items:stretch}
+        .answer-dialog{width:100vw;max-width:none;height:100dvh;max-height:none!important;border-radius:0;border:0}
+        .answer-head{padding:12px 13px}.answer-head h2{font-size:18px}.answer-sub{font-size:11px}
+        .answer-content{padding:12px 11px 96px;font-size:14px}
+        .answer-actions{position:absolute;left:0;right:0;bottom:0;padding:8px 9px calc(8px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.96);backdrop-filter:blur(10px)}
+        .answer-actions .btn{min-width:0}.answer-actions .btn:last-child{grid-column:1/-1}
+        .solution-q summary{padding:11px 10px}.solution-body{padding:9px 10px 11px}
+
+        /* Thanh thao tác luôn ở ngón cái. */
+        .mobile-dock{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:7px;position:fixed;left:8px;right:8px;bottom:calc(7px + env(safe-area-inset-bottom,0px));z-index:90;padding:7px;border:1px solid rgba(207,216,232,.92);border-radius:17px;background:rgba(255,255,255,.95);box-shadow:0 10px 35px rgba(15,23,42,.20);backdrop-filter:blur(14px)}
+        .mobile-dock button{border:0;border-radius:11px;min-height:48px;padding:6px 5px;background:#f3f6fb;color:#475569;font:800 11px Nunito,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+        .mobile-dock button span{font-size:17px;line-height:1}
+        .mobile-dock .dock-create{background:linear-gradient(135deg,#4f6bff,#7c3aed);color:#fff;box-shadow:0 5px 14px rgba(79,107,255,.28)}
+
+        body.student-focus{padding-top:55px;padding-bottom:12px}
+        body.student-focus main{padding:7px!important}
+        body.student-focus #paper:not(.export-paper){border-radius:10px}
+        .student-mode-bar{padding-top:calc(7px + env(safe-area-inset-top,0px));min-height:54px}
+        .student-mode-bar .student-bar-copy span{display:none}
+        .student-mode-bar button{padding:6px 8px;min-height:36px;font-size:11px}
+      }
+
+      @media screen and (max-width:390px){
+        .module-choice{grid-template-columns:62px minmax(0,1fr)}
+        .question-count-label{grid-template-columns:62px 70px}
+        .seg button{font-size:12px;padding-left:4px;padding-right:4px}
+        .output-actions{grid-template-columns:1fr}
+        .mobile-dock{left:5px;right:5px;gap:5px}
+      }
     </style>
   </head>
   <body>
     <header>
       <h1>🧮 Tạo đề Toán Tiểu học</h1>
-      <p>Chọn lớp → chọn dạng bài → số câu & độ khó → Tạo đề. Các chức năng nâng cao được app tự xử lý.</p>
+      <p>Chọn lớp → chọn dạng bài → Dễ/Vừa/Khó → Tự luận/Trắc nghiệm → số câu → Tạo đề. Các chức năng nâng cao được app tự xử lý. Tối ưu cả máy tính và điện thoại.</p>
     </header>
+    <div class="student-mode-bar" id="studentModeBar">
+      <div class="student-bar-copy"><b>📱 Chế độ xem của học sinh</b><span>Chỉ hiển thị đề, không hiển thị đáp án hay công cụ giáo viên.</span></div>
+      <div class="student-bar-actions"><button type="button" onclick="studentHtmlSave()">⬇ HTML học sinh</button><button type="button" onclick="toggleStudentView(false)">✕ Thoát</button></div>
+    </div>
     <main>
       <section>
         <div class="card selector-card">
           <div class="tabs" id="tabs"></div>
           <div class="quick-create-bar">
             <div class="quick-create-copy">
-              <b>Chọn dạng bài, độ khó và số câu</b>
+              <b>Chọn dạng bài, độ khó, hình thức và số câu</b>
               <span id="cnt">Chưa chọn module</span>
             </div>
             <button class="quick-gen" onclick="gen()" title="Tạo đề ngay theo các lựa chọn hiện tại"><span class="quick-gen-icon">✦</span><span class="quick-gen-text"><strong>TẠO ĐỀ NGAY</strong><small>Tự sắp xếp blueprint</small></span><span class="quick-gen-arrow">→</span></button>
@@ -631,7 +756,7 @@
           <details class="advanced-shell" id="advancedPanel">
             <summary>⚙️ Tùy chọn nâng cao <span class="adv-sub">Không mở vẫn chạy tự động tối ưu</span></summary>
             <div class="advanced-body">
-              <div class="advanced-note"><b>Chế độ đơn giản đang là mặc định.</b> Nếu chỉ muốn tạo bài cho học sinh, bạn không cần chỉnh phần này. App vẫn tự dùng ngân hàng tư duy, ma trận 3 chiều và blueprint toàn đề ở phía sau.</div>
+              <div class="advanced-note"><b>Chế độ đơn giản đang là mặc định.</b> Nếu chỉ muốn tạo bài cho học sinh, bạn không cần chỉnh phần này. Tự luận/Trắc nghiệm vẫn chọn trực tiếp ở từng module; app tự dùng ngân hàng tư duy, ma trận 3 chiều và blueprint toàn đề ở phía sau.</div>
               <div class="row">
                 <button class="btn g" onclick="setMode(0)">✍️ Cả lớp: tự luận</button>
                 <button class="btn g" onclick="setMode(1)">🔘 Cả lớp: trắc nghiệm</button>
@@ -701,8 +826,10 @@ Phần III - 2 bài toán có lời văn"></textarea>
         </div>
       </section>
       <section class="card">
-        <div class="row" style="margin: 0 0 10px">
-          <button class="btn" onclick="docxSave()">⬇ DOCX đề</button
+        <div class="row output-actions" style="margin: 0 0 10px">
+          <button class="btn g student-view-btn" onclick="toggleStudentView(true)">📱 Xem như học sinh</button
+          ><button class="btn g student-html-btn" onclick="studentHtmlSave()">⬇ HTML học sinh</button
+          ><button class="btn" onclick="docxSave()">⬇ DOCX đề</button
           ><button class="btn" onclick="pdfSave()">⬇ PDF đề</button
           ><button class="btn g" onclick="showAnswers()">📖 Đáp án & lời giải</button
           ><button class="btn g" onclick="docxAnswerSave()">⬇ DOCX lời giải</button
@@ -718,6 +845,11 @@ Phần III - 2 bài toán có lời văn"></textarea>
         </div>
       </section>
     </main>
+    <nav class="mobile-dock" aria-label="Thao tác nhanh trên điện thoại">
+      <button type="button" onclick="scrollToBuilder()"><span>☰</span>Chọn bài</button>
+      <button type="button" class="dock-create" onclick="gen();setTimeout(scrollToPaper,60)"><span>✦</span>Tạo đề</button>
+      <button type="button" onclick="scrollToPaper()"><span>📄</span>Xem đề</button>
+    </nav>
     <div id="answerModal" class="answer-modal" hidden>
       <div class="answer-backdrop" onclick="hideAnswers()"></div>
       <div class="answer-dialog" role="dialog" aria-modal="true" aria-labelledby="answerTitle">
@@ -735,6 +867,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
     </div>
     <div id="toast"></div>
     <script>
+      /* v12: chống học thuộc mẫu — random hóa lõi, tránh lặp giữa các lần tạo, tách rõ Dễ/Vừa/Khó */
       const $ = (i) => document.getElementById(i),
         r = (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
         p = (a) => a[r(0, a.length - 1)],
@@ -3410,7 +3543,10 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function modHtml(m) {
         const s = sel[m.uid],
           lb = m.h ? LH : LB;
-        return `<div id="mod-${m.uid}" class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.uid}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.uid}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class="seg module-mode-advanced">${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.uid}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.uid}'].n=Math.min(50,Math.max(1,+this.value||1));render()"></label></div></div>`;
+        const diffTitles = m.h
+          ? ["Nâng cao: bài vận dụng trong phạm vi lớp", "HSG Tỉnh: nhiều quan hệ và bước suy luận hơn", "HSG Quốc gia: lõi bài khó nhất trong phạm vi lớp"]
+          : ["Dễ: phạm vi số nhỏ hơn, ưu tiên 1 bước và dạng nền tảng", "Vừa: phạm vi rộng hơn, có biến đổi và 1–2 bước", "Khó: ưu tiên lõi vận dụng, suy ngược và quan hệ nhiều bước"];
+        return `<div id="mod-${m.uid}" class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.uid}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class="module-choice"><span class="module-choice-label">Mức độ</span><span class="seg difficulty-seg">${[1, 2, 3].map((i) => `<button type="button" title="${diffTitles[i-1]}" class="${s.l == i ? "a" : ""}" onclick="sel['${m.uid}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span></span><span class="module-choice"><span class="module-choice-label">Hình thức</span><span class="seg module-mode-advanced">${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button type="button" class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.uid}'].mc=${i};render()">${t}</button>`).join("")}</span></span><label class="question-count-label">Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.uid}'].n=Math.min(50,Math.max(1,+this.value||1));render()"></label></div></div>`;
       }
       function render() {
         const gradeStats = Object.fromEntries([1,2,3,4,5].map(g => {
@@ -3544,18 +3680,33 @@ Phần III - 2 bài toán có lời văn"></textarea>
       const TB = {};
       const bank = (strand, ...fns) => TB[strand] = fns;
 
-      /* ---------- SỐ / SO SÁNH ---------- */
+      /* ---------- SỐ / SO SÁNH ----------
+         Bản chống học thuộc mẫu: các lõi được thiết kế theo 3 tầng kiến thức rõ ràng.
+         Dễ thiên về nhận biết trực tiếp; Vừa thiên về cấu tạo/quan hệ; Khó thiên về nhiều điều kiện và suy ngược. */
+      const rs=(a,b)=>r(a,Math.max(a,b));
       bank("number",
-        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-2,999999)),b=r(1,Math.min(m-a,999999));return qmake(`Một số lớn hơn ${a} đúng ${b} đơn vị. Số đó là?`,a+b,[a+b+1,a+b-1,a+b*2]);},
-        (g,l)=>{const m=numLimit(g,l),a=r(2,Math.min(9,Math.max(2,Math.floor(m/10)))),b=r(1,Math.max(1,a-1)),ans=a*10+b;return qmake(`Số có hàng chục là ${a} và hàng đơn vị là ${b} là số nào?`,ans,[ans+10,ans-1,a+b]);},
-        (g,l)=>{const m=numLimit(g,l),a=r(10,Math.min(m-10,99999)),b=r(1,9),ans=a+b;return qmake(`Số nào đứng ngay sau ${a}?`,ans,[a-b,a+10,ans+1]);},
-        (g,l)=>{const m=numLimit(g,l),a=r(10,Math.min(m-1,99999)),b=r(1,9),ans=a-b;return qmake(`Số nào đứng ngay trước ${a}?`,ans,[a+b,a-10,ans-1]);},
-        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-1,99999)),b=r(1,Math.min(m-1,99999));return qmake(`Không cần tính hiệu. Số nào lớn hơn? ${a} hay ${b}?`,relation(a,b),[">","<","="]);},
-        (g,l)=>{const a=r(1,9),b=r(0,9),c=r(0,9),ans=a*100+b*10+c;return qmake(`Dùng các chữ số ${a}, ${b}, ${c}, mỗi chữ số dùng một lần. Số có hàng trăm là ${a} và lớn nhất có thể là?`,ans,[a*100+b*10+c,a*100+c*10+b,c*100+b*10+a]);},
-        (g,l)=>{const m=numLimit(g,l),a=r(1,Math.min(m-20,99999)),lo=a+8,hi=a+20,ans=lo;return qmake(`Số nào vừa lớn hơn ${lo-1} vừa không lớn hơn ${lo}?`,ans,[lo-1,lo,hi,hi+1]);},
-        (g,l)=>{const a=r(2,9),b=r(2,9),c=r(2,9),ans=Math.max(a,b,c);return qmake(`Ba số là ${a}, ${b}, ${c}. Số lớn nhất là?`,ans,[a,b,c].filter(x=>x!==ans).concat(ans));},
-        (g,l)=>{const a=r(11,88),d=r(2,9),b=a+d,ans=b-a;return qmake(`Không cần tìm hai số. Khoảng cách giữa ${a} và ${b} là bao nhiêu?`,ans,[a+b,a-d,ans+1]);},
-        (g,l)=>{const a=r(1,9),b=r(1,9),c=r(1,9),ans=a*100+b*10+c;return qmake(`Trong số ${ans}, chữ số ở hàng chục có giá trị là bao nhiêu?`,b*10,[b,b*10,b+10,b]);}
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-2)),b=rs(1,Math.max(1,Math.min(m-a,Math.max(2,Math.floor(m/3)))));return qmake(`Một số lớn hơn ${a} đúng ${b} đơn vị. Số đó là?`,a+b,[a+b+1,Math.max(0,a+b-1),a]);},
+        (g,l)=>{const m=numLimit(g,l),t=rs(1,Math.max(1,Math.min(9,Math.floor(m/10)))),u=rs(0,9),ans=Math.min(m,t*10+u);const tt=Math.floor(ans/10),uu=ans%10;return qmake(`Số gồm ${tt} chục và ${uu} đơn vị là số nào?`,ans,[Math.max(0,ans-1),Math.min(m,ans+1),tt+uu]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-1)),ans=a+1;return qmake(`Số nào đứng ngay sau ${a}?`,ans,[Math.max(0,a-1),a,Math.min(m,ans+1)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(1,m),ans=a-1;return qmake(`Số nào đứng ngay trước ${a}?`,ans,[a,Math.max(0,ans-1),Math.min(m,a+1)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,m),b=rs(0,m);return qmake(`Điền dấu thích hợp: ${a} … ${b}`,relation(a,b),[">","<","="]);},
+        (g,l)=>{const m=numLimit(g,l);if(m<=100){let a=rs(1,9),b=rs(0,9);while(b===a)b=rs(0,9);const hi=Math.max(a,b),lo=Math.min(a,b),ans=hi*10+lo;return qmake(`Dùng hai chữ số ${a} và ${b}, mỗi chữ số một lần. Hãy lập số lớn nhất có thể.`,ans,[lo*10+hi,Math.max(0,ans-1),Math.min(99,ans+1)]);}const a=rs(1,9),b=rs(0,9),c=rs(0,9),digits=[a,b,c],desc=digits.slice().sort((x,y)=>y-x),ans=desc[0]*100+desc[1]*10+desc[2];return qmake(`Dùng ba chữ số ${a}, ${b}, ${c}, mỗi chữ số một lần. Hãy lập số lớn nhất có thể.`,ans,[desc[2]*100+desc[1]*10+desc[0],a*100+b*10+c,ans-1]);},
+        (g,l)=>{const m=numLimit(g,l),lo=rs(1,Math.max(1,m-3)),ans=Math.min(m,lo+1),hi=Math.min(m,lo+2);return qmake(`Tìm số tự nhiên lớn hơn ${lo} nhưng nhỏ hơn ${hi}.`,ans,[lo,hi,Math.min(m,hi+1)]);},
+        (g,l)=>{const m=numLimit(g,l);let a,b,c;do{a=rs(0,m);b=rs(0,m);c=rs(0,m);}while(m>=2&&new Set([a,b,c]).size<3);const ans=Math.max(a,b,c);return qmake(`Trong ba số ${a}, ${b}, ${c}, số lớn nhất là?`,ans,[a,b,c].filter(x=>x!==ans).concat(ans));},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-2)),b=rs(a+1,m),ans=b-a;return qmake(`Từ ${a} đến ${b} cách nhau bao nhiêu đơn vị?`,ans,[a+b,Math.max(0,ans-1),ans+1]);},
+        (g,l)=>{const m=numLimit(g,l),n=rs(Math.min(10,m),m),t=Math.floor(n/10)%10,ans=t*10;return qmake(`Trong số ${n}, chữ số hàng chục có giá trị là bao nhiêu?`,ans,[t,n%10,t+10]);},
+        (g,l)=>{const m=numLimit(g,l),d=l===1?1:p([1,2,5]),a=rs(0,Math.max(0,m-3*d)),v=[a,a+d,a+2*d,a+3*d],i=rs(1,2),ans=v[i];v[i]="…";return qmake(`Điền số còn thiếu: ${v.join(", ")}`,ans,[Math.max(0,ans-d),ans+d,a]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-2)),ans=a+1;return qmake(`Số nằm giữa ${a} và ${a+2} là số nào?`,ans,[a,a+2,Math.min(m,a+3)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,m),b=rs(0,m),c=rs(0,m),arr=[a,b,c].sort((x,y)=>x-y),ans=arr.join(" < ");return qmake(`Sắp xếp ${a}, ${b}, ${c} theo thứ tự từ bé đến lớn.`,ans,[arr.slice().reverse().join(" < "),`${arr[0]} < ${arr[2]} < ${arr[1]}`,`${arr[1]} < ${arr[0]} < ${arr[2]}`]);},
+        (g,l)=>{const m=numLimit(g,l),t=rs(1,Math.max(1,Math.min(9,Math.floor(m/10)))),u=rs(0,9),ans=Math.min(m,t*10+u),sum=Math.floor(ans/10)+(ans%10);return qmake(`Một số có ${Math.floor(ans/10)} chục, số đơn vị là ${ans%10}. Tổng hai chữ số của số đó bằng bao nhiêu?`,sum,[ans,Math.floor(ans/10),ans%10]);},
+        (g,l)=>{const m=numLimit(g,l),ans=rs(1,Math.max(1,m-1));return qmake(`Biết số liền trước của một số là ${ans-1}. Số cần tìm là?`,ans,[Math.max(0,ans-1),Math.min(m,ans+1),Math.max(0,ans-2)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-10)),ans=Math.min(m,a+10);return qmake(`Số nào lớn hơn ${a} đúng 10 đơn vị?`,ans,[Math.min(m,a+1),Math.max(0,a-10),Math.min(m,a+9)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,m),b=rs(0,m),ans=Math.min(a,b);return qmake(`Giữa ${a} và ${b}, số nào bé hơn?`,ans,[Math.max(a,b),Math.min(m,ans+1),Math.max(0,ans-1)]);},
+        (g,l)=>{const m=numLimit(g,l),a=rs(0,Math.max(0,m-3)),ans=a+3;return qmake(`Đếm tiếp: ${a}, ${a+1}, ${a+2}, …`,ans,[a+2,Math.min(m,ans+1),a+1]);},
+        (g,l)=>{const m=numLimit(g,l),lo=rs(0,Math.max(0,m-4)),hi=Math.min(m,lo+4),ans=rs(lo+1,Math.max(lo+1,hi-1));return qmake(`Số ${ans} nằm giữa hai mốc nào dưới đây?`,`${lo} và ${hi}`,[`${Math.max(0,lo-1)} và ${lo}`,`${hi} và ${Math.min(m,hi+1)}`,`${lo} và ${Math.min(m,lo+1)}`]);},
+        (g,l)=>{const m=numLimit(g,l),ans=rs(0,Math.max(0,m-1)),next=ans+1;return qmake(`Số liền sau của một số là ${next}. Số ban đầu là?`,ans,[next,Math.max(0,ans-1),Math.min(m,next+1)]);},
+        (g,l)=>{const m=numLimit(g,l),k=rs(0,m),vals=[rs(0,m),rs(0,m),rs(0,m)],ans=vals.filter(v=>v>k).length;return qmake(`Trong các số ${vals.join(", ")}, có bao nhiêu số lớn hơn ${k}?`,ans,[0,1,2,3].filter(v=>v!==ans));},
+        (g,l)=>{const m=numLimit(g,l);let a,b,c;do{a=rs(0,m);b=rs(0,m);c=rs(0,m);}while(m>=2&&new Set([a,b,c]).size<3);const arr=[a,b,c].sort((x,y)=>x-y),ans=arr[1];return qmake(`Ba số ${a}, ${b}, ${c}. Số nào không lớn nhất cũng không bé nhất?`,ans,[arr[0],arr[2],Math.min(m,ans+1)]);}
       );
 
       /* ---------- CỘNG / TRỪ ---------- */
@@ -3792,6 +3943,9 @@ Phần III - 2 bài toán có lời văn"></textarea>
         "Câu hỏi đảo chiều"
       ];
 
+      const shellPeople=["An","Bình","Chi","Lan","Mai","Minh","Nam","Hà"];
+      const shellPick=(arr)=>p(arr);
+
       function thinkingShell(x, shell, m, l) {
         if (!x) return x;
         x.meta={...(x.meta||{})};
@@ -3806,14 +3960,27 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if (shell === 1) {
           const w = candidates.find(v=>String(v)!==String(ans)) ?? wrongNum(ans);
           shellData.wrong=w;
-          if (w != null) x[0] = `${base} Một bạn ghi kết quả “${w}”. Em hãy tự tính để kiểm tra và ghi đáp án đúng.`;
-          else x[0] = `${base} Em hãy giải độc lập rồi kiểm tra lại kết quả trước khi ghi đáp án.`;
+          if (w != null) {
+            const who=p(shellPeople);
+            x[0]=shellPick([
+              `${base} ${who} ghi kết quả “${w}”. Em hãy tự tính để kiểm tra rồi ghi đáp án đúng.`,
+              `${base} Có một đáp án gợi ý là “${w}”. Đừng tin ngay; hãy làm độc lập và đối chiếu.`,
+              `${base} Một bài làm cho kết quả “${w}”. Em hãy kiểm tra bằng cách của mình trước khi chốt.`,
+              `${base} Nếu có người chọn “${w}”, em có đồng ý không? Hãy tính lại và ghi kết quả đúng.`
+            ]);
+          } else x[0] = shellPick([`${base} Em hãy giải độc lập rồi kiểm tra lại kết quả trước khi ghi đáp án.`,`${base} Hãy tự làm trước, sau đó dùng một cách khác để kiểm tra kết quả.`]);
           return x;
         }
         if (shell === 2) {
           const w = candidates.find(v=>String(v)!==String(ans)) ?? wrongNum(ans) ?? "0";
           shellData.wrong=w;
-          x[0] = `${base} Một bạn ghi đáp án “${w}”. Em hãy kiểm tra: bạn ấy đúng hay sai?`;
+          const who=p(shellPeople);
+          x[0] = shellPick([
+            `${base} ${who} ghi đáp án “${w}”. Em hãy kiểm tra: bạn ấy đúng hay sai?`,
+            `${base} Có lời giải kết luận “${w}”. Hãy xác định kết luận đó đúng hay sai.`,
+            `${base} Một bạn cho rằng đáp số là “${w}”. Em hãy tìm chỗ có thể nhầm và kết luận đúng/sai.`,
+            `${base} Đáp án “${w}” đang được đề xuất. Em hãy tự giải rồi đánh giá đáp án ấy.`
+          ]);
           x[1] = String(w) === String(ans) ? "Đúng" : "Sai";
           x[3] = ["Đúng","Sai"];
           return x;
@@ -3821,14 +3988,18 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if (shell === 3 && ns != null) {
           const step = Math.max(1, Math.round(Math.abs(ns) / 10) || 1), b = ns + (Math.random()<.5?-step:step);
           shellData.compareTarget=b;
-          x[0] = `${base} Sau khi tìm được kết quả, hãy so sánh đáp số với ${fmtAns(b)}.`;
+          x[0] = shellPick([
+            `${base} Sau khi tìm được kết quả, hãy so sánh đáp số với ${fmtAns(b)}.`,
+            `${base} Đáp số của bài lớn hơn, nhỏ hơn hay bằng ${fmtAns(b)}?`,
+            `${base} Không dừng ở việc tính ra số: hãy đặt dấu thích hợp giữa đáp số và ${fmtAns(b)}.`
+          ]);
           x[1] = relation(ns,b);
           x[3] = [">","<","="];
           return x;
         }
         if (shell === 4 && ns != null && Number.isInteger(ns) && ns >= 0) {
           const use100 = Math.abs(ns) >= 100;
-          x[0] = `${base} Kết quả thuộc khoảng nào?`;
+          x[0] = shellPick([`${base} Kết quả thuộc khoảng nào?`,`${base} Chưa cần ghi số chính xác; trước hết hãy khoanh vùng khoảng chứa đáp số.`,`${base} Hãy chọn khoảng chắc chắn chứa kết quả của bài.`]);
           x[1] = use100 ? band100(ns) : band10(ns);
           shellData.range=x[1]; shellData.exact=ans;
           x[3] = use100 ? [band100(ns), band100(ns-100), band100(ns+100), band100(ns+200)] : [band10(ns), band10(ns-10), band10(ns+10), band10(ns+20)];
@@ -3837,7 +4008,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if (shell === 5) {
           try { mkOpts(x,m.g,m.sc); } catch(e) {}
           const opts = x.o || [ans, ...candidates];
-          x[0] = `${base} Khẳng định nào đúng về đáp án của bài?`;
+          x[0] = shellPick([`${base} Khẳng định nào đúng về đáp án của bài?`,`${base} Trong các lựa chọn sau, phát biểu nào phù hợp với kết quả?`,`${base} Hãy giải rồi chọn kết luận đúng nhất về đáp số.`]);
           x[1] = String(ans); shellData.correct=ans;
           x[3] = opts;
           return x;
@@ -3845,29 +4016,30 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if (shell === 7) {
           const extra = p(carefulExtras[m.g] || ["Trên bàn có một quyển vở.","Hôm nay trời có nắng.","Bạn ấy mang theo một chiếc thước."]);
           shellData.extra=extra;
-          x[0] = `${base} ${extra} Thông tin nào không cần dùng để giải bài?`;
+          x[0] = shellPick([`${base} ${extra} Thông tin nào không cần dùng để giải bài?`,`${extra} ${base} Hãy chỉ ra dữ kiện nào là thông tin thừa.`,`${base} Ngoài ra: ${extra} Em hãy lọc dữ kiện trước khi giải và chọn thông tin không cần thiết.`]);
           x[1] = extra;
           x[3] = [extra,"Dữ kiện số chính trong đề","Câu hỏi của bài","Đơn vị của đại lượng"].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4);
           return x;
         }
         if (shell === 8) {
           const w = candidates.find(v=>String(v)!==String(ans)) ?? wrongNum(ans) ?? "0";
-          const A = p(["An","Bình"]), B = A === "An" ? "Bình" : "An";
+          const A = p(shellPeople), B = p(shellPeople.filter(z=>z!==A));
           shellData.correctStudent=A; shellData.wrongStudent=B; shellData.wrong=w; shellData.correct=ans;
-          x[0] = `${base} ${A} trả lời “${ans}”; ${B} trả lời “${w}”. Em chọn bạn có đáp án đúng.`;
+          x[0] = shellPick([`${base} ${A} trả lời “${ans}”; ${B} trả lời “${w}”. Em chọn bạn có đáp án đúng.`,`${base} Hai bạn đưa ra hai kết quả: ${A}: “${ans}”, ${B}: “${w}”. Hãy kiểm tra rồi chọn bạn đúng.`,`${base} ${A} và ${B} không thống nhất đáp án (${ans} và ${w}). Em hãy làm trọng tài bằng phép tính của mình.`]);
           x[1] = A;
           x[3] = [A,B];
           return x;
         }
         if (shell === 9 && ns != null) {
-          x[0] = `${base} Hãy ưu tiên dùng phép tính ngược hoặc suy ngược để tự kiểm tra, rồi ghi kết quả cuối cùng.`;
+          x[0] = shellPick([`${base} Hãy ưu tiên dùng phép tính ngược hoặc suy ngược để tự kiểm tra, rồi ghi kết quả cuối cùng.`,`${base} Thử bắt đầu từ điều cần tìm và lần ngược về dữ kiện ban đầu.`,`${base} Sau khi có đáp án, hãy thay ngược trở lại đề để kiểm chứng.`]);
           return x;
         }
         if (shell === 10 && ns != null) {
           const cmp = Math.max(0, Math.round(Math.abs(ns) * (Math.random()*.5 + .25)));
           const claimGE = Math.random() < .5;
           shellData.compareTarget=cmp; shellData.claimGE=claimGE; shellData.exact=ans;
-          x[0] = `${base} Một bạn nhận xét: “Kết quả ${claimGE ? "không nhỏ hơn" : "nhỏ hơn"} ${fmtAns(cmp)}”. Nhận xét đó đúng hay sai?`;
+          const who=p(shellPeople);
+          x[0] = shellPick([`${base} ${who} nhận xét: “Kết quả ${claimGE ? "không nhỏ hơn" : "nhỏ hơn"} ${fmtAns(cmp)}”. Nhận xét đó đúng hay sai?`,`${base} Có ý kiến cho rằng đáp số ${claimGE ? "ít nhất là" : "nhỏ hơn"} ${fmtAns(cmp)}. Em hãy kiểm tra tính hợp lí của ý kiến đó.`,`${base} Trước khi chốt đáp án, hãy đánh giá phát biểu: “Kết quả ${claimGE ? "≥" : "<"} ${fmtAns(cmp)}”.`]);
           x[1] = ((ns >= cmp) === claimGE) ? "Đúng" : "Sai";
           x[3] = ["Đúng","Sai"];
           return x;
@@ -3876,7 +4048,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           const step = Math.abs(ns) >= 100 ? 100 : 10;
           const rounded = Math.round(ns / step) * step;
           shellData.step=step; shellData.rounded=rounded; shellData.exact=ans;
-          x[0] = `${base} Không cần tính chính xác ngay. Ước lượng đáp số về số tròn gần nhất là?`;
+          x[0] = shellPick([`${base} Không cần tính chính xác ngay. Ước lượng đáp số về số tròn gần nhất là?`,`${base} Hãy ước lượng trước khi tính chi tiết. Số tròn nào gần đáp số nhất?`,`${base} Nếu làm tròn để kiểm tra nhanh, em dự đoán kết quả gần số nào nhất?`]);
           x[1] = rounded;
           x[3] = uniqOpts(rounded, [rounded-step, rounded+step, rounded+2*step]);
           return x;
@@ -4419,6 +4591,84 @@ Phần III - 2 bài toán có lời văn"></textarea>
         blocks.innerHTML=blueprintBlocks(bp).map(b=>`<div class="bp-block"><b>Câu ${b.from}${b.to>b.from?`–${b.to}`:""}</b> · 🌱${b.levels.basic||0} 🧩${b.levels.reason||0} 🔥${b.levels.challenge||0}<div class="bp-skills">Kỹ năng nổi bật: ${b.top||"—"}</div></div>`).join("");
       }
 
+      /* ================================================================
+         BỘ ĐIỀU PHỐI CHỐNG HỌC THUỘC MẪU
+         - Mỗi lần tạo đề dùng thứ tự lõi ngẫu nhiên khác nhau.
+         - Ghi nhớ các lõi vừa dùng của từng module/mức độ để lần bấm "Tạo đề khác"
+           ưu tiên cấu trúc chưa xuất hiện gần đây, không chỉ đổi số.
+         - Dễ / Vừa / Khó dùng các vùng lõi khác nhau thay vì ba lát cắt chồng lấn mạnh.
+         ================================================================ */
+      const CORE_LEVEL_INDEX = {
+        number:{1:[0,2,3,4,7,10,11,16,17,19],2:[0,1,4,8,9,10,14,16,18,19,20],3:[5,6,8,9,12,13,14,15,18,20,21]},
+        addsub:{1:[0,1,2,3],2:[3,4,6,7,9],3:[4,5,6,7,8,9]},
+        muldiv:{1:[0,1,2],2:[2,3,5,7,8],3:[4,5,6,7,8,9]},
+        unknown:{1:[0,1,2,3],2:[3,4,5,6,7],3:[5,6,7,8,9]},
+        pattern:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        word:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        geometry:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        stats:{1:[0,1,3,5],2:[2,3,4,6,7],3:[4,6,7,8,9]},
+        fraction:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        decimal:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        percent:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]},
+        ratio:{1:[0,1,2,4],2:[2,3,4,5,7],3:[5,6,7,8,9]},
+        motion:{1:[0,1,2],2:[2,3,4,6,7],3:[5,6,7,8,9]},
+        logic:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]}
+      };
+      let recentCoreHistory = {};
+      try { recentCoreHistory = JSON.parse(localStorage.getItem("mathRecentCoreV12")||"{}"); } catch(e) {}
+      function recentCoreKey(m,l){ return `${m.uid||m.id}|L${l}`; }
+      function saveRecentCores(m,l,items){
+        const key=recentCoreKey(m,l);
+        const now=items.map(x=>x?.meta?.coreKey).filter(Boolean);
+        const old=Array.isArray(recentCoreHistory[key])?recentCoreHistory[key]:[];
+        recentCoreHistory[key]=[...now,...old].slice(0,18);
+        try { localStorage.setItem("mathRecentCoreV12",JSON.stringify(recentCoreHistory)); } catch(e) {}
+      }
+      function difficultyCorePool(strand,g,level){
+        const all=TB[strand]||TB.logic||[], allowed=bankIndexes(strand,g);
+        let entries=all.map((fn,idx)=>({fn,idx}));
+        if(Array.isArray(allowed)) entries=entries.filter(z=>allowed.includes(z.idx));
+        const curated=CORE_LEVEL_INDEX[strand]?.[level];
+        if(Array.isArray(curated)){
+          const hit=entries.filter(z=>curated.includes(z.idx));
+          if(hit.length>=Math.min(3,entries.length)) entries=hit;
+        } else if(entries.length>=6){
+          const n=entries.length;
+          if(level===1) entries=entries.slice(0,Math.max(3,Math.ceil(n*.42)));
+          else if(level===2) entries=entries.slice(Math.floor(n*.25),Math.max(Math.floor(n*.25)+3,Math.ceil(n*.78)));
+          else entries=entries.slice(Math.floor(n*.55));
+        }
+        return entries;
+      }
+      function pickCoreEntry(entries,ctx,attempt){
+        if(!entries.length)return null;
+        const prior=ctx?.priorCore||new Set(),used=ctx?.usedCore||new Set();
+        let best=[],score=Infinity;
+        for(const z of entries){
+          const key=`b${z.idx}`;
+          const sc=(used.has(key)?8:0)+(prior.has(key)?3:0)+Math.random()*1.8+((z.idx+attempt)%5)*.015;
+          if(sc<score-.0001){score=sc;best=[z];}else if(Math.abs(sc-score)<.0001)best.push(z);
+        }
+        return p(best);
+      }
+
+      /* Độ khó kiến thức của module phải tạo khác biệt THỰC SỰ, không chỉ đổi nhãn.
+         - Dễ: ưu tiên lõi nền tảng ở đầu ngân hàng + generator gốc mức 1.
+         - Vừa: dùng vùng giữa, có biến đổi và bài 1–2 bước.
+         - Khó: ưu tiên nửa sau của ngân hàng, nơi có suy ngược / vận dụng / dữ kiện kết hợp.
+         Việc này độc lập với "Mức độ tư duy" của ma trận 3 chiều. */
+      function knowledgeDifficultyBankSlice(fns,level){
+        if(!Array.isArray(fns)||fns.length<3)return fns;
+        const n=fns.length;
+        if(level===1) return fns.slice(0, Math.max(2, Math.ceil(n*.46)));
+        if(level===3) return fns.slice(Math.max(0, Math.floor(n*.42)));
+        return fns.slice(Math.max(0,Math.floor(n*.18)), Math.max(3,Math.ceil(n*.84)));
+      }
+      function knowledgeBankChance(depth,level){
+        const table={1:[.62,.76,.88],2:[.72,.86,.94],3:[.82,.92,.98]};
+        return (table[depth]||table[3])[Math.max(1,Math.min(3,+level||2))-1];
+      }
+
       function cognitiveBankSlice(fns,level){
         if(!Array.isArray(fns)||fns.length<3)return fns;
         const n=fns.length;
@@ -4468,7 +4718,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
       }
 
       const bankIndexes = (strand, g) => ({
-        number: g===1?[0,2,3,4,6,7,8]:null,
+        number: null,
         addsub: null,
         arithmetic: null,
         muldiv: g>=2?null:[],
@@ -4486,26 +4736,27 @@ Phần III - 2 bài toán có lời văn"></textarea>
         expression: g>=3?null:[]
       });
 
-      function variedQuestion(m, l, attempt, depth, skillId, cogLevel=2) {
+      function variedQuestion(m, l, attempt, depth, skillId, cogLevel=2, ctx=null) {
         const strand = m.strand || strandOf(m);
-        let bankFns = TB[strand] || TB.logic;
-        const idxs = bankIndexes(strand,m.g);
-        if(Array.isArray(idxs)) bankFns = idxs.map(i=>TB[strand][i]).filter(Boolean);
-        bankFns = cognitiveBankSlice(bankFns,cogLevel);
-        const bankChance = depth >= 3 ? 1 : depth === 2 ? .82 : .45;
-        const useBank = bankFns && bankFns.length && (attempt % 100) / 100 < bankChance;
+        const entries = difficultyCorePool(strand,m.g,l);
+        const bankChance = knowledgeBankChance(depth,l);
+        // Khi chế độ ma trận/blueprint hoạt động, ưu tiên 100% ngân hàng lõi đã phân tầng.
+        // Generator gốc của nhiều module đời đầu chỉ đổi số chứ không đổi cấu trúc và thường bỏ qua Dễ/Vừa/Khó.
+        // Vì vậy chỉ dùng generator gốc làm phương án dự phòng khi mạch chưa có lõi phù hợp.
+        const useBank = entries.length > 0;
         let x;
         try {
           if(useBank){
-            const coreIndex = attempt % bankFns.length;
-            x = bankFns[coreIndex](m.g,l);
-            if(x) x.meta={strand,bankIndex:coreIndex,shell:-1};
+            const chosen=pickCoreEntry(entries,ctx,attempt);
+            if(!chosen)return null;
+            x = chosen.fn(m.g,l);
+            if(x) x.meta={...(x.meta||{}),strand,bankIndex:chosen.idx,coreKey:`b${chosen.idx}`,shell:-1};
           } else {
             x = m.gen(l);
-            if(x) x.meta={strand,bankIndex:-1,shell:0};
+            if(x) x.meta={...(x.meta||{}),strand,bankIndex:-1,coreKey:"native",shell:0};
           }
           if(!x) return null;
-          x.meta={...(x.meta||{})};
+          x.meta={...(x.meta||{}),knowledgeDifficulty:l,knowledgeDifficultyName:(m.h?LH:LB)[l-1]};
           if(x.meta.baseQuestion==null) x.meta.baseQuestion=String(x[0]);
           if(x.meta.baseAnswer==null) x.meta.baseAnswer=x[1];
           if(x.meta.baseOpts==null) x.meta.baseOpts=Array.isArray(x[3])?x[3].slice():[];
@@ -4578,9 +4829,11 @@ Phần III - 2 bài toán có lời văn"></textarea>
               wanted = planItem ? planItem.n : s.n,
               strand = m.strand || strandOf(m),
               bpSec = blueprintOn ? blueprint.sections[i] : null,
-              sectionStart = strandCursor[strand] || 0;
+              sectionStart = strandCursor[strand] || 0,
+              historyKey = recentCoreKey(m,s.l),
+              sectionCtx = {usedCore:new Set(),priorCore:new Set(Array.isArray(recentCoreHistory[historyKey])?recentCoreHistory[historyKey]:[])};
             strandCursor[strand] = sectionStart + wanted;
-            const maxTries = Math.max(500, wanted * (carefulOn ? 220 : 80));
+            const maxTries = Math.max(500, wanted * (carefulOn ? 240 : 90));
             for (let k = 0; k < maxTries && it.length < wanted; k++) {
               let x = null;
               try {
@@ -4588,7 +4841,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 const goalSkill = carefulOn ? (bpSlot?.skill || strandSchedules[strand]?.[sectionStart + it.length]) : null;
                 const cogPos = carefulOn && !blueprintOn && goalSkill ? (cogCursor[strand]?.[goalSkill]||0) : 0;
                 const goalCog = carefulOn && goalSkill ? (bpSlot?.cog || cogSchedules[strand]?.[goalSkill]?.[cogPos] || 2) : 2;
-                x = carefulOn ? variedQuestion(m, s.l, k + it.length * 17, depth, goalSkill, goalCog) : m.gen(s.l);
+                x = carefulOn ? variedQuestion(m, s.l, k + it.length * 17, depth, goalSkill, goalCog, sectionCtx) : m.gen(s.l);
                 if (!x) continue;
                 x.meta={...(x.meta||{})};
                 if(x.meta.baseQuestion==null) x.meta.baseQuestion=String(x[0]);
@@ -4598,14 +4851,16 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 x._goalSkill=goalSkill;x._goalCog=goalCog;x._cogPos=cogPos;
               } catch (e) { continue; }
               const h = x[0] + "||" + x[1] + "||" + (x[2] || "");
-              const pattern = `${strand}|${x._goalSkill||""}|${x._goalCog||""}|${x.meta?.appliedShell??x.meta?.shell??""}|${x.meta?.bankIndex??""}`;
+              const pattern = `${strand}|${x._goalSkill||""}|${x._goalCog||""}|${x.meta?.appliedShell??x.meta?.shell??""}|${x.meta?.coreKey??x.meta?.bankIndex??""}`;
               const samePattern = blueprintOn && lastQuestionPattern && pattern===lastQuestionPattern;
               if (!seen.has(h) && (!samePattern || k%7===6)) {
                 seen.add(h); it.push(x); lastQuestionPattern=pattern;
+                if(x.meta?.coreKey) sectionCtx.usedCore.add(x.meta.coreKey);
                 if(carefulOn&&!blueprintOn&&x._goalSkill)cogCursor[strand][x._goalSkill]=x._cogPos+1;
               }
             }
             if (it.length < wanted) console.warn(`Ngân hàng ${m.id} chỉ sinh được ${it.length}/${wanted} câu khác nhau.`);
+            saveRecentCores(m,s.l,it);
             return { m, l: s.l, mc, it, pt: i < n - 1 ? bs : 10 - bs * (n - 1) };
           }),
         };
@@ -4628,6 +4883,54 @@ Phần III - 2 bài toán có lời văn"></textarea>
           `<div class=end>— Hết —</div>`;
         toast(blueprintOn ? `Đã tạo đề theo blueprint toàn đề · ${totalWanted} câu` : carefulOn ? `Đã tạo đề theo ma trận 3 chiều · ${totalWanted} câu` : `Đã tạo đề · ${totalWanted} câu`);
       }
+      function scrollToBuilder() {
+        const el = document.querySelector('.selector-card');
+        if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+      function scrollToPaper() {
+        if (!P) return toast('Hãy tạo đề trước');
+        const el = document.querySelector('main > section.card');
+        if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+      function toggleStudentView(on) {
+        if (on && !P) return toast('Hãy tạo đề trước');
+        document.body.classList.toggle('student-focus', !!on);
+        if (on) {
+          document.querySelector('#paper')?.scrollIntoView({block:'start'});
+          window.scrollTo({top:0,behavior:'smooth'});
+        } else {
+          window.scrollTo({top:0,behavior:'smooth'});
+        }
+      }
+      function studentHtmlDocument() {
+        if (!P) return null;
+        const src = $('paper');
+        if (!src) return null;
+        const title = eh(P.title || 'Đề Toán Tiểu học');
+        const body = src.innerHTML;
+        const stamp = Date.now().toString(36);
+        return `<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${title}</title>
+<style>
+*{box-sizing:border-box}html{background:#eef2f7}body{margin:0;padding:14px 10px 90px;color:#111;font-family:Arial,sans-serif}.student-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:780px;margin:0 auto 9px;padding:9px 10px;border:1px solid #dce5f0;border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(15,23,42,.10);backdrop-filter:blur(10px)}.student-top b{font-size:13px;color:#334155}.student-top small{display:block;color:#64748b;margin-top:2px}.student-top button{border:0;border-radius:9px;background:#4f6bff;color:#fff;padding:8px 10px;font-weight:700;cursor:pointer}.paper{width:min(760px,100%);margin:auto;background:#fff;padding:22px 18px;border-radius:12px;box-shadow:0 8px 28px rgba(15,23,42,.10);font:16px/1.55 "Times New Roman",serif}.paper table{width:100%;border-collapse:collapse}.paper .hd td{vertical-align:top;text-align:center;width:50%;font-size:15px}.paper .bx{margin:8px 0 10px}.paper .bx td{border:1px solid #111;padding:6px 8px;vertical-align:top;height:24mm;font-size:15px}.paper h3{font-size:16px;margin:14px 0 6px}.paper h3.pt{text-align:center;font-size:17px;margin:18px 0 4px}.paper .hn{font-weight:400;font-style:italic;color:#555;font-size:14px}.qs{columns:2;column-gap:24px}.qs>div{break-inside:avoid;padding:5px 0}.qs.w{columns:1}.qs.w>div{padding:6px 0 12px}.qs.mq{columns:1}.qs.mq>div{padding:4px 0 8px}.qi{display:flex;justify-content:space-between;align-items:center;gap:8px}.op{display:grid;gap:4px 10px;margin-top:4px;padding-left:4px}.op.c4{grid-template-columns:repeat(4,1fr)}.op.c2{grid-template-columns:repeat(2,1fr)}.op.c1{grid-template-columns:1fr}.mc .op span{border:1px solid transparent;border-radius:8px;padding:5px 7px;cursor:pointer;transition:.12s}.mc .op span.selected{border-color:#4f6bff;background:#eef2ff}.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;line-height:1.2;font-size:.95em}.fr>i{font-style:normal;padding:0 3px}.fr>i:first-child{border-bottom:1.5px solid #111}.ln{display:flex;align-items:flex-end;min-height:8mm;overflow:hidden;white-space:nowrap}.ln .dt{flex:1;overflow:hidden;letter-spacing:3px;color:#333;margin-left:4px;line-height:1.1}.fg{flex:none}.end{text-align:center;margin-top:14px;font-style:italic}.student-work{display:block;width:100%;min-height:74px;margin:8px 0 4px;border:1px solid #d7deea;border-radius:9px;padding:8px;font:14px/1.45 Arial,sans-serif;resize:vertical;background:#fbfcfe}.save-note{max-width:760px;margin:8px auto 0;text-align:center;color:#64748b;font-size:11px}
+@media(max-width:700px){body{padding:7px 7px 80px}.student-top{border-radius:10px;margin-bottom:7px}.student-top small{display:none}.paper{padding:14px 12px;border-radius:10px;font-size:16px;box-shadow:none}.paper .qs{columns:1!important}.paper .op.c4,.paper .op.c2,.paper .op.c1{grid-template-columns:1fr}.paper .op span{background:#fafafa}.paper .hd,.paper .hd tbody,.paper .hd tr,.paper .hd td{display:block;width:100%!important}.paper .hd td:first-child{font-size:13px;margin-bottom:4px}.paper .bx,.paper .bx tbody,.paper .bx tr{display:block;width:100%}.paper .bx td:first-child{display:block;width:100%!important;height:auto;min-height:52px}.paper .bx td:nth-child(2),.paper .bx td:nth-child(3){display:none}.paper .qi{align-items:flex-start}.paper .fg{max-width:42%;overflow:auto}.student-work{min-height:90px}}
+@media print{html{background:#fff}body{padding:0}.student-top,.save-note,.student-work{display:none!important}.paper{width:190mm;box-shadow:none;border-radius:0;padding:6mm 4mm}.paper .qs{columns:2}.paper .qs.w,.paper .qs.mq{columns:1}.paper .hd{display:table}.paper .hd tbody{display:table-row-group}.paper .hd tr{display:table-row}.paper .hd td{display:table-cell}.paper .bx{display:table}.paper .bx tbody{display:table-row-group}.paper .bx tr{display:table-row}.paper .bx td{display:table-cell!important}}
+</style></head><body>
+<div class="student-top"><div><b>🧮 Bài Toán của em</b><small>Trắc nghiệm: chạm vào đáp án. Tự luận: có thể gõ nháp bên dưới.</small></div><button onclick="window.print()">🖨 In / PDF</button></div>
+<div class="paper" id="paper">${body}</div><div class="save-note">Bài làm nhập trên thiết bị này được tự lưu trong trình duyệt. File học sinh không chứa đáp án hay lời giải.</div>
+<script>(function(){const KEY='math-student-${stamp}';const root=document.getElementById('paper');root.querySelectorAll('.mc .op').forEach((op,idx)=>{[...op.children].forEach((x,j)=>{x.addEventListener('click',()=>{[...op.children].forEach(y=>y.classList.remove('selected'));x.classList.add('selected');save();});});});root.querySelectorAll('.qs:not(.mq)>div').forEach((q,idx)=>{const t=document.createElement('textarea');t.className='student-work';t.placeholder='Bài làm / nháp của em…';t.dataset.work=idx;t.addEventListener('input',save);q.appendChild(t);});function save(){try{const data={mc:[...root.querySelectorAll('.mc .op')].map(op=>[...op.children].findIndex(x=>x.classList.contains('selected'))),work:[...root.querySelectorAll('.student-work')].map(t=>t.value)};localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(!d)return;[...root.querySelectorAll('.mc .op')].forEach((op,i)=>{const j=d.mc?.[i];if(j>=0&&op.children[j])op.children[j].classList.add('selected');});[...root.querySelectorAll('.student-work')].forEach((t,i)=>t.value=d.work?.[i]||'');}catch(e){}}load();})();<\/script></body></html>`;
+      }
+      async function studentHtmlSave() {
+        if (!P) return toast('Hãy tạo đề trước');
+        const html = studentHtmlDocument();
+        if (!html) return toast('Không tạo được file học sinh');
+        await save(new Blob([html], {type:'text/html;charset=utf-8'}), 'de-toan-cho-hoc-sinh.html');
+        toast('Đã tạo file HTML cho học sinh · không chứa đáp án');
+      }
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && document.body.classList.contains('student-focus')) toggleStudentView(false);
+      });
+
       async function save(b, n) {
         try {
           const d = window.claude && (await claude.use("downloads"));
