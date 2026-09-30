@@ -197,6 +197,16 @@
         accent-color: var(--c, var(--pr));
         vertical-align: middle;
       }
+      /* UX: thành phần có thể bấm đều hiện con trỏ bàn tay. */
+      input[type="checkbox"] { cursor: pointer; }
+      button,
+      label:has(input[type="checkbox"]),
+      label:has(input[type="number"]) {
+        cursor: pointer;
+      }
+      button:disabled { cursor: not-allowed; }
+      input[type="text"], textarea { cursor: text; }
+      input[type="number"] { cursor: pointer; }
       .row {
         display: flex;
         gap: 8px;
@@ -218,6 +228,12 @@
         background: var(--cd);
         color: var(--tx);
         border: 2px solid var(--bd);
+      }
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid var(--c, #4f6bff);
+        outline-offset: 2px;
       }
       .btn.big {
         width: 100%;
@@ -441,23 +457,39 @@
       .hint{font-size:12px;color:var(--mu);font-weight:500}
       .structure-help{margin-top:8px;font-size:12px;color:var(--mu);line-height:1.5}
       .structure-help span{display:inline-block;padding:2px 7px;margin:2px 2px;border-radius:999px;background:#eef2ff;color:#475569}
+      .careful-box{margin-top:10px;padding:10px 12px;border:1px solid #dbe3f0;border-radius:12px;background:linear-gradient(180deg,#fffdf7,#fff8e8);font-size:13px;line-height:1.5}
+      .careful-box b{font-weight:800}
+      .careful-box small{display:block;margin-top:3px;color:var(--mu)}
+
+      .answer-info{background:#f8fafc;border-radius:10px;padding:8px 10px;font-size:12px}
+      .answer-modal[hidden]{display:none}
+      .answer-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+      .answer-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(3px)}
+      .answer-dialog{position:relative;width:min(760px,96vw);max-height:88vh;overflow:hidden;background:var(--cd);color:var(--tx);border:1px solid var(--bd);border-radius:18px;box-shadow:0 24px 70px rgba(15,23,42,.28);display:flex;flex-direction:column}
+      .answer-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border-bottom:1px solid var(--bd)}
+      .answer-head h2{margin:0;font-size:20px}
+      .answer-sub{margin-top:3px;color:var(--mu);font-size:12px}
+      .answer-close{border:0;background:transparent;color:var(--mu);font-size:30px;line-height:1;cursor:pointer;padding:2px 8px}
+      .answer-content{overflow:auto;padding:18px 20px;line-height:1.65}
+      .answer-content .ans-item{padding:10px 0;border-bottom:1px dashed var(--bd)}
+      .answer-content .ans-item:last-child{border-bottom:0}
+      .answer-actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--bd);background:color-mix(in srgb,var(--cd) 94%,#94a3b8)}
+      .answer-export{width:190mm;box-sizing:border-box;background:#fff;color:#111;padding:12mm;font-family:"Times New Roman",serif;line-height:1.55}
+      .answer-export h1{text-align:center;font-size:20px;margin:0 0 18px}
+      .answer-export .ae-item{margin:0 0 12px}
+      @media(max-width:700px){.answer-dialog{max-height:92vh}.answer-actions .btn{flex:1}.answer-info{align-items:flex-start!important;flex-direction:column}}
     </style>
   </head>
   <body>
     <header>
       <h1>🧮 Tạo đề Toán Tiểu học</h1>
-      <p>Chọn lớp → chọn dạng bài đúng khối kiến thức → chọn mức độ → tạo đề → tải Word / PDF</p>
+      <p>Chọn lớp → dạng bài → mức độ → 1–50 câu/module → tạo đề biến hóa → tải Word / PDF</p>
     </header>
     <main>
       <section>
         <div class="card">
           <div class="tabs" id="tabs"></div>
           <div id="mods"></div>
-          <div class="row">
-            <button class="btn g" onclick="all(1)">Chọn tất cả lớp này</button
-            ><button class="btn g" onclick="all(0)">Bỏ chọn</button
-            >
-          </div>
           <div class="row">
             <button class="btn g" onclick="setMode(0)">✍️ Cả lớp: tự luận</button
             ><button class="btn g" onclick="setMode(1)">🔘 Cả lớp: trắc nghiệm</button>
@@ -494,11 +526,15 @@ Phần III - 2 bài toán có lời văn"></textarea>
               giải</label
             >
           </div>
-          <div class="row" style="align-items: center">
-            <label
-              ><input type="checkbox" id="key" checked /> Kèm trang đáp
-              án</label
-            ><span id="cnt" style="color: var(--mu)"></span>
+          <div class="careful-box">
+            <label><input type="checkbox" id="careful" checked />
+              <b>🧠 Rèn tư duy & cẩn thận</b>
+            </label>
+            <small>Câu hỏi luân phiên cách đặt vấn đề: tính trực tiếp, kiểm tra một đáp án sai, đối chiếu lời giải và lọc dữ kiện phụ. Học sinh phải đọc kỹ rồi mới làm, thay vì nhìn mẫu là biết ngay cách giải.</small>
+          </div>
+          <div class="row answer-info" style="align-items:center;justify-content:space-between;gap:10px">
+            <span style="color:var(--mu)">🔐 Đáp án được tách riêng để không bị lộ khi phát đề.</span>
+            <span id="cnt" style="color:var(--mu)"></span>
           </div>
           <div class="row">
             <button class="btn big" onclick="gen()">✨ Tạo đề</button>
@@ -507,8 +543,11 @@ Phần III - 2 bài toán có lời văn"></textarea>
       </section>
       <section class="card">
         <div class="row" style="margin: 0 0 10px">
-          <button class="btn" onclick="docxSave()">⬇ Tải DOCX</button
-          ><button class="btn" onclick="pdfSave()">⬇ Tải PDF</button
+          <button class="btn" onclick="docxSave()">⬇ DOCX đề</button
+          ><button class="btn" onclick="pdfSave()">⬇ PDF đề</button
+          ><button class="btn g" onclick="showAnswers()">👁 Xem đáp án</button
+          ><button class="btn g" onclick="docxAnswerSave()">⬇ DOCX đáp án</button
+          ><button class="btn g" onclick="pdfAnswerSave()">⬇ PDF đáp án</button
           ><button class="btn g" onclick="gen()">🔄 Đề mới</button>
         </div>
         <div class="pv">
@@ -520,6 +559,21 @@ Phần III - 2 bài toán có lời văn"></textarea>
         </div>
       </section>
     </main>
+    <div id="answerModal" class="answer-modal" hidden>
+      <div class="answer-backdrop" onclick="hideAnswers()"></div>
+      <div class="answer-dialog" role="dialog" aria-modal="true" aria-labelledby="answerTitle">
+        <div class="answer-head">
+          <div><h2 id="answerTitle">🔐 ĐÁP ÁN VÀ BIỂU ĐIỂM</h2><div class="answer-sub">Chỉ hiển thị khi giáo viên chủ động mở.</div></div>
+          <button class="answer-close" onclick="hideAnswers()" aria-label="Đóng">×</button>
+        </div>
+        <div id="answerContent" class="answer-content"></div>
+        <div class="answer-actions">
+          <button class="btn" onclick="docxAnswerSave()">⬇ Tải DOCX đáp án</button>
+          <button class="btn" onclick="pdfAnswerSave()">⬇ Tải PDF đáp án</button>
+          <button class="btn g" onclick="hideAnswers()">Đóng</button>
+        </div>
+      </div>
+    </div>
     <div id="toast"></div>
     <script>
       const $ = (i) => document.getElementById(i),
@@ -2727,7 +2781,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           [/(nhân|chia|tính\s*toán|phép\s*tính)/i,/calc|addsub|muldiv|num/]
         ];
         for(const line of lines){
-          const mm=line.match(/(?:-|–|:)?\s*(\d+)\s*câu/i); const n=mm?Math.max(1,Math.min(10,+mm[1])):1;
+          const mm=line.match(/(?:-|–|:)?\s*(\d+)\s*câu/i); const n=mm?Math.max(1,Math.min(50,+mm[1])):1;
           const a=aliases.find(x=>x[0].test(line)); if(!a) continue;
           const m=M.find(x=>x.g===g && new RegExp(a[1]).test(x.id)); if(m) out.push({m,n});
         }
@@ -3194,7 +3248,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function modHtml(m) {
         const s = sel[m.id],
           lb = m.h ? LH : LB;
-        return `<div class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.id}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.id}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class=seg>${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.id}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=10 value=${s.n} onchange="sel['${m.id}'].n=Math.min(10,Math.max(1,+this.value||1))"></label></div></div>`;
+        return `<div class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.id}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class=seg>${[1, 2, 3].map((i) => `<button class="${s.l == i ? "a" : ""}" onclick="sel['${m.id}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span><span class=seg>${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.id}'].mc=${i};render()">${t}</button>`).join("")}</span><label>Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.id}'].n=Math.min(50,Math.max(1,+this.value||1))"></label></div></div>`;
       }
       function render() {
         $("tabs").innerHTML = [1, 2, 3, 4, 5]
@@ -3214,13 +3268,12 @@ Phần III - 2 bài toán có lời văn"></textarea>
             .join("");
         const k = M.filter((m) => sel[m.id].on);
         const sp=structurePlan(G);
+        const totalSelected = sp
+          ? sp.reduce((a,z)=>a+z.n,0)
+          : k.reduce((a, m) => a + sel[m.id].n, 0);
         $("cnt").textContent = sp
-          ? `Cấu trúc riêng: ${sp.reduce((a,z)=>a+z.n,0)} câu · ${sp.length} phần`
-          : `Đã chọn ${k.length} module · ${k.reduce((a, m) => a + sel[m.id].n, 0)} câu`;
-      }
-      function all(v) {
-        M.filter((m) => m.g == G).forEach((m) => (sel[m.id].on = !!v));
-        render();
+          ? `Cấu trúc riêng: ${totalSelected} câu · ${sp.length} phần`
+          : `Đã chọn ${k.length} module · ${totalSelected} câu · tối đa 50 câu/module`;
       }
       function setMode(v) {
         M.filter((m) => m.g == G).forEach((m) => (sel[m.id].mc = v));
@@ -3240,6 +3293,35 @@ Phần III - 2 bài toán có lời văn"></textarea>
           return mx <= 12 ? "c4" : mx <= 30 ? "c2" : "c1";
         },
         NL = { 1: 3, 3: 6 };
+      /* ================================================================
+         BỘ MÁY RÈN ĐỌC KỸ / CHỐNG "NHÌN MẪU LÀ BIẾT CÁCH LÀM"
+         - Mỗi câu không chỉ đổi số mà còn luân phiên cách đặt vấn đề.
+         - Vẫn giữ nguyên kiến thức và đáp án toán học của generator gốc.
+         ================================================================ */
+      const carefulExtras = {
+        1: ["Bạn ấy có một chiếc bút màu đỏ.", "Hôm nay lớp học có tiết Mĩ thuật.", "Trên bàn có một quyển vở."],
+        2: ["Cửa hàng mở lúc 7 giờ.", "Hôm nay là thứ Ba.", "Chiếc cặp của bạn có màu xanh."],
+        3: ["Cửa hàng đóng cửa lúc 17 giờ.", "Bạn ấy đi học bằng xe đạp.", "Hôm nay trời có nắng."],
+        4: ["Hôm nay là thứ Tư.", "Bạn ấy mang theo một chiếc thước.", "Lớp có bảng mới."],
+        5: ["Nhiệt độ ngoài trời là 30°C.", "Bạn ấy dùng một chiếc bút màu xanh.", "Hôm nay là ngày nghỉ."],
+      };
+      const normAns = (v) => String(v).replace(FRD, "$1/$2").trim();
+      function carefulVariant(x, m, style, l) {
+        if (!x || style === 0) return x;
+        try { if (!x.o || x.o.length < 2) mkOpts(x, m.g, m.sc); } catch (e) {}
+        const ans = normAns(x[1]);
+        const wrong = (x.o || []).map(normAns).find(v => v !== ans) || (ans === "0" ? "1" : "0");
+        if (style === 1) {
+          x[0] = `Kiểm tra thật kỹ: ${x[0]} Một bạn ghi đáp án “${wrong}”. Em hãy tự kiểm tra và ghi đáp án đúng.`;
+        } else if (style === 2) {
+          x[0] = `Đối chiếu lời giải: ${x[0]} Một bạn cho rằng đáp án là “${wrong}”. Em có đồng ý không? Hãy xác định đáp án chính xác.`;
+        } else {
+          const extra = p(carefulExtras[m.g] || ["Có một thông tin phụ không cần dùng."]);
+          x[0] = `${x[0]} ${extra} Hãy bỏ qua thông tin không cần thiết và chỉ dùng dữ kiện phù hợp để trả lời.`;
+        }
+        return x;
+      }
+
       function gen() {
         const plan = structurePlan(G);
         const A = plan ? plan.map(z=>z.m) : M.filter((m) => sel[m.id].on);
@@ -3255,7 +3337,6 @@ Phần III - 2 bài toán có lời văn"></textarea>
           time: $("tm").value,
           lop: gs.length == 1 ? gs[0] : "……",
           sp: $("sp").checked,
-          key: $("key").checked,
           both: nmc > 0 && nmc < n,
           secs: B.map((m, i) => {
             const planItem = plan ? plan.find(z=>z.m.id===m.id) : null;
@@ -3264,19 +3345,25 @@ Phần III - 2 bài toán có lời văn"></textarea>
               seen = new Set(),
               it = [];
             const wanted = planItem ? planItem.n : s.n;
-            for (let k = 0; k < wanted * 40 && it.length < wanted; k++) {
+            const carefulOn = $("careful")?.checked !== false;
+            for (let k = 0; k < Math.max(200, wanted * 120) && it.length < wanted; k++) {
               let x;
               try {
                 x = m.gen(s.l);
+                if (carefulOn || mc) mkOpts(x, m.g, m.sc);
+                if (carefulOn) x = carefulVariant(x, m, k % 4, s.l);
                 if (mc) mkOpts(x, m.g, m.sc);
               } catch (e) {
                 continue;
               }
-              const h = x[0] + x[1] + (x[2] || "");
+              const h = x[0] + "||" + x[1] + "||" + (x[2] || "");
               if (!seen.has(h)) {
                 seen.add(h);
                 it.push(x);
               }
+            }
+            if (it.length < wanted) {
+              console.warn(`Ngân hàng ${m.id} chỉ sinh được ${it.length}/${wanted} câu khác nhau.`);
             }
             return { m, l: s.l, mc, it, pt: i < n - 1 ? bs : 10 - bs * (n - 1) };
           }),
@@ -3285,7 +3372,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           item = (s, x, j) =>
             s.mc
               ? `<div class=mc><div class=qi><span><b>Câu ${j + 1}.</b> ${H(x[0])}</span>${fg(x)}</div><div class="op ${oc(x)}">${x.o.map((v, i) => `<span><b>${LT[i]}.</b> ${H(v)}</span>`).join("")}</div></div>`
-              : `<div><div class=qi><span>${L[j]}) ${H(x[0])}</span>${fg(x)}</div>${P.sp && NL[s.m.w] ? dl("").repeat(NL[s.m.w]) + dl("Đáp số: ") : ""}${P.sp && s.m.w == 2 ? dl("Trả lời: ") : ""}</div>`;
+              : `<div><div class=qi><span><b>Câu ${j + 1}.</b> ${H(x[0])}</span>${fg(x)}</div>${P.sp && NL[s.m.w] ? dl("").repeat(NL[s.m.w]) + dl("Đáp số: ") : ""}${P.sp && s.m.w == 2 ? dl("Trả lời: ") : ""}</div>`;
         $("paper").innerHTML =
           `<table class=hd><tr><td><b>${eh(P.school)}</b></td><td><b>${eh(P.title)}</b><br>Môn: Toán – Lớp ${P.lop}<br><i>Thời gian làm bài: ${eh(P.time)}</i></td></tr></table>\n<table class=bx><tr><td style="width:46%">Họ và tên: ......................<br><br>Lớp: ........ Số báo danh: ........</td><td style="width:14%;text-align:center"><b>Điểm</b></td><td><b>Nhận xét của giáo viên</b></td></tr></table>` +
           P.secs
@@ -3298,9 +3385,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
             )
             .join("") +
           `<div class=end>— Hết —</div>` +
-          (P.key
-            ? `<div class=ans><h2>ĐÁP ÁN VÀ BIỂU ĐIỂM</h2>${P.secs.map((s, i) => `<p><b>Bài ${i + 1} (${D(s.pt)} điểm):</b> ${s.it.map((x, j) => (s.mc ? `Câu ${j + 1}: ${LT[x.c]} (${H(x[1])})` : `${L[j]}) ${H(x[1])}`)).join(" &nbsp; ; &nbsp; ")}</p>`).join("")}</div>`
-            : "");
+          "";
       }
       async function save(b, n) {
         try {
@@ -3523,31 +3608,6 @@ Phần III - 2 bài toán có lời văn"></textarea>
             r: { italics: true },
           }),
         );
-        if (P.key) {
-          c.push(
-            t("ĐÁP ÁN VÀ BIỂU ĐIỂM", {
-              p: {
-                pageBreakBefore: true,
-                alignment: C,
-                spacing: { after: 200 },
-              },
-              r: { bold: true, size: 32 },
-            }),
-          );
-          P.secs.forEach((s, i) =>
-            c.push(
-              t(
-                `Bài ${i + 1} (${D(s.pt)} điểm): ` +
-                  s.it
-                    .map((x, j) =>
-                      s.mc ? `Câu ${j + 1}: ${LT[x.c]} (${x[1]})` : `${L[j]}) ${x[1]}`,
-                    )
-                    .join(";   "),
-                { p: { spacing: { after: 120 } } },
-              ),
-            ),
-          );
-        }
         save(
           await Packer.toBlob(
             new Document({
@@ -3563,6 +3623,60 @@ Phần III - 2 bài toán có lời văn"></textarea>
           ),
           "de-toan.docx",
         );
+      }
+      function answerText(x, s, j) {
+        return s.mc ? `Câu ${j + 1}: ${LT[x.c]} — ${String(x[1]).replace(FRD, "$1/$2")}` : `Câu ${j + 1}: ${String(x[1]).replace(FRD, "$1/$2")}`;
+      }
+      function answerHtml() {
+        if (!P) return "";
+        return P.secs.map((s, i) =>
+          `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm)</b><div>${s.it.map((x,j)=>H(answerText(x,s,j))).join(" &nbsp; · &nbsp; ")}</div></div>`
+        ).join("");
+      }
+      function showAnswers() {
+        if (!P) return toast("Hãy tạo đề trước");
+        $("answerContent").innerHTML = answerHtml();
+        $("answerModal").hidden = false;
+        document.body.style.overflow = "hidden";
+      }
+      function hideAnswers() {
+        $("answerModal").hidden = true;
+        document.body.style.overflow = "";
+      }
+      function answerExportHtml() {
+        if (!P) return null;
+        const el = document.createElement("div");
+        el.className = "answer-export";
+        el.innerHTML = `<h1>ĐÁP ÁN VÀ BIỂU ĐIỂM</h1><p><b>${eh(P.title)}</b> — Toán lớp ${eh(P.lop)}</p>${answerHtml()}`;
+        document.body.appendChild(el);
+        return el;
+      }
+      async function docxAnswerSave() {
+        if (!P) return toast("Hãy tạo đề trước");
+        if (!window.docx) return toast("Chưa tải được thư viện DOCX");
+        const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+        const C = AlignmentType.CENTER;
+        const plain = (s) => String(s).replace(FRD, "$1/$2");
+        const children = [
+          new Paragraph({ alignment: C, children: [new TextRun({text:"ĐÁP ÁN VÀ BIỂU ĐIỂM", bold:true, size:32, font:"Times New Roman"})] }),
+          new Paragraph({ children: [new TextRun({text:`${P.title} — Toán lớp ${P.lop}`, bold:true, size:26, font:"Times New Roman"})] }),
+        ];
+        P.secs.forEach((s,i)=>{
+          children.push(new Paragraph({spacing:{before:180,after:80},children:[new TextRun({text:`Bài ${i+1} (${D(s.pt)} điểm)`,bold:true,size:26,font:"Times New Roman"})]}));
+          children.push(new Paragraph({children:[new TextRun({text:s.it.map((x,j)=>answerText(x,s,j)).join(";   "),size:26,font:"Times New Roman"})]}));
+        });
+        save(await Packer.toBlob(new Document({sections:[{properties:{page:{margin:{top:1134,bottom:1134,left:1134,right:1134}}},children}]})),"dap-an-toan.docx");
+      }
+      async function pdfAnswerSave() {
+        if (!P) return toast("Hãy tạo đề trước");
+        toast("Đang tạo PDF đáp án…");
+        if (!window.html2pdf)
+          await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)}).catch(()=>0);
+        if (!window.html2pdf) return toast("Chưa tải được thư viện PDF");
+        const el=answerExportHtml();
+        try {
+          save(await html2pdf().set({margin:10,image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#fff"},jsPDF:{unit:"mm",format:"a4"},pagebreak:{mode:["css","legacy"]}}).from(el).outputPdf("blob"),"dap-an-toan.pdf");
+        } finally { el.remove(); }
       }
       async function pdfSave() {
         if (!P) return toast("Hãy tạo đề trước");
@@ -3597,6 +3711,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           paper.classList.remove("export-paper");
         }
       }
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("answerModal").hidden) hideAnswers(); });
       render();
     </script>
   </body>
