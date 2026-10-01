@@ -63,7 +63,7 @@
         font-size: clamp(22px, 4vw, 32px);
         font-weight: 800;
       }
-      header h1::after{content:'  ·  V15 — KIỂM SOÁT TIẾN ĐỘ';display:inline-block;margin-left:8px;padding:4px 8px;border-radius:999px;background:#fff3cd;color:#8a5a00;font-size:11px;letter-spacing:.3px;vertical-align:middle}
+      header h1::after{content:'  ·  V22 — ĐỒNG BỘ MODULE VÀ DẠNG BÀI';display:inline-block;margin-left:8px;padding:4px 8px;border-radius:999px;background:#fff3cd;color:#8a5a00;font-size:11px;letter-spacing:.3px;vertical-align:middle}
       header h1::after{content:'  ·  V14 — TIẾN ĐỘ THEO TUẦN';display:inline-block;margin-left:8px;padding:4px 8px;border-radius:999px;background:#fff3cd;color:#8a5a00;font-size:11px;letter-spacing:.3px;vertical-align:middle}
       header p {
         margin: 6px 0 0;
@@ -751,7 +751,7 @@
           <div class="tabs" id="tabs"></div>
           <div class="section-label progress-label">2️⃣ CHỌN TIẾN ĐỘ TUẦN ĐÃ HỌC</div>
           <div class="curriculum-bar" id="curriculumProgressBar">
-            <label for="curriculumScope"><b>📚 V15 · PHẠM VI KIẾN THỨC ĐƯỢC PHÉP RA ĐỀ</b></label>
+            <label for="curriculumScope"><b>📚 V22 · PHẠM VI KIẾN THỨC ĐƯỢC PHÉP RA ĐỀ</b></label>
             <select id="curriculumScope" onchange="setCurriculumScope(this.value)"></select>
             <span id="curriculumNote"></span>
           </div>
@@ -3560,18 +3560,25 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function curriculumAllowedModule(m){ const p=curriculumProfile(); return p[3].includes(m.strand||strandOf(m)); }
       function refreshCurriculumUI(){ const el=$("curriculumScope"); if(!el)return; const a=CURRICULUM13[G]||[]; el.innerHTML=a.map((x,i)=>`<option value="${x[0]}">${x[1]}</option>`).join(""); if(!a.some(x=>x[0]===curriculumWeek)) curriculumWeek=a[0]?.[0]||'w1_4'; el.value=curriculumWeek; $("curriculumNote").textContent=curriculumProfile()[4]?"Tuần đầu: ưu tiên dạng số/hình; giáo viên đọc câu hỏi cho học sinh.":"Chỉ hiện các mạch kiến thức phù hợp tiến độ đã chọn."; }
       function setCurriculumScope(v){ curriculumWeek=v; M.filter(m=>!curriculumAllowedModule(m)).forEach(m=>sel[m.uid].on=false); render(); }
-      function moduleTitle19(m){
+      function moduleTitle22(m){
         const p=curriculumProfile(), strand=m.strand||strandOf(m), id=String(m.id), max=p[2];
         const lim=max>=1000000?'1 000 000':max>=100000?'100 000':max>=10000?'10 000':String(max);
-        if(G===1&&p[0]==='w1_4'&&strand==='number') return 'Số và so sánh trong phạm vi 5';
-        if(G===1&&p[0]==='w1_4'&&(strand==='addsub'||/addsub|calc|muldiv/.test(id))) return 'Cộng, trừ không nhớ trong phạm vi 5';
-        if(strand==='number') return G===2?`Số và cấu tạo trong phạm vi ${lim}`:`Số tự nhiên và so sánh đến ${lim}`;
-        if(strand==='addsub') return `Cộng, trừ${G>=3?' và các phép tính':''} trong phạm vi ${lim}`;
-        if(strand==='muldiv') return `Nhân, chia trong phạm vi ${lim}`;
-        if(strand==='arithmetic') return `Tính nhẩm, tính nhanh trong phạm vi ${lim}`;
-        if(strand==='unknown') return `Tìm thành phần chưa biết trong phạm vi ${lim}`;
-        if(strand==='word') return `Bài toán có lời văn trong phạm vi ${lim}`;
-        if(strand==='stats') return `Đọc số liệu phù hợp phạm vi ${lim}`;
+        if(id==='num1') return `Số và so sánh trong phạm vi ${lim}`;
+        if(id==='num2') return `Số và cấu tạo trong phạm vi ${lim}`;
+        if(id==='num3') return `Số và so sánh, làm tròn đến ${lim}`;
+        if(id==='num4') return `Số tự nhiên và làm tròn đến ${lim}`;
+        if(id==='addsub1') return `Cộng, trừ không nhớ trong phạm vi ${lim}`;
+        if(id==='addsub2') return `Cộng, trừ trong phạm vi ${lim}`;
+        if(id==='calc3'||id==='calc4') return `Cộng, trừ, nhân, chia trong phạm vi ${lim}`;
+        if(id==='cond1') return `Số thỏa điều kiện trong phạm vi ${lim}`;
+        if(id==='order1') return `Xếp thứ tự các số trong phạm vi ${lim}`;
+        if(id==='find1'||id==='find2'||id==='find3'||id==='find4'||id==='find5'||id==='rev1'||id==='rev3') return `Tìm số chưa biết trong phạm vi ${lim}`;
+        if(id==='num5') return `Số tự nhiên và phân số (phạm vi số tự nhiên đến ${lim})`;
+        if(id==='muldiv2') return `Nhân, chia trong phạm vi ${lim}`;
+        if(id==='mental1') return `Tính nhẩm trong phạm vi ${lim}`;
+        if(id==='fast1'||id==='fast2'||id==='fast3'||id==='fast4'||id==='fast5') return `Tính nhanh trong phạm vi ${lim}`;
+        if(id==='word1'||id==='word2'||id==='word3'||id==='word4'||id==='word5') return `Bài toán có lời văn trong phạm vi ${lim}`;
+        if(id==='stats1'||id==='stats2'||id==='stats3'||id==='stats4'||id==='stats5'||id==='table2'||id==='avg4'||id==='data5') return `Đọc số liệu phù hợp phạm vi ${lim}`;
         if(strand==='geometry') return G===1?'Hình học và đo lường trực quan':'Hình học và đo lường';
         return m.name;
       }
@@ -3581,7 +3588,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function modHtml(m) {
         const s = sel[m.uid],
           lb = m.h ? LH : LB;
-        const displayName=moduleTitle19(m);
+        const displayName=moduleTitle22(m);
         const diffTitles = m.h
           ? ["Nâng cao: bài vận dụng trong phạm vi lớp", "HSG Tỉnh: nhiều quan hệ và bước suy luận hơn", "HSG Quốc gia: lõi bài khó nhất trong phạm vi lớp"]
           : ["Dễ: phạm vi số nhỏ hơn, ưu tiên 1 bước và dạng nền tảng", "Vừa: phạm vi rộng hơn, có biến đổi và 1–2 bước", "Khó: ưu tiên lõi vận dụng, suy ngược và quan hệ nhiều bước"];
@@ -3602,7 +3609,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         const sg=$("selectedGrades");
         if(sg) sg.innerHTML=[1,2,3,4,5].filter(g=>gradeStats[g].mods>0).map(g=>`<button class="selected-grade-chip" style="--c:${col[g]}" onclick="G=${g};render()">✓ Lớp ${g}: ${gradeStats[g].mods} module · ${gradeStats[g].qs} câu</button>`).join("");
         const currentPicked=M.filter(m=>m.g===G && sel[m.uid].on);
-        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(moduleTitle19(m))}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(moduleTitle19(m))}</button>`).join("")}</div>` : "";
+        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(moduleTitle22(m))}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(moduleTitle22(m))}</button>`).join("")}</div>` : "";
         $("mods").innerHTML =
           `<div class="curriculum-note"><b>Đang áp dụng:</b> ${H(curriculumProfile()[1])}. Tên module bên dưới đã được đổi theo phạm vi này. Mặc định 5 câu/module; có thể chọn 1–50 câu.</div>` +
           pickedNav +
@@ -5165,8 +5172,9 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if(q.length>180) throw Error('Câu dẫn quá dài');
         if(mc){
           const binary=x.o?.length===2 && x.o.map(v=>String(v).trim().toLowerCase()).sort().join('|')==='đúng|sai';
-          if(!Array.isArray(x.o)||(!binary&&x.o.length!==4)) throw Error('Trắc nghiệm phải có 4 phương án, trừ câu kiểm tra đúng hoặc sai');
-          if(new Set(x.o.map(key13)).size!==4) throw Error('Phương án trùng');
+          const relation=x.o?.length===3 && x.o.map(v=>String(v).trim()).sort().join('|')==='<|=|>';
+          if(!Array.isArray(x.o)||(!binary&&!relation&&x.o.length!==4)) throw Error('Trắc nghiệm phải có 4 phương án, trừ câu đúng/sai hoặc câu điền dấu');
+          if(new Set(x.o.map(key13)).size!==(relation?3:4)) throw Error('Phương án trùng');
           if(x.c<0||x.c>=x.o.length) throw Error('Thiếu đáp án đúng');
         }
         return x;
@@ -5251,16 +5259,41 @@ Phần III - 2 bài toán có lời văn"></textarea>
         expression: g>=3?null:[]
       });
 
+      function earlyQuestion21(m,max){
+        const id=String(m.id), limit=Math.max(5,Math.min(max,10));
+        if(id==='num1'){
+          const a=1+Math.floor(Math.random()*(limit-1)), b=1+Math.floor(Math.random()*(limit-a)), c=1+Math.floor(Math.random()*limit), value=a+b, rel=value>c?'>':value<c?'<':'=';
+          return qmake(`${a} + ${b} □ ${c}`,rel,['>','<','='],{arity:3,coreKey:`early-compare-${a}-${b}-${c}`,strand:'number'});
+        }
+        if(id==='order1'){
+          const vals=shuf(Array.from({length:limit},(_,i)=>i+1)).slice(0,3),v=vals.slice().sort((x,y)=>x-y),ans=v.join(' < '), opts=[ans,v.slice().reverse().join(' < '),[v[0],v[2],v[1]].join(' < '),[v[1],v[0],v[2]].join(' < ')];
+          return qmake(`Sắp xếp ${vals.join(', ')} từ bé đến lớn.`,ans,opts,{arity:4,coreKey:`early-order-${vals.join('-')}`,strand:'number'});
+        }
+        if(id==='cond1'){
+          const low=1+Math.floor(Math.random()*Math.max(1,limit-2)), high=Math.min(limit,low+2+Math.floor(Math.random()*2)), ans=low+1, pool=Array.from({length:limit},(_,i)=>i+1).filter(v=>v!==ans).sort(()=>Math.random()-.5).slice(0,3);
+          return qmake(`Số nào lớn hơn ${low} và bé hơn ${high}?`,ans,[ans,...pool],{arity:4,coreKey:`early-condition-${low}-${high}`,strand:'number'});
+        }
+        const a=1+Math.floor(Math.random()*(limit-1)), b=1+Math.floor(Math.random()*(limit-a)), ans=a+b;
+        const pool=Array.from({length:limit+1},(_,i)=>i).filter(v=>v!==ans).sort(()=>Math.random()-.5).slice(0,3);
+        return qmake(`${a} + ${b} = ?`,ans,[ans,...pool],{arity:4,coreKey:`early-add-${a}-${b}`,strand:m.strand||strandOf(m)});
+      }
       function variedQuestion(m,l,attempt,depth,skillId,cogLevel=2,ctx=null){
         try{
           const cp=curriculumProfile();
-          if(cp[4] && ['number','addsub'].includes(m.strand||strandOf(m))){
-            const max=Math.max(2,Math.min(cp[2],5)), a=1+Math.floor(Math.random()*(max-1)), b=1+Math.floor(Math.random()*(max-a)), ans=a+b;
-            const pool=Array.from({length:max+1},(_,i)=>i).filter(v=>v!==ans).sort(()=>Math.random()-.5).slice(0,3);
-            return qmake(`${a} + ${b} = ?`,ans,[ans,...pool],{arity:4,coreKey:`early-add-${a}-${b}`,strand:m.strand||strandOf(m)});
-          }
+          if(cp[4] && ['number','addsub','unknown','pattern'].includes(m.strand||strandOf(m))) return earlyQuestion21(m,cp[2]);
           return create13(m,l,attempt,skillId,cogLevel,ctx);
         }catch(e){failed13(ctx);return null;}
+      }
+      function moduleQuestionMatches22(m,x){
+        if(!x) return false;
+        const q=String(x[0]||''), id=String(m.id), early=curriculumProfile()[4];
+        if(x.meta?.strand && x.meta.strand!==(m.strand||strandOf(m))) return false;
+        if(!early) return true;
+        if(id==='num1') return /□/.test(q)&&Array.isArray(x.o)&&x.o.length===3&&x.o.every(v=>['>','<','='].includes(String(v)));
+        if(id==='addsub1') return /= \?$/.test(q)&&!/[□<>]/.test(q);
+        if(id==='cond1') return /lớn hơn/.test(q)&&/bé hơn/.test(q);
+        if(id==='order1') return /^Sắp xếp/.test(q);
+        return true;
       }
       function curriculumAccept13(x){
         const cp=curriculumProfile(), max=cp[2];
@@ -5350,8 +5383,13 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 sectionCtx.lastCore=lastQuestionPattern;
                 x = variedQuestion(m,s.l,k+it.length*17,depth,goalSkill,goalCog,sectionCtx);
                 if (!x) continue;
+                const expectedStrand=m.strand||strandOf(m);
+                if (x.meta?.strand && x.meta.strand!==expectedStrand) continue;
                 if (!curriculumAccept13(x)) continue;
                 x.meta={...(x.meta||{})};
+                x.meta.moduleId=m.id;
+                x.meta.moduleStrand=m.strand||strandOf(m);
+                if(x.meta.strand && x.meta.strand!==x.meta.moduleStrand) continue;
                 if(x.meta.baseQuestion==null) x.meta.baseQuestion=String(x[0]);
                 if(x.meta.baseAnswer==null) x.meta.baseAnswer=x[1];
                 if(x.meta.baseOpts==null) x.meta.baseOpts=Array.isArray(x[3])?x[3].slice():[];
@@ -5360,6 +5398,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
                   options13(x);
                 }
                 if (!curriculumAccept13(x)) continue;
+                if (!moduleQuestionMatches22(m,x)) continue;
                 validateQuestion13(x,mc);
                 x._goalSkill=goalSkill;x._goalCog=goalCog;x._cogPos=cogPos;
               } catch (e) { continue; }
@@ -5395,7 +5434,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc))
                   ? `<h3 class=pt>${s.mc ? "Phần I. Trắc nghiệm" : "Phần II. Tự luận"}</h3>`
                   : "") +
-                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(moduleTitle19(s.m))}${s.mc ? ' <span class=hn>(Chọn một đáp án)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
+                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(moduleTitle22(s.m))}${s.mc ? ' <span class=hn>(Chọn một đáp án)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
             )
             .join("") +
           `<div class=end>— Hết —</div>`;
@@ -5990,7 +6029,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
             const z=teacherSolution(x,s), ans=s.mc?`${LT[x.c]} — ${z.answer}`:z.answer;
             return `<details class="solution-q"><summary><div class="solution-q-title"><b>Câu ${j+1} (${D(x.points)} điểm)</b><div class="solution-answer">Đáp án: ${H(ans)}</div></div></summary><div class="solution-body"><div style="margin-bottom:8px"><b>Đề bài:</b> ${H(z.question)}</div>${z.steps.map((t,k)=>`<div class="solution-step"><span class="solution-step-no">${k+1}</span><div class="solution-step-text">${H(t)}</div></div>`).join("")}<div class="solution-tip"><b>💡 Cách tự kiểm tra:</b> ${H(z.tip)}</div><div class="solution-final">✓ Kết luận: ${H(ans)}</div></div></details>`;
           }).join("");
-          return `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm) — ${H(moduleTitle19(s.m))}</b><div style="margin-top:8px">${qs}</div></div>`;
+          return `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm) — ${H(moduleTitle22(s.m))}</b><div style="margin-top:8px">${qs}</div></div>`;
         }).join("");
         return tools+body;
       }
