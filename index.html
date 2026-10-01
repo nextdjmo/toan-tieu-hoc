@@ -3550,7 +3550,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         P = null;
       let curriculumWeek = 'w1_4';
       const CURRICULUM13 = {
-        1:[['w1_4','Tuần 1–4 · Làm quen số 1–5, hình và vị trí',5,['number','geometry'],true],['w5_8','Tuần 5–8 · Số 1–10, so sánh, cộng/trừ trong 5',10,['number','addsub','geometry'],true],['w9_12','Tuần 9–12 · Số 0–10, cộng/trừ trong 10',10,['number','addsub','geometry'],false],['w13_18','Tuần 13–18 · Số đến 20, cộng/trừ trong 20',20,['number','addsub','geometry','measure'],false],['w19_25','Tuần 19–25 · Số đến 50, đo lường và hình học',50,['number','addsub','geometry','measure'],false],['w26_35','Tuần 26–35 · Số đến 100 và bài toán đơn giản',100,['number','addsub','geometry','measure','word','stats'],false]],
+        1:[['w1_4','Tuần 1–4 · Làm quen số 1–5, hình và vị trí',5,['number','addsub'],true],['w5_8','Tuần 5–8 · Số 1–10, so sánh, cộng/trừ trong 5',10,['number','addsub','geometry'],true],['w9_12','Tuần 9–12 · Số 0–10, cộng/trừ trong 10',10,['number','addsub','geometry'],false],['w13_18','Tuần 13–18 · Số đến 20, cộng/trừ trong 20',20,['number','addsub','geometry','measure'],false],['w19_25','Tuần 19–25 · Số đến 50, đo lường và hình học',50,['number','addsub','geometry','measure'],false],['w26_35','Tuần 26–35 · Số đến 100 và bài toán đơn giản',100,['number','addsub','geometry','measure','word','stats'],false]],
         2:[['w1_8','Tuần 1–8 · Số đến 100, cộng trừ và hình học nền tảng',100,['number','addsub','geometry','measure'],false],['w9_18','Tuần 9–18 · Nhân chia và số đến 1000',1000,['number','addsub','muldiv','geometry','measure'],false],['w19_27','Tuần 19–27 · Bảng nhân chia, đo lường, dữ liệu',1000,['number','addsub','muldiv','geometry','measure','stats'],false],['w28_35','Tuần 28–35 · Bài toán nhiều bước và phân số đơn giản',1000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false]],
         3:[['w1_10','Tuần 1–10 · Số đến 1000 và bốn phép tính',1000,['number','addsub','muldiv','geometry','measure'],false],['w11_20','Tuần 11–20 · Mở rộng số đến 10 000',10000,['number','addsub','muldiv','geometry','measure','stats'],false],['w21_30','Tuần 21–30 · Số đến 100 000, phân số và dữ liệu',100000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false],['w31_35','Tuần 31–35 · Ôn tập tổng hợp lớp 3',100000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false]],
         4:[['w1_10','Tuần 1–10 · Số tự nhiên và bốn phép tính',100000,['number','addsub','muldiv','geometry','measure'],false],['w11_20','Tuần 11–20 · Phân số và hình học',100000,['number','addsub','muldiv','geometry','measure','fraction'],false],['w21_30','Tuần 21–30 · Dữ liệu, biểu thức và bài toán nhiều bước',1000000,['number','addsub','muldiv','geometry','measure','fraction','stats','word','expression'],false],['w31_35','Tuần 31–35 · Ôn tập tổng hợp lớp 4',1000000,['number','addsub','muldiv','geometry','measure','fraction','stats','word','expression'],false]],
@@ -3560,12 +3560,19 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function curriculumAllowedModule(m){ const p=curriculumProfile(); return p[3].includes(m.strand||strandOf(m)); }
       function refreshCurriculumUI(){ const el=$("curriculumScope"); if(!el)return; const a=CURRICULUM13[G]||[]; el.innerHTML=a.map((x,i)=>`<option value="${x[0]}">${x[1]}</option>`).join(""); if(!a.some(x=>x[0]===curriculumWeek)) curriculumWeek=a[0]?.[0]||'w1_4'; el.value=curriculumWeek; $("curriculumNote").textContent=curriculumProfile()[4]?"Tuần đầu: ưu tiên dạng số/hình; giáo viên đọc câu hỏi cho học sinh.":"Chỉ hiện các mạch kiến thức phù hợp tiến độ đã chọn."; }
       function setCurriculumScope(v){ curriculumWeek=v; M.filter(m=>!curriculumAllowedModule(m)).forEach(m=>sel[m.uid].on=false); render(); }
-      function moduleTitle18(m){
-        const p=curriculumProfile(), strand=m.strand||strandOf(m), id=String(m.id);
-        if(G===1&&p[0]==='w1_4'&&(id==='num1'||strand==='number')) return 'Số và so sánh trong phạm vi 5';
+      function moduleTitle19(m){
+        const p=curriculumProfile(), strand=m.strand||strandOf(m), id=String(m.id), max=p[2];
+        const lim=max>=1000000?'1 000 000':max>=100000?'100 000':max>=10000?'10 000':String(max);
+        if(G===1&&p[0]==='w1_4'&&strand==='number') return 'Số và so sánh trong phạm vi 5';
         if(G===1&&p[0]==='w1_4'&&(strand==='addsub'||/addsub|calc|muldiv/.test(id))) return 'Cộng, trừ không nhớ trong phạm vi 5';
-        if(G===1&&p[0]==='w5_8'&&(id==='num1'||strand==='number')) return 'Số và so sánh trong phạm vi 10';
-        if(G===1&&p[0]==='w5_8'&&(strand==='addsub'||/addsub|calc/.test(id))) return 'Cộng, trừ không nhớ trong phạm vi 5';
+        if(strand==='number') return G===2?`Số và cấu tạo trong phạm vi ${lim}`:`Số tự nhiên và so sánh đến ${lim}`;
+        if(strand==='addsub') return `Cộng, trừ${G>=3?' và các phép tính':''} trong phạm vi ${lim}`;
+        if(strand==='muldiv') return `Nhân, chia trong phạm vi ${lim}`;
+        if(strand==='arithmetic') return `Tính nhẩm, tính nhanh trong phạm vi ${lim}`;
+        if(strand==='unknown') return `Tìm thành phần chưa biết trong phạm vi ${lim}`;
+        if(strand==='word') return `Bài toán có lời văn trong phạm vi ${lim}`;
+        if(strand==='stats') return `Đọc số liệu phù hợp phạm vi ${lim}`;
+        if(strand==='geometry') return G===1?'Hình học và đo lường trực quan':'Hình học và đo lường';
         return m.name;
       }
       const LB = ["Dễ", "Vừa", "Khó"],
@@ -3574,7 +3581,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function modHtml(m) {
         const s = sel[m.uid],
           lb = m.h ? LH : LB;
-        const displayName=moduleTitle18(m);
+        const displayName=moduleTitle19(m);
         const diffTitles = m.h
           ? ["Nâng cao: bài vận dụng trong phạm vi lớp", "HSG Tỉnh: nhiều quan hệ và bước suy luận hơn", "HSG Quốc gia: lõi bài khó nhất trong phạm vi lớp"]
           : ["Dễ: phạm vi số nhỏ hơn, ưu tiên 1 bước và dạng nền tảng", "Vừa: phạm vi rộng hơn, có biến đổi và 1–2 bước", "Khó: ưu tiên lõi vận dụng, suy ngược và quan hệ nhiều bước"];
@@ -3595,7 +3602,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         const sg=$("selectedGrades");
         if(sg) sg.innerHTML=[1,2,3,4,5].filter(g=>gradeStats[g].mods>0).map(g=>`<button class="selected-grade-chip" style="--c:${col[g]}" onclick="G=${g};render()">✓ Lớp ${g}: ${gradeStats[g].mods} module · ${gradeStats[g].qs} câu</button>`).join("");
         const currentPicked=M.filter(m=>m.g===G && sel[m.uid].on);
-        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(moduleTitle18(m))}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(moduleTitle18(m))}</button>`).join("")}</div>` : "";
+        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(moduleTitle19(m))}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(moduleTitle19(m))}</button>`).join("")}</div>` : "";
         $("mods").innerHTML =
           `<div class="curriculum-note"><b>Đang áp dụng:</b> ${H(curriculumProfile()[1])}. Tên module bên dưới đã được đổi theo phạm vi này. Mặc định 5 câu/module; có thể chọn 1–50 câu.</div>` +
           pickedNav +
@@ -5388,7 +5395,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc))
                   ? `<h3 class=pt>${s.mc ? "Phần I. Trắc nghiệm" : "Phần II. Tự luận"}</h3>`
                   : "") +
-                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(s.m.t)}${s.mc ? ' <span class=hn>(Chọn một đáp án)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
+                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(moduleTitle19(s.m))}${s.mc ? ' <span class=hn>(Chọn một đáp án)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
             )
             .join("") +
           `<div class=end>— Hết —</div>`;
@@ -5983,7 +5990,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
             const z=teacherSolution(x,s), ans=s.mc?`${LT[x.c]} — ${z.answer}`:z.answer;
             return `<details class="solution-q"><summary><div class="solution-q-title"><b>Câu ${j+1} (${D(x.points)} điểm)</b><div class="solution-answer">Đáp án: ${H(ans)}</div></div></summary><div class="solution-body"><div style="margin-bottom:8px"><b>Đề bài:</b> ${H(z.question)}</div>${z.steps.map((t,k)=>`<div class="solution-step"><span class="solution-step-no">${k+1}</span><div class="solution-step-text">${H(t)}</div></div>`).join("")}<div class="solution-tip"><b>💡 Cách tự kiểm tra:</b> ${H(z.tip)}</div><div class="solution-final">✓ Kết luận: ${H(ans)}</div></div></details>`;
           }).join("");
-          return `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm) — ${H(s.m.t)}</b><div style="margin-top:8px">${qs}</div></div>`;
+          return `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm) — ${H(moduleTitle19(s.m))}</b><div style="margin-top:8px">${qs}</div></div>`;
         }).join("");
         return tools+body;
       }
