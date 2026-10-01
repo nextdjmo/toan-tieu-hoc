@@ -63,6 +63,8 @@
         font-size: clamp(22px, 4vw, 32px);
         font-weight: 800;
       }
+      header h1::after{content:'  ·  V15 — KIỂM SOÁT TIẾN ĐỘ';display:inline-block;margin-left:8px;padding:4px 8px;border-radius:999px;background:#fff3cd;color:#8a5a00;font-size:11px;letter-spacing:.3px;vertical-align:middle}
+      header h1::after{content:'  ·  V14 — TIẾN ĐỘ THEO TUẦN';display:inline-block;margin-left:8px;padding:4px 8px;border-radius:999px;background:#fff3cd;color:#8a5a00;font-size:11px;letter-spacing:.3px;vertical-align:middle}
       header p {
         margin: 6px 0 0;
         opacity: 0.9;
@@ -158,6 +160,8 @@
       .selected-grades{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
       .selected-grades:empty{display:none}
       .selected-grade-chip{border:1px solid var(--c);background:color-mix(in srgb,var(--c) 9%,var(--cd));color:var(--c);border-radius:999px;padding:5px 9px;font:800 11px Nunito,sans-serif;cursor:pointer}
+      .curriculum-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 12px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--pr) 25%,var(--bd));border-radius:11px;background:color-mix(in srgb,var(--pr) 5%,var(--cd));font-size:12px}.curriculum-bar select{max-width:100%;flex:1;min-width:230px;border:1px solid var(--bd);border-radius:8px;padding:7px 9px;background:var(--cd);color:var(--tx);font:inherit}.curriculum-bar span{color:var(--mu);font-size:11px}
+      .section-label{margin:10px 0 7px;padding:8px 10px;border-radius:9px;font-size:12px;font-weight:900;letter-spacing:.2px}.module-label{color:#3148ad;background:#eef2ff;border-left:4px solid #4f6bff}.progress-label{color:#166534;background:#ecfdf5;border-left:4px solid #22c55e}
       .selected-current{margin:0 0 10px;padding:8px 9px;border:1px dashed color-mix(in srgb,var(--c) 38%,var(--bd));border-radius:10px;background:color-mix(in srgb,var(--c) 5%,var(--cd));font-size:11px;color:var(--mu)}
       .selected-current b{color:var(--tx);margin-right:5px}.selected-current button{border:1px solid color-mix(in srgb,var(--c) 45%,var(--bd));background:var(--cd);color:var(--c);border-radius:999px;padding:3px 7px;margin:2px;font:700 10px Nunito,sans-serif;cursor:pointer;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
       .advanced-shell{margin:0 0 12px;border:1px solid var(--bd);border-radius:12px;background:color-mix(in srgb,var(--cd) 96%,#eef2ff);overflow:hidden}
@@ -626,7 +630,7 @@
       body.student-focus>header,body.student-focus main>section:first-child{display:none!important}
       body.student-focus main{display:block!important;max-width:900px;padding:10px;margin:0 auto}
       body.student-focus main>section.card{box-shadow:none;border:0;background:transparent;padding:0}
-      body.student-focus .output-actions{display:none!important}
+      body.student-focus .output-actions,body.student-focus #qualityReport13{display:none!important}
       body.student-focus .student-mode-bar{display:flex}
       body.student-focus .pv{background:transparent;padding:0;border-radius:0}
       body.student-focus #paper{max-width:760px;box-shadow:0 8px 30px rgba(15,23,42,.10)}
@@ -690,7 +694,7 @@
         #paper:not(.export-paper) .op.c4,#paper:not(.export-paper) .op.c2,#paper:not(.export-paper) .op.c1{grid-template-columns:1fr;gap:5px}
         #paper:not(.export-paper) .op span{display:block;padding:5px 7px;border-radius:7px;background:#fafafa}
         #paper:not(.export-paper) .qi{align-items:flex-start;gap:5px}
-        #paper:not(.export-paper) .fg{max-width:42%;overflow:auto}
+        #paper:not(.export-paper) .fg{max-width:100%;overflow:auto}
         #paper:not(.export-paper) .hd,#paper:not(.export-paper) .hd tbody,#paper:not(.export-paper) .hd tr,#paper:not(.export-paper) .hd td{display:block;width:100%!important}
         #paper:not(.export-paper) .hd td{padding:2px 0;text-align:center}
         #paper:not(.export-paper) .hd td:first-child{font-size:13px;color:#444;margin-bottom:4px}
@@ -743,7 +747,14 @@
     <main>
       <section>
         <div class="card selector-card">
+          <div class="section-label module-label">1️⃣ CHỌN LỚP VÀ DẠNG BÀI (MODULE)</div>
           <div class="tabs" id="tabs"></div>
+          <div class="section-label progress-label">2️⃣ CHỌN TIẾN ĐỘ TUẦN ĐÃ HỌC</div>
+          <div class="curriculum-bar" id="curriculumProgressBar">
+            <label for="curriculumScope"><b>📚 V15 · PHẠM VI KIẾN THỨC ĐƯỢC PHÉP RA ĐỀ</b></label>
+            <select id="curriculumScope" onchange="setCurriculumScope(this.value)"></select>
+            <span id="curriculumNote"></span>
+          </div>
           <div class="quick-create-bar">
             <div class="quick-create-copy">
               <b>Chọn dạng bài, độ khó, hình thức và số câu</b>
@@ -809,7 +820,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
                     <div class="bp-title"><label><input type="checkbox" id="blueprintAuto" checked onchange="renderBlueprintPreview()" /> 🗺️ App tự xây blueprint toàn đề</label></div>
                     <label>Nhịp toàn đề <select id="blueprintMode" onchange="renderBlueprintPreview()"><option value="auto" selected>Tự động theo lớp</option><option value="progressive">Khởi động → tăng dần → thử thách</option><option value="balanced">Cân bằng xuyên suốt</option><option value="interleave">Xen kẽ mức tư duy</option></select></label>
                   </div>
-                  <div class="blueprint-help"><b>Blueprint không đổi mục tiêu của ma trận.</b> Nó giữ đúng số câu ở từng Mạch × Kỹ năng × Mức tư duy rồi tự sắp thứ tự để tránh dồn một kiểu.</div>
+                  <div class="blueprint-help"><b>Ma trận là mục tiêu phân bổ.</b> Khi mục tiêu không phù hợp module, ưu tiên câu đúng nội dung; báo cáo sau tạo đề ghi số câu được điều chỉnh. Dạng đã dùng được hạn chế lặp.</div>
                   <div id="blueprintSummary" class="blueprint-summary"></div>
                   <div id="blueprintMetrics" class="blueprint-metrics"></div>
                   <div id="blueprintBlocks" class="blueprint-blocks"></div>
@@ -867,7 +878,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
     </div>
     <div id="toast"></div>
     <script>
-      /* v12: chống học thuộc mẫu — random hóa lõi, tránh lặp giữa các lần tạo, tách rõ Dễ/Vừa/Khó */
+      /* v13: ngân hàng dạng bài độc lập, câu hỏi một mục tiêu, đáp án và lời giải đồng bộ. */
       const $ = (i) => document.getElementById(i),
         r = (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
         p = (a) => a[r(0, a.length - 1)],
@@ -3110,8 +3121,8 @@ Phần III - 2 bài toán có lời văn"></textarea>
         return [`Có ${a} con chim. Thêm ${b} con bay đến rồi ${b} con bay đi. Hỏi còn bao nhiêu con chim?`,a,null,[a+b,a-b,c]];
       });
       addExtra(1,"stats1","Thống kê, biểu đồ","Dựa vào bảng số liệu:",(l)=>{
-        const a=r(2,8),b=r(2,8),c=r(2,8), vals=[a,b,c], mx=Math.max(...vals), ans=vals.indexOf(mx)+1;
-        return [`Số bạn chọn môn: Toán ${a}, Tiếng Việt ${b}, Mĩ thuật ${c}. Môn nào có nhiều bạn chọn nhất?`,["Toán","Tiếng Việt","Mĩ thuật"][ans-1],null,["Toán","Tiếng Việt","Mĩ thuật"].filter(x=>x!==["Toán","Tiếng Việt","Mĩ thuật"][ans-1])];
+        const a=r(2,8),b=r(2,8),c=r(2,8), result=largestGroups([a,b,c],["Toán","Tiếng Việt","Mĩ thuật"]);
+        return [`Số bạn chọn môn: Toán ${a}, Tiếng Việt ${b}, Mĩ thuật ${c}. Môn nào có nhiều bạn chọn nhất? Hãy nêu đầy đủ các môn cùng đạt số lớn nhất.`,result.answer,null,result.options];
       });
       addExtra(1,"custom1","Tạo đề theo cấu trúc riêng","Theo cấu trúc đã nhập:",(l)=>{
         const a=r(10,50),b=r(1,20); return [`${a} + ${b} = …`,a+b,null,[a+b-1,a+b+1,a-b]];
@@ -3453,8 +3464,8 @@ Phần III - 2 bài toán có lời văn"></textarea>
         return choice(`Một món đồ giá ${price} nghìn đồng. Mua ${n} món cần ít nhất bao nhiêu nghìn đồng?`,total,[total,total+price,total-price,price+n]);
       });
       brain(2,"table2","Đọc bảng dữ liệu", "Đọc và suy luận:",(l)=>{
-        const a=r(3,9),b=r(3,9),c=r(3,9),mx=Math.max(a,b,c),ans=["Thứ Hai","Thứ Ba","Thứ Tư"][[a,b,c].indexOf(mx)];
-        return choice(`Số sách đọc: Thứ Hai ${a}, Thứ Ba ${b}, Thứ Tư ${c}. Ngày nào đọc nhiều nhất?`,ans,["Thứ Hai","Thứ Ba","Thứ Tư","Cả ba ngày"]);
+        const a=r(3,9),b=r(3,9),c=r(3,9),result=largestGroups([a,b,c],["Thứ Hai","Thứ Ba","Thứ Tư"]);
+        return choice(`Số sách đọc: Thứ Hai ${a}, Thứ Ba ${b}, Thứ Tư ${c}. Ngày nào đọc nhiều nhất? Hãy nêu đầy đủ các ngày cùng đạt số lớn nhất.`,result.answer,result.options);
       });
 
       // LỚP 3 — nhân/chia, biểu thức, đo lường, diện tích, phân số trực quan.
@@ -3537,18 +3548,40 @@ Phần III - 2 bài toán có lời văn"></textarea>
       });
       let G = 1,
         P = null;
+      let curriculumWeek = 'w1_4';
+      const CURRICULUM13 = {
+        1:[['w1_4','Tuần 1–4 · Làm quen số 1–5, hình và vị trí',5,['number','geometry'],true],['w5_8','Tuần 5–8 · Số 1–10, so sánh, cộng/trừ trong 5',10,['number','addsub','geometry'],true],['w9_12','Tuần 9–12 · Số 0–10, cộng/trừ trong 10',10,['number','addsub','geometry'],false],['w13_18','Tuần 13–18 · Số đến 20, cộng/trừ trong 20',20,['number','addsub','geometry','measure'],false],['w19_25','Tuần 19–25 · Số đến 50, đo lường và hình học',50,['number','addsub','geometry','measure'],false],['w26_35','Tuần 26–35 · Số đến 100 và bài toán đơn giản',100,['number','addsub','geometry','measure','word','stats'],false]],
+        2:[['w1_8','Tuần 1–8 · Số đến 100, cộng trừ và hình học nền tảng',100,['number','addsub','geometry','measure'],false],['w9_18','Tuần 9–18 · Nhân chia và số đến 1000',1000,['number','addsub','muldiv','geometry','measure'],false],['w19_27','Tuần 19–27 · Bảng nhân chia, đo lường, dữ liệu',1000,['number','addsub','muldiv','geometry','measure','stats'],false],['w28_35','Tuần 28–35 · Bài toán nhiều bước và phân số đơn giản',1000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false]],
+        3:[['w1_10','Tuần 1–10 · Số đến 1000 và bốn phép tính',1000,['number','addsub','muldiv','geometry','measure'],false],['w11_20','Tuần 11–20 · Mở rộng số đến 10 000',10000,['number','addsub','muldiv','geometry','measure','stats'],false],['w21_30','Tuần 21–30 · Số đến 100 000, phân số và dữ liệu',100000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false],['w31_35','Tuần 31–35 · Ôn tập tổng hợp lớp 3',100000,['number','addsub','muldiv','geometry','measure','stats','word','fraction'],false]],
+        4:[['w1_10','Tuần 1–10 · Số tự nhiên và bốn phép tính',100000,['number','addsub','muldiv','geometry','measure'],false],['w11_20','Tuần 11–20 · Phân số và hình học',100000,['number','addsub','muldiv','geometry','measure','fraction'],false],['w21_30','Tuần 21–30 · Dữ liệu, biểu thức và bài toán nhiều bước',1000000,['number','addsub','muldiv','geometry','measure','fraction','stats','word','expression'],false],['w31_35','Tuần 31–35 · Ôn tập tổng hợp lớp 4',1000000,['number','addsub','muldiv','geometry','measure','fraction','stats','word','expression'],false]],
+        5:[['w1_10','Tuần 1–10 · Phân số, số thập phân nền tảng',1000000,['number','addsub','muldiv','geometry','measure','fraction','decimal'],false],['w11_20','Tuần 11–20 · Số thập phân và phần trăm',1000000,['number','addsub','muldiv','geometry','measure','fraction','decimal','percent'],false],['w21_30','Tuần 21–30 · Tỉ số, chuyển động và hình học',100000000,['number','addsub','muldiv','geometry','measure','fraction','decimal','percent','ratio','motion','word'],false],['w31_35','Tuần 31–35 · Ôn tập tổng hợp lớp 5',100000000,['number','addsub','muldiv','geometry','measure','fraction','decimal','percent','ratio','motion','word','stats'],false]]
+      };
+      function curriculumProfile(){ const a=CURRICULUM13[G]||CURRICULUM13[1]; return a.find(x=>curriculumWeek===x[0])||a[0]; }
+      function curriculumAllowedModule(m){ const p=curriculumProfile(); return p[3].includes(m.strand||strandOf(m)); }
+      function refreshCurriculumUI(){ const el=$("curriculumScope"); if(!el)return; const a=CURRICULUM13[G]||[]; el.innerHTML=a.map((x,i)=>`<option value="${x[0]}">${x[1]}</option>`).join(""); if(!a.some(x=>x[0]===curriculumWeek)) curriculumWeek=a[0]?.[0]||'w1_4'; el.value=curriculumWeek; $("curriculumNote").textContent=curriculumProfile()[4]?"Tuần đầu: ưu tiên dạng số/hình; giáo viên đọc câu hỏi cho học sinh.":"Chỉ hiện các mạch kiến thức phù hợp tiến độ đã chọn."; }
+      function setCurriculumScope(v){ curriculumWeek=v; M.filter(m=>!curriculumAllowedModule(m)).forEach(m=>sel[m.uid].on=false); render(); }
+      function moduleTitle18(m){
+        const p=curriculumProfile(), strand=m.strand||strandOf(m), id=String(m.id);
+        if(G===1&&p[0]==='w1_4'&&(id==='num1'||strand==='number')) return 'Số và so sánh trong phạm vi 5';
+        if(G===1&&p[0]==='w1_4'&&(strand==='addsub'||/addsub|calc|muldiv/.test(id))) return 'Cộng, trừ không nhớ trong phạm vi 5';
+        if(G===1&&p[0]==='w5_8'&&(id==='num1'||strand==='number')) return 'Số và so sánh trong phạm vi 10';
+        if(G===1&&p[0]==='w5_8'&&(strand==='addsub'||/addsub|calc/.test(id))) return 'Cộng, trừ không nhớ trong phạm vi 5';
+        return m.name;
+      }
       const LB = ["Dễ", "Vừa", "Khó"],
-        LH = ["Nâng cao", "HSG Tỉnh", "HSG Quốc gia"],
+        LH = ["Vận dụng", "Suy luận", "Nhiều bước"],
         LT = "ABCD";
       function modHtml(m) {
         const s = sel[m.uid],
           lb = m.h ? LH : LB;
+        const displayName=moduleTitle18(m);
         const diffTitles = m.h
           ? ["Nâng cao: bài vận dụng trong phạm vi lớp", "HSG Tỉnh: nhiều quan hệ và bước suy luận hơn", "HSG Quốc gia: lõi bài khó nhất trong phạm vi lớp"]
           : ["Dễ: phạm vi số nhỏ hơn, ưu tiên 1 bước và dạng nền tảng", "Vừa: phạm vi rộng hơn, có biến đổi và 1–2 bước", "Khó: ưu tiên lõi vận dụng, suy ngược và quan hệ nhiều bước"];
-        return `<div id="mod-${m.uid}" class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.uid}'].on=this.checked;render()"><b>${m.name}</b></label><div class=ctl><span class="module-choice"><span class="module-choice-label">Mức độ</span><span class="seg difficulty-seg">${[1, 2, 3].map((i) => `<button type="button" title="${diffTitles[i-1]}" class="${s.l == i ? "a" : ""}" onclick="sel['${m.uid}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span></span><span class="module-choice"><span class="module-choice-label">Hình thức</span><span class="seg module-mode-advanced">${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button type="button" class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.uid}'].mc=${i};render()">${t}</button>`).join("")}</span></span><label class="question-count-label">Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.uid}'].n=Math.min(50,Math.max(1,+this.value||1));render()"></label></div></div>`;
+        return `<div id="mod-${m.uid}" class="mod ${s.on ? "on" : ""}" style="--c:${col[G]}"><label><input type=checkbox ${s.on ? "checked" : ""} onchange="sel['${m.uid}'].on=this.checked;render()"><b>${displayName}</b></label><div class=ctl><span class="module-choice"><span class="module-choice-label">Mức độ</span><span class="seg difficulty-seg">${[1, 2, 3].map((i) => `<button type="button" title="${diffTitles[i-1]}" class="${s.l == i ? "a" : ""}" onclick="sel['${m.uid}'].l=${i};render()">${lb[i - 1]}</button>`).join("")}</span></span><span class="module-choice"><span class="module-choice-label">Hình thức</span><span class="seg module-mode-advanced">${["Tự luận", "Trắc nghiệm"].map((t, i) => `<button type="button" class="${!!s.mc == !!i ? "a" : ""}" onclick="sel['${m.uid}'].mc=${i};render()">${t}</button>`).join("")}</span></span><label class="question-count-label">Số câu <input type=number min=1 max=50 value=${s.n} onchange="sel['${m.uid}'].n=Math.min(50,Math.max(1,+this.value||1));render()"></label></div></div>`;
       }
       function render() {
+        refreshCurriculumUI();
         const gradeStats = Object.fromEntries([1,2,3,4,5].map(g => {
           const chosen=M.filter(m=>m.g===g && sel[m.uid].on);
           return [g,{mods:chosen.length,qs:chosen.reduce((a,m)=>a+sel[m.uid].n,0)}];
@@ -3562,13 +3595,13 @@ Phần III - 2 bài toán có lời văn"></textarea>
         const sg=$("selectedGrades");
         if(sg) sg.innerHTML=[1,2,3,4,5].filter(g=>gradeStats[g].mods>0).map(g=>`<button class="selected-grade-chip" style="--c:${col[g]}" onclick="G=${g};render()">✓ Lớp ${g}: ${gradeStats[g].mods} module · ${gradeStats[g].qs} câu</button>`).join("");
         const currentPicked=M.filter(m=>m.g===G && sel[m.uid].on);
-        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(m.name)}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(m.name)}</button>`).join("")}</div>` : "";
+        const pickedNav=currentPicked.length ? `<div class="selected-current" style="--c:${col[G]}"><b>✓ Đã chọn trong lớp ${G}:</b>${currentPicked.map(m=>`<button type="button" title="${eh(moduleTitle18(m))}" onclick="document.getElementById('mod-${m.uid}')?.scrollIntoView({behavior:'smooth',block:'center'})">${eh(moduleTitle18(m))}</button>`).join("")}</div>` : "";
         $("mods").innerHTML =
-          `<div class="curriculum-note"><b>Khung lớp ${G}:</b> chỉ sinh câu hỏi trong phạm vi kiến thức của lớp ${G}; các dạng chưa thuộc lớp này sẽ không xuất hiện.</div>` +
+          `<div class="curriculum-note"><b>Đang áp dụng:</b> ${H(curriculumProfile()[1])}. Tên module bên dưới đã được đổi theo phạm vi này. Mặc định 5 câu/module; có thể chọn 1–50 câu.</div>` +
           pickedNav +
-          M.filter((m) => m.g == G && !m.h).map(modHtml).join("") +
-          `<div class="hh">🏆 Học sinh giỏi: Nâng cao → HSG Tỉnh → HSG Quốc gia</div>` +
-          M.filter((m) => m.g == G && m.h).map(modHtml).join("");
+          M.filter((m) => m.g == G && !m.h && curriculumAllowedModule(m)).map(modHtml).join("") +
+          `<div class="hh">🏆 Học sinh giỏi: Vận dụng → Suy luận → Nhiều bước</div>` +
+          M.filter((m) => m.g == G && m.h && curriculumAllowedModule(m)).map(modHtml).join("");
         const k = M.filter((m) => sel[m.uid].on);
         const sp=structurePlan(G);
         const totalSelected = sp
@@ -3884,7 +3917,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         (g,l)=>{let a,b,c;do{a=r(2,20);b=r(2,20);c=r(2,20);}while((a+b+c)%3!==0);return qmake(`Ba lớp có ${a}, ${b}, ${c} bạn. Trung bình là?`,(a+b+c)/3,[(a+b+c)/3+1,(a+b+c)/3-1,a]);},
         (g,l)=>{const a=r(5,20),b=r(1,5),ans=a-b;return qmake(`Số liệu A là ${a}; B ít hơn A ${b}. B bằng?`,ans,[a+b,ans+1,b]);},
         (g,l)=>{const a=r(3,15),b=r(3,15),c=r(3,15),sum=a+b+c;return qmake(`Bảng có ba ô: ${a}, ${b}, ${c}. Nếu cần tìm tổng, thông tin nào phải dùng?`,`cả ba số`,["chỉ số lớn nhất","cả ba số","chỉ hai số đầu","không cần số nào"]);},
-        (g,l)=>{const a=r(4,15),b=r(4,15),c=r(4,15),mx=Math.max(a,b,c),ans=["A","B","C"][[a,b,c].indexOf(mx)];return qmake(`Số liệu A=${a}, B=${b}, C=${c}. Nhóm nào lớn nhất?`,ans,["A","B","C","Bằng nhau"]);},
+        (g,l)=>{const a=r(4,15),b=r(4,15),c=r(4,15),result=largestGroups([a,b,c],["A","B","C"]);return qmake(`Số liệu A=${a}, B=${b}, C=${c}. Nhóm nào có giá trị lớn nhất? Hãy nêu đầy đủ các nhóm cùng đạt giá trị lớn nhất.`,result.answer,result.options);},
         (g,l)=>{const a=r(5,20),b=r(5,20),sum=a+b;return qmake(`Hai ngày tổng ${sum}; ngày thứ nhất có ${a}. Ngày thứ hai có?`,b,[a,b,sum]);},
         (g,l)=>{const a=r(5,20),b=r(5,20),ans=Math.abs(a-b);return qmake(`Chênh lệch giữa ${a} và ${b} là?`,ans,[a+b,Math.abs(a-b),ans+1]);},
         (g,l)=>{const a=r(2,20),b=r(2,20),c=r(2,20),mn=Math.min(a,b,c);return qmake(`Ba số ${a}, ${b}, ${c}. Số nhỏ nhất là?`,mn,[a,b,c].filter(x=>x!==mn).concat(mn));},
@@ -4615,14 +4648,14 @@ Phần III - 2 bài toán có lời văn"></textarea>
         logic:{1:[0,1,2,3],2:[2,3,4,5,6],3:[5,6,7,8,9]}
       };
       let recentCoreHistory = {};
-      try { recentCoreHistory = JSON.parse(localStorage.getItem("mathRecentCoreV12")||"{}"); } catch(e) {}
+      try { recentCoreHistory = JSON.parse(localStorage.getItem("mathRecentCoreV13")||"{}"); } catch(e) {}
       function recentCoreKey(m,l){ return `${m.uid||m.id}|L${l}`; }
       function saveRecentCores(m,l,items){
         const key=recentCoreKey(m,l);
         const now=items.map(x=>x?.meta?.coreKey).filter(Boolean);
         const old=Array.isArray(recentCoreHistory[key])?recentCoreHistory[key]:[];
         recentCoreHistory[key]=[...now,...old].slice(0,18);
-        try { localStorage.setItem("mathRecentCoreV12",JSON.stringify(recentCoreHistory)); } catch(e) {}
+        try { localStorage.setItem("mathRecentCoreV13",JSON.stringify(recentCoreHistory)); } catch(e) {}
       }
       function difficultyCorePool(strand,g,level){
         const all=TB[strand]||TB.logic||[], allowed=bankIndexes(strand,g);
@@ -4676,6 +4709,481 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if(level===3)return fns.slice(Math.max(0,Math.floor(n*.42)));
         return fns.slice(Math.max(0,Math.floor(n*.18)),Math.max(2,Math.ceil(n*.86)));
       }
+      /* v13: Mỗi lõi có câu hỏi, lời giải, lỗi sai dự kiến và phạm vi lớp riêng.
+         Không ghép câu nhắc nhở vào đề. Các biến thể kiểm chứng thay toàn bộ câu hỏi. */
+      const QB13=[];
+      let currentGrade13=5;
+      function reg13(strand,id,grade,tier,skill,fn,tags=[]){QB13.push({strand,id:strand+':'+id,grade,tier,skill,fn,tags});}
+      function key13(v){
+        let s=String(v).trim().replace(/\s+/g,' ');
+        const f=s.match(/^⟦(-?\d+)\|(\d+)⟧$/); if(f)return 'n:'+Number((+f[1]/+f[2]).toFixed(8));
+        if(/^-?\d+(?:[.,]\d+)?$/.test(s))return 'n:'+Number(Number(s.replace(',','.')).toFixed(8));
+        return s.toLowerCase();
+      }
+      function text13(v){return typeof v==='number'?D(v):String(v);}
+      function q13(q,a,errors,steps,extra={}){
+        if(typeof a==='number'&&(!Number.isFinite(a)||a<0))throw Error('Đáp số ngoài miền');
+        const ans=text13(a), seen=new Set([key13(ans)]), wrong=[];
+        for(const value of errors){
+          if(typeof value==='number'&&(!Number.isFinite(value)||value<0||(currentGrade13<5&&!Number.isInteger(value))))continue;
+          const z=text13(value),key=key13(z);if(/^-[0-9]/.test(z)||seen.has(key))continue;seen.add(key);wrong.push(z);
+        }
+        const arity=extra.arity||4;
+        if(wrong.length<arity-1)throw Error('Chưa đủ nhiễu khác giá trị');
+        if(!steps.length||/[?？].*[?？]/.test(q))throw Error('Câu hỏi hoặc lời giải chưa hợp lệ');
+        const x=[q,ans,extra.figure||null,[ans,...shuf(wrong).slice(0,arity-1)]];
+        x.meta={version:13,solution:steps.map(text13),tip:extra.tip||'Đối chiếu phép tính, đơn vị và điều kiện trong đề.',...extra,arity,answerKey:key13(ans)};
+        return x;
+      }
+      function calc13(expr,ans,errors,steps,extra={}){return q13(`Tính: ${expr} = ?`,ans,errors,steps||[`${expr} = ${text13(ans)}.`],{...extra,expression:expr});}
+      function unit13(q,a,wrong,unit,steps,extra={}){return q13(q,`${text13(a)} ${unit}`,wrong.map(v=>`${text13(v)} ${unit}`),steps,extra);}
+      function pair13(g,l){
+        const limit=({1:[10,20,100],2:[100,500,1000],3:[1000,10000,100000],4:[10000,100000,1000000],5:[10000,100000,1000000]}[g])[l-1];
+        if(g===1){const t=l===3?r(1,7):0,a=t*10+r(2,l===1?5:7),b=r(1,Math.min(9-a%10,limit-a));return {a,b,sum:a+b,limit};}
+        const a=r(12,Math.max(13,Math.floor(limit/3))),b=r(2,Math.min(a-1,Math.max(3,Math.floor(limit/5))));return {a,b,sum:a+b,limit};
+      }
+      function product13(g,l){const a=g===2?p([2,5]):r(2,9),b=r(2,g===2?10:l===1?9:l===2?20:50);return {a,b,n:a*b};}
+      function frac13(){const d=r(4,12),a=r(1,d-2),b=r(1,d-a-1);return {a,b,d};}
+      function rect13(){const b=r(3,12),a=b+r(2,9);return {a,b,area:a*b,per:2*(a+b)};}
+      function countFigure13(n,d){return `<svg width="220" height="40" viewBox="0 0 220 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${d} phần bằng nhau, ${n} phần tô màu">${Array.from({length:d},(_,i)=>`<rect x="${2+i*216/d}" y="5" width="${216/d}" height="30" fill="${i<n?'#7189dd':'white'}" stroke="#222"/>`).join('')}</svg>`;}
+
+      // Số: vị trí, cấu tạo, thứ tự, điều kiện, làm tròn.
+      reg13('number','next',1,1,'accurate',(g,l)=>{const {a}=pair13(g,l);return q13(`Số liền sau của ${a} là số nào?`,a+1,[a,a-1,a+10],[`${a} + 1 = ${a+1}.`]);});
+      reg13('number','before',1,1,'reverse',(g,l)=>{const {a}=pair13(g,l);return q13(`Số liền trước của ${a} là số nào?`,a-1,[a,a+1,a+10],[`${a} − 1 = ${a-1}.`]);});
+      reg13('number','tens',1,1,'accurate',(g,l)=>{const t=r(1,l===1?1:8),u=r(2,8),n=10*t+u;return q13(`Số gồm ${t} chục và ${u} đơn vị là số nào?`,n,[t+u,10*u+t,10*t,10*(t+u)],[`${t} chục = ${t*10}; ${t*10} + ${u} = ${n}.`]);});
+      reg13('number','digitvalue',1,1,'accurate',(g,l)=>{const t=r(2,8),u=r(1,9);return q13(`Chữ số hàng chục trong số ${t*10+u} có giá trị bao nhiêu?`,10*t,[t,u,t*10+u,t+u],[`Chữ số ${t} ở hàng chục có giá trị ${t} × 10 = ${t*10}.`]);});
+      reg13('number','compare',1,1,'compare',(g,l)=>{const {a,b}=pair13(g,l),c=p([a,a+b,a-b]);return q13(`Điền dấu: ${a} □ ${c}.`,relation(a,c),['>','<','='],[`${a} ${relation(a,c)} ${c}.`],{arity:3});});
+      reg13('number','maximum',1,1,'compare',(g,l)=>{const {a,b}=pair13(g,l),v=shuf([a-b,a,a+b,a+2*b]);return q13(`Trong các số ${v.join(', ')}, số nào lớn nhất?`,a+2*b,v,[`${a-b} < ${a} < ${a+b} < ${a+2*b}.`]);});
+      reg13('number','minimum',1,1,'compare',(g,l)=>{const {a,b}=pair13(g,l),v=shuf([a,a+b,a+2*b,a+3*b]);return q13(`Trong các số ${v.join(', ')}, số nào bé nhất?`,a,v,[`${a} < ${a+b} < ${a+2*b} < ${a+3*b}.`]);});
+      reg13('number','between',1,1,'range',(g,l)=>{const {a}=pair13(g,l);return q13(`Số tự nhiên nào lớn hơn ${a} và bé hơn ${a+2}?`,a+1,[a,a+2,a+3],[`Chỉ có ${a+1} thỏa mãn ${a} < ${a+1} < ${a+2}.`]);});
+      reg13('number','order',1,1,'compare',(g,l)=>{const {a,b}=pair13(g,l),v=[a,a+b,a+2*b],fmt=z=>z.join('; ');return q13(`Dãy nào xếp ${shuf(v).join(', ')} từ bé đến lớn?`,fmt(v),[fmt([v[2],v[1],v[0]]),fmt([v[1],v[0],v[2]]),fmt([v[0],v[2],v[1]])],[`${v[0]} < ${v[1]} < ${v[2]}.`]);},['order']);
+      reg13('number','countgreater',1,2,'filter',(g,l)=>{const a=r(3,6),v=shuf([a-2,a,a+1,a+3]);return q13(`Có bao nhiêu số lớn hơn ${a} trong dãy ${v.join(', ')}?`,2,[0,1,3,4],[`Các số lớn hơn ${a} là ${a+1} và ${a+3}: có 2 số.`]);});
+      reg13('number','reverse-next',1,2,'reverse',(g,l)=>{const {a}=pair13(g,l);return q13(`Số liền sau của một số là ${a+1}. Số đó là số nào?`,a,[a+1,a+2,a-1],[`${a+1} − 1 = ${a}.`]);});
+      reg13('number','hundreds',2,1,'accurate',()=>{const h=r(1,8),t=r(1,8),u=r(1,8),n=100*h+10*t+u;return q13(`Số gồm ${h} trăm, ${t} chục và ${u} đơn vị là số nào?`,n,[h+t+u,100*t+10*h+u,100*h+t+u,100*h+10*u+t],[`${h} × 100 + ${t} × 10 + ${u} = ${n}.`]);});
+      reg13('number','secret-digit',2,2,'reverse',()=>{const h=r(1,8),t=r(2,8),u=r(1,7),s=h+t+u;return q13(`Số ${h}□${u} có tổng các chữ số bằng ${s}. Chữ số trong ô là gì?`,t,[h,u,s,s-h],[`${s} − ${h} − ${u} = ${t}.`]);},['digit']);
+      reg13('number','round',3,1,'estimate',(g,l)=>{const step=l===1?10:l===2?100:1000,n=r(11,85)*step+r(1,step-1),ans=Math.round(n/step)*step;return q13(`Làm tròn ${n} đến hàng ${step===10?'chục':step===100?'trăm':'nghìn'} được số nào?`,ans,[Math.floor(n/step)*step,Math.ceil(n/step)*step,ans-step,ans+step,n],[`Chữ số ngay bên phải hàng làm tròn là ${Math.floor(n/(step/10))%10}.`,`Làm tròn được ${ans}.`]);});
+      reg13('number','largest-digits',2,2,'reasonable',()=>{const a=r(1,3),b=r(4,6),c=r(7,9);return q13(`Dùng ${a}, ${b}, ${c}, mỗi chữ số một lần, lập số lớn nhất.`,100*c+10*b+a,[100*a+10*b+c,100*b+10*c+a,100*c+10*a+b],[`Xếp chữ số từ lớn đến bé: ${c}, ${b}, ${a}.`]);});
+
+      // Cộng trừ: thao tác, số chưa biết, thay đổi tổng/hiệu và bài hai bước.
+      reg13('addsub','sum',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return calc13(`${a} + ${b}`,sum,[Math.abs(a-b),a,b,sum+10,sum-10]);});
+      reg13('addsub','difference',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return calc13(`${sum} − ${b}`,a,[sum+b,sum,b,a+10,a-10]);});
+      reg13('addsub','missing-addend',1,1,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Điền số: □ + ${b} = ${sum}.`,a,[sum+b,sum,b,a+10],[`${sum} − ${b} = ${a}.`]);});
+      reg13('addsub','missing-subtrahend',1,2,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Điền số: ${sum} − □ = ${a}.`,b,[sum+a,sum,a,Math.abs(a-b)],[`${sum} − ${a} = ${b}.`]);});
+      reg13('addsub','missing-minuend',1,2,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Điền số: □ − ${b} = ${a}.`,sum,[Math.abs(a-b),a,b,sum+10],[`${a} + ${b} = ${sum}.`]);});
+      reg13('addsub','three-addends',1,2,'accurate',(g,l)=>{const a=r(1,g===1?3:30),b=r(1,3),c=r(1,3);return calc13(`${a} + ${b} + ${c}`,a+b+c,[a+b,a+c,b+c,a+b-c,a*b+c],[`${a} + ${b} = ${a+b}; ${a+b} + ${c} = ${a+b+c}.`]);});
+      reg13('addsub','add-sub',1,2,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l),c=r(1,b);return calc13(`${a} + ${b} − ${c}`,sum-c,[sum+c,sum,a-c,a+b*c],[`${a} + ${b} = ${sum}; ${sum} − ${c} = ${sum-c}.`]);});
+      reg13('addsub','sum-change',1,2,'reasonable',()=>{const a=r(2,4),b=r(2,4),d=r(1,2);return q13(`Tổng là ${a+b}. Tăng một số hạng thêm ${d}, tổng mới bằng bao nhiêu?`,a+b+d,[a+b-d,a+b,a+b+2*d,d],[`Một số hạng tăng ${d} thì tổng tăng ${d}: ${a+b} + ${d} = ${a+b+d}.`]);});
+      reg13('addsub','difference-change',2,2,'reasonable',()=>{const a=r(20,60),b=r(3,9),d=r(2,5);return q13(`Hiệu của ${a} và ${b} là ${a-b}. Tăng số trừ thêm ${d}, hiệu mới bằng bao nhiêu?`,a-b-d,[a-b+d,a-b,a+b+d,d],[`Số trừ tăng ${d} thì hiệu giảm ${d}: ${a-b} − ${d} = ${a-b-d}.`]);});
+      reg13('addsub','compare-sums',1,1,'compare',()=>{const a=r(2,4),b=r(1,3),d=r(1,2);return q13(`Điền dấu: ${a} + ${b} □ ${a} + ${b+d}.`,'<',['>','<','='],[`Hai tổng cùng có số hạng ${a}; ${b} < ${b+d}, nên tổng thứ nhất bé hơn.`],{arity:3});});
+      reg13('addsub','distance',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Từ ${a} cần thêm bao nhiêu để được ${sum}?`,b,[sum+a,sum,a,Math.abs(a-b)],[`${sum} − ${a} = ${b}.`]);});
+      reg13('addsub','two-differences',2,3,'accurate',()=>{const a=r(30,90),b=r(3,9),c=r(2,8);return calc13(`${a} − ${b} − ${c}`,a-b-c,[a-b+c,a+b+c,a-b,a-c],[`${a} − ${b} = ${a-b}; ${a-b} − ${c} = ${a-b-c}.`]);});
+
+      // Nhân chia: đúng bảng 2, 5 ở lớp 2; chia dư chỉ từ lớp 3.
+      reg13('muldiv','product',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return calc13(`${a} × ${b}`,n,[a+b,n+a,n-a,b,a]);});
+      reg13('muldiv','quotient',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return calc13(`${n} : ${a}`,b,[n-a,n+a,n*a,a,n],[`Vì ${a} × ${b} = ${n}, nên ${n} : ${a} = ${b}.`]);});
+      reg13('muldiv','factor',2,1,'reverse',(g,l)=>{const {a,b,n}=product13(g,l);return q13(`Điền số: ${a} × □ = ${n}.`,b,[n-a,n+a,a,n],[`${n} : ${a} = ${b}.`]);});
+      reg13('muldiv','dividend',2,1,'reverse',(g,l)=>{const {a,b,n}=product13(g,l);return q13(`Điền số: □ : ${a} = ${b}.`,n,[a+b,Math.abs(a-b),a,b],[`${b} × ${a} = ${n}.`]);});
+      reg13('muldiv','divisor',2,2,'reverse',(g,l)=>{const {a,b,n}=product13(g,l);return q13(`Điền số: ${n} : □ = ${b}.`,a,[n-b,n+b,b,n],[`${n} : ${b} = ${a}.`]);});
+      reg13('muldiv','groups',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return unit13(`Có ${b} nhóm, mỗi nhóm ${a} em. Có tất cả bao nhiêu học sinh?`,n,[a+b,b,a,n+a],'em',[`${b} × ${a} = ${n} (em).`]);});
+      reg13('muldiv','sharing',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return unit13(`Chia đều ${n} chiếc bút vào ${a} hộp. Mỗi hộp có bao nhiêu chiếc bút?`,b,[n-a,n+a,a,n],'chiếc',[`${n} : ${a} = ${b} (chiếc).`]);});
+      reg13('muldiv','extra-group',2,2,'reasonable',(g,l)=>{const {a,b,n}=product13(g,l);return q13(`Biết ${b} × ${a} = ${n}. Tính ${b+1} × ${a}.`,n+a,[n+1,n+b,n-a,a+b],[`Thêm một nhóm ${a}: ${n} + ${a} = ${n+a}.`]);});
+      reg13('muldiv','repeated-add',2,1,'accurate',(g,l)=>{const a=g===2?p([2,5]):r(2,9),b=r(3,5);return calc13(Array(b).fill(a).join(' + '),a*b,[a+b,a*(b-1),a*(b+1),b],[`Có ${b} số hạng đều bằng ${a}: ${a} × ${b} = ${a*b}.`]);});
+      reg13('muldiv','remainder',3,2,'accurate',()=>{const d=r(3,9),q=r(3,12),rem=r(1,d-1),n=d*q+rem;return q13(`Phép chia ${n} : ${d} có số dư là bao nhiêu?`,rem,[0,d,q,n-d*q+d,d-rem],[`${n} = ${d} × ${q} + ${rem}; ${rem} < ${d}.`]);});
+      reg13('muldiv','round-up',3,3,'reasonable',()=>{const d=r(3,9),q=r(3,12),rem=r(1,d-1),n=d*q+rem;return unit13(`Có ${n} em, mỗi xe chở tối đa ${d} em. Cần ít nhất bao nhiêu xe?`,q+1,[q,n-d,n,d],'xe',[`${n} : ${d} = ${q} dư ${rem}.`,`Cần thêm 1 xe cho ${rem} em: ${q} + 1 = ${q+1} (xe).`]);});
+      reg13('muldiv','group-plus',3,2,'accurate',(g,l)=>{const {a,b,n}=product13(g,l),c=r(1,9);return unit13(`Có ${a} túi, mỗi túi ${b} viên bi và ${c} viên rời. Có tất cả bao nhiêu viên bi?`,n+c,[a*(b+c),a+b+c,n,n-c],'viên',[`${a} × ${b} + ${c} = ${n+c} (viên).`]);});
+      reg13('muldiv','double-factor',3,2,'reasonable',(g,l)=>{const {a,b,n}=product13(g,l);return q13(`Tích hai số là ${n}. Gấp một thừa số lên 2 lần, tích mới bằng bao nhiêu?`,n*2,[n+2,n/2,n,n*4],[`Một thừa số gấp 2 lần thì tích gấp 2 lần: ${n} × 2 = ${n*2}.`]);});
+
+      // Thành phần chưa biết và phép tính ngược.
+      for(const [id,op,tier] of [['add','+',1],['sub','−',1],['subtrahend','−',2],['mul','×',1],['div',' : ',2]]){
+        reg13('unknown',id,['mul','div'].includes(id)?2:1,tier,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l),v=product13(Math.max(2,g),l);let q,ans,wrong,step;
+          if(id==='add'){q=`□ + ${b} = ${sum}`;ans=a;wrong=[sum+b,sum,b,a+10];step=`${sum} − ${b} = ${a}`;}
+          if(id==='sub'){q=`□ − ${b} = ${a}`;ans=sum;wrong=[Math.abs(a-b),a,b,sum+10];step=`${a} + ${b} = ${sum}`;}
+          if(id==='subtrahend'){q=`${sum} − □ = ${a}`;ans=b;wrong=[sum+a,sum,a,a+b+10];step=`${sum} − ${a} = ${b}`;}
+          if(id==='mul'){q=`${v.a} × □ = ${v.n}`;ans=v.b;wrong=[v.n-v.a,v.n+v.a,v.a,v.n];step=`${v.n} : ${v.a} = ${v.b}`;}
+          if(id==='div'){q=`□ : ${v.a} = ${v.b}`;ans=v.n;wrong=[v.a+v.b,Math.abs(v.a-v.b),v.a,v.b];step=`${v.b} × ${v.a} = ${v.n}`;}
+          return q13(`Điền số vào ô: ${q}.`,ans,wrong,[step+'.']);
+        });
+      }
+      reg13('unknown','equal-sums',1,2,'reverse',()=>{const a=r(2,4),b=r(2,4),c=r(1,a),ans=a+b-c;return q13(`Điền số: ${a} + ${b} = ${c} + □.`,ans,[a+b,a+b+c,a,b,c],[`${a} + ${b} = ${a+b}; ${a+b} − ${c} = ${ans}.`]);});
+      reg13('unknown','before-change',1,1,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Một số thêm ${b} thì được ${sum}. Số ban đầu bằng bao nhiêu?`,a,[sum,sum+b,b,a+10],[`${sum} − ${b} = ${a}.`]);});
+      reg13('unknown','after-loss',1,1,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return q13(`Một số bớt ${b} thì còn ${a}. Số ban đầu bằng bao nhiêu?`,sum,[Math.abs(a-b),a,b,sum+10],[`${a} + ${b} = ${sum}.`]);});
+      reg13('unknown','two-step',3,3,'reverse',()=>{const a=r(3,9),x=r(4,20),b=r(2,8),c=a*x+b;return q13(`Tìm x: x × ${a} + ${b} = ${c}.`,x,[(c+b)/a,c-b,c/a,a*x],[`${c} − ${b} = ${c-b}; ${c-b} : ${a} = ${x}.`]);});
+      reg13('unknown','parentheses',3,3,'reverse',()=>{const x=r(5,20),b=r(2,8),c=r(2,9),n=(x+b)*c;return q13(`Tìm x: (x + ${b}) × ${c} = ${n}.`,x,[n/c,n/c+b,n-b,n/c-b+1],[`${n} : ${c} = ${x+b}; ${x+b} − ${b} = ${x}.`]);});
+      reg13('unknown','balance-difference',2,2,'reverse',()=>{const a=r(20,50),b=r(2,9),c=r(2,8),x=a-b+c;return q13(`Điền số: □ − ${c} = ${a} − ${b}.`,x,[a-b-c,a+b+c,a-b,a+c],[`${a} − ${b} = ${a-b}; ${a-b} + ${c} = ${x}.`]);});
+
+      // Biểu thức và tính nhẩm: mỗi dòng là một cấu trúc phép tính khác nhau.
+      reg13('expression','priority',3,1,'accurate',()=>{const a=r(2,9),b=r(2,9),c=r(2,9);return calc13(`${a} + ${b} × ${c}`,a+b*c,[(a+b)*c,a+b+c,a*b+c,b*c],[`Nhân trước: ${b} × ${c} = ${b*c}.`,`Sau đó cộng: ${a} + ${b*c} = ${a+b*c}.`]);});
+      reg13('expression','brackets',3,1,'accurate',()=>{const a=r(2,9),b=r(2,9),c=r(2,9);return calc13(`(${a} + ${b}) × ${c}`,(a+b)*c,[a+b*c,a+b+c,a*b*c,a*c],[`Trong ngoặc trước: ${a} + ${b} = ${a+b}.`,`${a+b} × ${c} = ${(a+b)*c}.`]);});
+      reg13('expression','divide-add',3,1,'accurate',()=>{const a=r(2,9),b=r(2,9),c=r(2,9);return calc13(`${a*b} : ${a} + ${c}`,b+c,[a*b/(a+c),b*c,a*b-a+c,b],[`Chia trước: ${a*b} : ${a} = ${b}; ${b} + ${c} = ${b+c}.`]);});
+      reg13('expression','subtract-product',3,2,'accurate',()=>{const b=r(2,9),c=r(2,9),a=b*c+r(2,30);return calc13(`${a} − ${b} × ${c}`,a-b*c,[(a-b)*c,a-b-c,a+b*c,b*c],[`${b} × ${c} = ${b*c}; ${a} − ${b*c} = ${a-b*c}.`]);});
+      reg13('expression','left-to-right',3,1,'accurate',()=>{const a=r(3,9),b=r(2,9),c=r(2,5);return calc13(`${a*b} : ${b} × ${c}`,a*c,[a/c,a,b*c,a*b*c],[`Nhân chia cùng mức, tính từ trái sang phải.`,`${a*b} : ${b} = ${a}; ${a} × ${c} = ${a*c}.`]);});
+      reg13('expression','distribute',3,2,'accurate',()=>{const a=r(3,9),b=r(2,9),c=r(2,8);return calc13(`${a} × ${b} + ${a} × ${c}`,a*(b+c),[a*b+c,a+b+c,a*b*c,a*(b+c+1)],[`${a} × (${b} + ${c}) = ${a} × ${b+c} = ${a*(b+c)}.`]);});
+      reg13('expression','divide-brackets',3,2,'accurate',()=>{const a=r(2,9),b=r(2,9),c=r(2,9);return calc13(`(${a*c} + ${b*c}) : ${c}`,a+b,[a*c+b,a+b*c,a*b,(a+b)*c],[`${a*c} + ${b*c} = ${(a+b)*c}; ${(a+b)*c} : ${c} = ${a+b}.`]);});
+      reg13('expression','difference-products',3,2,'accurate',()=>{const a=r(5,9),b=r(2,4),c=r(2,9);return calc13(`${a} × ${c} − ${b} × ${c}`,(a-b)*c,[a*c-b,(a+b)*c,a-b,a*b*c],[`(${a} − ${b}) × ${c} = ${a-b} × ${c} = ${(a-b)*c}.`]);});
+      reg13('expression','nested',4,3,'accurate',()=>{const a=r(2,9),b=r(2,9),c=r(2,9),d=r(2,5);return calc13(`(${a} + ${b} × ${c}) × ${d}`,(a+b*c)*d,[(a+b)*c*d,a+b*c*d,(a+b+c)*d,a+b*c],[`Trong ngoặc: ${a} + ${b} × ${c} = ${a+b*c}.`,`${a+b*c} × ${d} = ${(a+b*c)*d}.`]);});
+      reg13('arithmetic','make-ten',1,1,'accurate',()=>{const a=r(2,7),b=10-a;return calc13(`${a} + ${b}`,10,[a,b,Math.abs(a-b),a+b+1],[`Ghép ${a} và ${b} được 10.`]);});
+      reg13('arithmetic','cancel',1,1,'accurate',()=>{const a=r(2,6),b=r(1,3);return calc13(`${a} + ${b} − ${b}`,a,[a+b,a-b,a+2*b,b],[`Thêm rồi bớt cùng ${b} nên trở lại ${a}.`]);});
+      reg13('arithmetic','near-ten',1,2,'accurate',()=>{const a=r(2,8);return calc13(`9 + ${a}`,9+a,[10+a,9-a,10-a,a],[`9 + ${a} = 10 + ${a-1} = ${9+a}.`]);});
+      reg13('arithmetic','difference-round',1,1,'accurate',()=>{const a=r(2,8);return calc13(`10 − ${a}`,10-a,[10+a,a,9-a,11-a],[`10 − ${a} = ${10-a}.`]);});
+      reg13('arithmetic','tens',1,2,'accurate',()=>{const a=r(2,4),b=r(1,4);return calc13(`${a*10} + ${b*10}`,(a+b)*10,[a+b,Math.abs(a-b)*10,a*10+b,a+b*10],[`${a} chục + ${b} chục = ${a+b} chục = ${(a+b)*10}.`]);});
+      reg13('arithmetic','group-three',2,1,'accurate',()=>{const a=r(11,39),b=r(2,8);return calc13(`${a} + ${b} + ${100-a}`,100+b,[100,100-b,a+b,100+a],[`Ghép ${a} + ${100-a} = 100; 100 + ${b} = ${100+b}.`]);});
+      reg13('arithmetic','compensation',2,2,'accurate',()=>{const a=r(15,70);return calc13(`${a} + 19`,a+19,[a+20,a+18,a-19,a+9],[`${a} + 20 − 1 = ${a+19}.`]);});
+      reg13('arithmetic','minus-near',2,2,'accurate',()=>{const a=r(35,90);return calc13(`${a} − 19`,a-19,[a-20,a-18,a+19,a-9],[`${a} − 20 + 1 = ${a-19}.`]);});
+      reg13('arithmetic','times-25',4,2,'accurate',()=>{const a=r(2,20);return calc13(`${a*4} × 25`,a*100,[a*25,a*4+25,a*1000,a*10],[`${a*4} × 25 = ${a} × (4 × 25) = ${a*100}.`]);});
+      reg13('arithmetic','times-99',3,2,'accurate',()=>{const a=r(3,30);return calc13(`${a} × 99`,a*99,[a*100,a*100+1,a*100-1,a+99],[`${a} × (100 − 1) = ${a*100} − ${a} = ${a*99}.`]);});
+      reg13('arithmetic','divide-5',3,2,'accurate',()=>{const a=r(11,40);return calc13(`${a*5} : 5`,a,[a*5-5,a*10,a/10,a*5+5],[`${a*5} : 5 = ${a*5} × 2 : 10 = ${a}.`]);});
+
+      // Quy luật nêu rõ quy tắc, không đòi suy đoán một dãy hữu hạn.
+      reg13('pattern','next',1,1,'accurate',(g,l)=>{const a=r(1,3),d=g===1?1:r(2,9),v=[a,a+d,a+2*d];return q13(`Dãy tăng đều ${d}: ${v.join(', ')}, □. Điền số vào ô.`,a+3*d,[a+2*d,a+4*d,a+d,a+3],[`${a+2*d} + ${d} = ${a+3*d}.`]);});
+      reg13('pattern','missing-middle',1,1,'reverse',(g,l)=>{const a=r(1,3),d=g===1?1:r(2,7);return q13(`Dãy tăng đều ${d}: ${a}, ${a+d}, □, ${a+3*d}. Điền số vào ô.`,a+2*d,[a+d,a+3*d,a,a+4*d],[`${a+d} + ${d} = ${a+2*d}.`]);});
+      reg13('pattern','decrease',1,1,'accurate',(g,l)=>{const d=g===1?1:r(2,7),a=r(1,4)+4*d;return q13(`Dãy giảm đều ${d}: ${a}, ${a-d}, ${a-2*d}, □. Điền số vào ô.`,a-3*d,[a-d,a-2*d,a-4*d,a+3*d],[`${a-2*d} − ${d} = ${a-3*d}.`]);});
+      reg13('pattern','repeat-ab',1,1,'accurate',()=>{const a=r(1,4),b=r(5,9);return q13(`Dãy lặp nhóm (${a}, ${b}): ${a}, ${b}, ${a}, ${b}, ${a}, □. Điền số vào ô.`,b,[a,a+b,b-a,0],[`Sau ${a} là ${b} trong mỗi nhóm lặp.`]);});
+      reg13('pattern','repeat-abc',1,2,'accurate',()=>{const a=r(1,3),b=r(4,6),c=r(7,9);return q13(`Dãy lặp nhóm (${a}, ${b}, ${c}). Số thứ 5 là số nào?`,b,[a,c,a+b,b+c],[`Vị trí 1–3 là ${a}, ${b}, ${c}; vị trí 4–6 lặp lại. Số thứ 5 là ${b}.`]);});
+      reg13('pattern','first',1,2,'reverse',(g,l)=>{const d=g===1?1:r(2,6),a=r(1,5);return q13(`Dãy tăng đều ${d}: □, ${a+d}, ${a+2*d}, ${a+3*d}. Điền số vào ô.`,a,[a+d,a+2*d,a+3*d,a+4*d],[`${a+d} − ${d} = ${a}.`]);});
+      reg13('pattern','position',2,2,'accurate',()=>{const a=r(1,8),d=r(2,5),n=r(5,9),ans=a+(n-1)*d;return q13(`Dãy bắt đầu từ ${a}, mỗi bước tăng ${d}. Số thứ ${n} bằng bao nhiêu?`,ans,[a+n*d,a+(n-2)*d,n*d,a+n],[`Từ số đầu đến số thứ ${n} có ${n-1} bước: ${a} + ${n-1} × ${d} = ${ans}.`]);});
+      reg13('pattern','steps',1,2,'accurate',()=>{const a=r(1,3),n=r(3,6);return q13(`Bắt đầu từ ${a}, mỗi lần thêm 1. Cần mấy lần để đến ${a+n}?`,n,[n+1,n-1,a+n,a],[`${a+n} − ${a} = ${n} lần.`]);});
+      reg13('pattern','alternating',3,2,'accurate',()=>{const a=r(1,9),d=r(2,4),e=r(5,8),v=[a,a+d,a+d+e,a+2*d+e,a+2*d+2*e];return q13(`Dãy luân phiên cộng ${d}, cộng ${e}: ${v.join(', ')}, □. Điền số vào ô.`,v[4]+d,[v[4]+e,v[4]+d+e,v[4],v[4]-d],[`Bước vừa rồi cộng ${e}; bước tiếp theo cộng ${d}: ${v[4]} + ${d} = ${v[4]+d}.`]);});
+      reg13('pattern','sum-two',3,3,'accurate',()=>{const a=r(1,5),b=r(2,6),v=[a,b,a+b,a+2*b];return q13(`Mỗi số bằng tổng hai số trước: ${v.join(', ')}, □. Điền số vào ô.`,v[2]+v[3],[v[3]+b,v[3]*2,v[3]+1,v[3]],[`${v[2]} + ${v[3]} = ${v[2]+v[3]}.`]);});
+      reg13('pattern','times',3,2,'accurate',()=>{const a=r(1,4),d=r(2,3);return q13(`Mỗi bước nhân ${d}: ${a}, ${a*d}, ${a*d*d}, □. Điền số vào ô.`,a*d*d*d,[a*d*d+d,a*d*d,a*d*(d+1),a*d*d*(d+1)],[`${a*d*d} × ${d} = ${a*d*d*d}.`]);});
+
+      // Lời văn: dữ kiện tự nhiên, hỏi đúng một đại lượng.
+      reg13('word','receive',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`Lan có ${a} quyển vở, được cho thêm ${b} quyển. Lan có tất cả bao nhiêu quyển vở?`,sum,[Math.abs(a-b),a,b,sum+10],'quyển',[`${a} + ${b} = ${sum} (quyển).`]);});
+      reg13('word','give-away',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`Lan có ${sum} viên bi, cho bạn ${b} viên. Lan còn bao nhiêu viên bi?`,a,[sum+b,sum,b,a+10],'viên',[`${sum} − ${b} = ${a} (viên).`]);});
+      reg13('word','more-than',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`An có ${a} nhãn vở. Bình có nhiều hơn An ${b} nhãn. Bình có bao nhiêu nhãn vở?`,sum,[Math.abs(a-b),a,b,sum+10],'nhãn',[`${a} + ${b} = ${sum} (nhãn).`]);});
+      reg13('word','less-than',1,1,'accurate',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`An có ${sum} nhãn vở. Bình có ít hơn An ${b} nhãn. Bình có bao nhiêu nhãn vở?`,a,[sum+b,sum,b,a+10],'nhãn',[`${sum} − ${b} = ${a} (nhãn).`]);});
+      reg13('word','original',1,2,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`Sau khi cho bạn ${b} viên bi, An còn ${a} viên. Ban đầu An có bao nhiêu viên bi?`,sum,[Math.abs(a-b),a,b,sum+10],'viên',[`${a} + ${b} = ${sum} (viên).`]);});
+      reg13('word','part-total',1,1,'reverse',(g,l)=>{const {a,b,sum}=pair13(g,l);return unit13(`Có ${sum} bông hoa, gồm ${b} bông đỏ và một số bông vàng. Có bao nhiêu bông vàng?`,a,[sum+b,sum,b,a+10],'bông',[`${sum} − ${b} = ${a} (bông).`]);});
+      reg13('word','irrelevant',1,2,'filter',(g,l)=>{const a=r(2,4),b=r(1,3),c=r(2,5);return unit13(`An có ${a} bút đỏ, ${b} bút xanh và ${c} quyển vở. An có tất cả bao nhiêu chiếc bút?`,a+b,[a+b+c,a+c,b+c,a,b],'chiếc',[`Chỉ đếm bút: ${a} + ${b} = ${a+b} (chiếc).`,`Số quyển vở không dùng để tính số bút.`]);});
+      reg13('word','multiply',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return unit13(`Có ${b} hộp, mỗi hộp ${a} chiếc bánh. Có tất cả bao nhiêu chiếc bánh?`,n,[a+b,a,b,n+a],'chiếc',[`${b} × ${a} = ${n} (chiếc).`]);});
+      reg13('word','divide',2,1,'accurate',(g,l)=>{const {a,b,n}=product13(g,l);return unit13(`Xếp ${n} chiếc bánh vào các hộp, mỗi hộp ${a} chiếc. Xếp được bao nhiêu hộp?`,b,[n-a,n+a,a,n],'hộp',[`${n} : ${a} = ${b} (hộp).`]);});
+      reg13('word','two-events',2,2,'accurate',()=>{const a=r(20,60),b=r(3,9),c=r(2,8);return unit13(`Kho có ${a} kg gạo, bán ${b} kg rồi nhập ${c} kg. Kho còn bao nhiêu ki-lô-gam gạo?`,a-b+c,[a-b-c,a+b+c,a-b,a+c],'kg',[`${a} − ${b} + ${c} = ${a-b+c} (kg).`]);});
+      reg13('word','left-groups',3,2,'accurate',()=>{const a=r(3,8),b=r(3,9),c=r(2,8),n=a*b;return unit13(`Có ${a} túi kẹo, mỗi túi ${b} viên. Ăn ${c} viên thì còn bao nhiêu viên kẹo?`,n-c,[n+c,a+b-c,n,a*(b-c)],'viên',[`${a} × ${b} = ${n}; ${n} − ${c} = ${n-c} (viên).`]);});
+      reg13('word','sum-difference',4,3,'reverse',()=>{const b=r(10,30),d=r(2,12),a=b+d;return q13(`Tổng hai số là ${a+b}, hiệu là ${d}. Số bé bằng bao nhiêu?`,b,[(a+b+d)/2,a+b-d,a,b+d*2],[`Số bé = (tổng − hiệu) : 2 = (${a+b} − ${d}) : 2 = ${b}.`]);});
+
+      // Đơn vị: chuyển đổi, so sánh, thời gian và tiền.
+      reg13('measure','m-cm',2,1,'accurate',()=>{const a=r(2,9);return unit13(`${a} m bằng bao nhiêu xăng-ti-mét?`,a*100,[a*10,a,a*1000,a+100],'cm',[`1 m = 100 cm; ${a} m = ${a*100} cm.`]);});
+      reg13('measure','dm-cm',2,1,'accurate',()=>{const a=r(2,9);return unit13(`${a} dm bằng bao nhiêu xăng-ti-mét?`,a*10,[a*100,a,a+10,a*1000],'cm',[`1 dm = 10 cm; ${a} dm = ${a*10} cm.`]);});
+      reg13('measure','mixed-length',2,2,'accurate',()=>{const a=r(1,9),b=r(2,9);return unit13(`${a} m ${b} cm bằng bao nhiêu xăng-ti-mét?`,a*100+b,[a*10+b,a*100+b*10,a+b,(a+b)*100],'cm',[`${a} m = ${a*100} cm; ${a*100} + ${b} = ${a*100+b} cm.`]);});
+      reg13('measure','kg-g',3,1,'accurate',()=>{const a=r(2,9);return unit13(`${a} kg bằng bao nhiêu gam?`,a*1000,[a*100,a*10,a,a+1000],'g',[`1 kg = 1000 g; ${a} kg = ${a*1000} g.`]);});
+      reg13('measure','hour-minute',3,1,'accurate',()=>{const a=r(2,5);return unit13(`${a} giờ bằng bao nhiêu phút?`,a*60,[a*100,a*10,a,a+60],'phút',[`1 giờ = 60 phút; ${a} × 60 = ${a*60} phút.`]);});
+      reg13('measure','mixed-time',3,2,'accurate',()=>{const a=r(1,3),b=r(10,45);return unit13(`${a} giờ ${b} phút bằng bao nhiêu phút?`,a*60+b,[a*100+b,a+b,a*60,a*60-b],'phút',[`${a} × 60 + ${b} = ${a*60+b} phút.`]);});
+      reg13('measure','elapsed',3,2,'accurate',()=>{const h=r(7,10),a=r(10,25),b=r(30,50);return unit13(`Buổi học bắt đầu lúc ${h} giờ ${a} phút, kết thúc lúc ${h+1} giờ ${b} phút. Buổi học dài bao lâu?`,60+b-a,[b-a,100+b-a,60+b+a,60],'phút',[`Từ ${h} giờ ${a} phút đến ${h+1} giờ ${a} phút là 60 phút.`,`60 + ${b} − ${a} = ${60+b-a} phút.`]);});
+      reg13('measure','change',2,2,'reverse',()=>{const a=p([20,50,100]),b=r(2,a/2);return unit13(`Mua bút hết ${b} nghìn đồng, trả ${a} nghìn đồng. Được trả lại bao nhiêu tiền?`,a-b,[a+b,a,b,a-b+10],'nghìn đồng',[`${a} − ${b} = ${a-b} (nghìn đồng).`]);});
+      reg13('measure','compare-length',2,1,'compare',()=>{const a=r(2,8),b=p([a*100,a*100-10,a*100+10]);return q13(`Điền dấu: ${a} m □ ${b} cm.`,relation(a*100,b),['>','<','='],[`${a} m = ${a*100} cm; ${a*100} ${relation(a*100,b)} ${b}.`],{arity:3});});
+      reg13('measure','square-units',4,2,'accurate',()=>{const a=r(2,9);return unit13(`${a} m² bằng bao nhiêu đề-xi-mét vuông?`,a*100,[a*10,a*1000,a,a+100],'dm²',[`1 m² = 100 dm²; ${a} m² = ${a*100} dm².`]);});
+      reg13('measure','cubic-units',5,2,'accurate',()=>{const a=r(2,9);return unit13(`${a} dm³ bằng bao nhiêu xăng-ti-mét khối?`,a*1000,[a*100,a*10,a,a+1000],'cm³',[`1 dm³ = 1000 cm³; ${a} dm³ = ${a*1000} cm³.`]);});
+
+      // Hình học: nhận biết ở lớp 1–2, chu vi/diện tích theo lớp.
+      reg13('geometry','sides',1,1,'accurate',()=>{const [name,n]=p([['hình tam giác',3],['hình vuông',4],['hình chữ nhật',4]]);return q13(`${name[0].toUpperCase()+name.slice(1)} có mấy cạnh?`,n,[0,2,3,4,5],[`${name} có ${n} cạnh.`]);});
+      reg13('geometry','vertices',1,1,'accurate',()=>{const [name,n]=p([['Hình tam giác',3],['Hình vuông',4],['Hình chữ nhật',4]]);return q13(`${name} có mấy đỉnh?`,n,[0,2,3,4,5],[`${name} có ${n} đỉnh.`]);});
+      reg13('geometry','identify',1,1,'accurate',()=>q13('Hình nào không có cạnh thẳng?','Hình tròn',['Hình tam giác','Hình vuông','Hình chữ nhật'],['Đường bao của hình tròn là đường cong.']));
+      reg13('geometry','length-add',1,1,'accurate',()=>{const a=r(2,5),b=r(1,4);return unit13(`Hai đoạn dây dài ${a} cm và ${b} cm. Tổng độ dài là bao nhiêu?`,a+b,[Math.abs(a-b),a,b,a+b+1],'cm',[`${a} + ${b} = ${a+b} (cm).`]);});
+      reg13('geometry','length-diff',1,1,'compare',()=>{const a=r(5,9),b=r(1,4);return unit13(`Bút dài ${a} cm, tẩy dài ${b} cm. Bút dài hơn tẩy bao nhiêu?`,a-b,[a+b,a,b,a-b+1],'cm',[`${a} − ${b} = ${a-b} (cm).`]);});
+      reg13('geometry','ruler-offset',1,2,'accurate',()=>{const a=r(1,4),b=r(a+2,10);return unit13(`Đoạn dây bắt đầu ở vạch ${a} cm và kết thúc ở vạch ${b} cm. Dây dài bao nhiêu?`,b-a,[b,a,a+b,b-a+1],'cm',[`${b} − ${a} = ${b-a} (cm).`]);});
+      reg13('geometry','broken-line',2,1,'accurate',()=>{const a=r(2,8),b=r(2,8),c=r(2,8);return unit13(`Đường gấp khúc có ba đoạn dài ${a} cm, ${b} cm, ${c} cm. Tổng độ dài là bao nhiêu?`,a+b+c,[a+b,b+c,a+c,a*b*c],'cm',[`${a} + ${b} + ${c} = ${a+b+c} (cm).`]);});
+      reg13('geometry','triangle-perimeter',2,2,'accurate',()=>{const a=r(3,9),b=a+1,c=a+2;return unit13(`Tam giác có các cạnh ${a} cm, ${b} cm, ${c} cm. Chu vi bằng bao nhiêu?`,a+b+c,[a+b,b+c,a*c,a+b+c+1],'cm',[`${a} + ${b} + ${c} = ${a+b+c} (cm).`]);});
+      reg13('geometry','rect-perimeter',3,1,'accurate',()=>{const {a,b,per}=rect13();return unit13(`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Chu vi bằng bao nhiêu?`,per,[a+b,a*b,2*a+b,a+2*b],'cm',[`(${a} + ${b}) × 2 = ${per} (cm).`]);});
+      reg13('geometry','rect-area',3,1,'accurate',()=>{const {a,b,area,per}=rect13();return unit13(`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Diện tích bằng bao nhiêu?`,area,[per,a+b,a*a,b*b],'cm²',[`${a} × ${b} = ${area} (cm²).`]);});
+      reg13('geometry','square-area',3,1,'accurate',()=>{const a=r(3,12);return unit13(`Hình vuông có cạnh ${a} cm. Diện tích bằng bao nhiêu?`,a*a,[4*a,2*a,a,a*a+1],'cm²',[`${a} × ${a} = ${a*a} (cm²).`]);});
+      reg13('geometry','square-perimeter',3,1,'accurate',()=>{const a=r(3,12);return unit13(`Hình vuông có cạnh ${a} cm. Chu vi bằng bao nhiêu?`,4*a,[a*a,2*a,a,3*a],'cm',[`${a} × 4 = ${4*a} (cm).`]);});
+      reg13('geometry','missing-width',3,2,'reverse',()=>{const {a,b,area}=rect13();return unit13(`Hình chữ nhật có diện tích ${area} cm², dài ${a} cm. Chiều rộng bằng bao nhiêu?`,b,[area-a,area/a/2,a,area+a],'cm',[`${area} : ${a} = ${b} (cm).`]);});
+      reg13('geometry','perimeter-reverse',3,2,'reverse',()=>{const {a,b,per}=rect13();return unit13(`Hình chữ nhật có chu vi ${per} cm, dài ${a} cm. Chiều rộng bằng bao nhiêu?`,b,[per-a,per/2,per/2+a,a],'cm',[`${per} : 2 − ${a} = ${b} (cm).`]);});
+      reg13('geometry','same-area',4,3,'reverse',()=>{const a=r(3,8),b=r(3,8),area=2*a*b;return unit13(`Hai hình chữ nhật cùng diện tích. Hình thứ nhất dài ${2*a} cm, rộng ${b} cm; hình thứ hai dài ${a} cm. Chiều rộng hình thứ hai là bao nhiêu?`,2*b,[b,area-a,a+b,area],'cm',[`Diện tích: ${2*a} × ${b} = ${area} (cm²).`,`Chiều rộng: ${area} : ${a} = ${2*b} (cm).`]);},['same-area']);
+      reg13('geometry','triangle-area',5,1,'accurate',()=>{const a=r(3,12)*2,h=r(3,9);return unit13(`Tam giác có đáy ${a} cm, chiều cao ${h} cm. Diện tích bằng bao nhiêu?`,a*h/2,[a*h,a+h,(a+h)/2,a*h*2],'cm²',[`${a} × ${h} : 2 = ${a*h/2} (cm²).`]);});
+      reg13('geometry','trapezoid',5,2,'accurate',()=>{const a=r(8,15),b=r(3,7),h=r(2,8)*2;return unit13(`Hình thang có hai đáy ${a} cm, ${b} cm và chiều cao ${h} cm. Diện tích bằng bao nhiêu?`,(a+b)*h/2,[(a+b)*h,a*b,(a-b)*h/2,a+b+h],'cm²',[`(${a} + ${b}) × ${h} : 2 = ${(a+b)*h/2} (cm²).`]);});
+      reg13('geometry','circle-area',5,2,'accurate',()=>{const a=r(2,9);return unit13(`Hình tròn bán kính ${a} cm. Với π = 3,14, diện tích bằng bao nhiêu?`,a*a*3.14,[2*a*3.14,a*3.14,a*a,a*a*3.14*4],'cm²',[`${a} × ${a} × 3,14 = ${D(a*a*3.14)} (cm²).`]);});
+      reg13('geometry','box-volume',5,2,'accurate',()=>{const a=r(3,9),b=r(2,8),c=r(2,7);return unit13(`Hộp chữ nhật dài ${a} cm, rộng ${b} cm, cao ${c} cm. Thể tích bằng bao nhiêu?`,a*b*c,[a*b,a+b+c,2*(a*b+b*c+a*c),a*b+c],'cm³',[`${a} × ${b} × ${c} = ${a*b*c} (cm³).`]);});
+      // Thống kê: dữ liệu đủ, xử lý tất cả trường hợp đồng hạng.
+      function data13(g){const a=r(2,g===1?5:15),b=r(2,g===1?5:15),c=r(2,g===1?5:15);return {a,b,c,total:a+b+c,stem:`Số liệu A=${a}, B=${b}, C=${c}.`};}
+      reg13('stats','total',1,1,'accurate',(g)=>{const {a,b,c,total,stem}=data13(g);return q13(`${stem} Tổng ba nhóm bằng bao nhiêu?`,total,[a+b,a+c,b+c,a*b*c],[`${a} + ${b} + ${c} = ${total}.`]);});
+      reg13('stats','largest',1,1,'compare',(g)=>{const {a,b,c,stem}=data13(g),z=largestGroups([a,b,c],['A','B','C']);return q13(`${stem} Phương án nào nêu đủ các nhóm có giá trị lớn nhất?`,z.answer,z.options,[`${Math.min(a,b,c)} ≤ ${Math.max(a,b,c)}. Giá trị lớn nhất là ${z.max}.`,`Các nhóm đạt ${z.max}: ${z.winners.join(', ')}.`]);});
+      reg13('stats','smallest',1,1,'compare',(g)=>{const {a,b,c,stem}=data13(g),z=largestGroups([-a,-b,-c],['A','B','C']);return q13(`${stem} Phương án nào nêu đủ các nhóm có giá trị bé nhất?`,z.answer,z.options,[`Giá trị bé nhất là ${-z.max}.`,`Các nhóm đạt ${-z.max}: ${z.winners.join(', ')}.`]);});
+      reg13('stats','difference',1,1,'compare',(g)=>{const {a,b,c,stem}=data13(g),lo=Math.min(a,b,c),hi=Math.max(a,b,c);return q13(`${stem} Chênh lệch giữa giá trị lớn nhất và bé nhất là bao nhiêu?`,hi-lo,[hi+lo,hi,lo,a+b+c,0],[`${hi} − ${lo} = ${hi-lo}.`]);});
+      reg13('stats','two-groups',1,1,'filter',(g)=>{const {a,b,c,stem}=data13(g);return q13(`${stem} Tổng riêng hai nhóm A và B bằng bao nhiêu?`,a+b,[a+c,b+c,a+b+c,Math.abs(a-b),a*b],[`Chỉ dùng A và B: ${a} + ${b} = ${a+b}.`]);});
+      reg13('stats','threshold',1,2,'filter',(g)=>{const {a,b,c,stem}=data13(g),k=r(2,g===1?5:12),n=[a,b,c].filter(v=>v>k).length;return q13(`${stem} Có bao nhiêu nhóm có giá trị lớn hơn ${k}?`,n,[0,1,2,3],[`Các nhóm vượt ${k}: ${['A','B','C'].filter((_,i)=>[a,b,c][i]>k).join(', ')||'không có'}. Vậy có ${n} nhóm.`]);});
+      reg13('stats','missing',1,2,'reverse',(g)=>{const {a,b,c,total}=data13(g);return q13(`Tổng ba nhóm là ${total}, nhóm A có ${a}, nhóm B có ${b}. Nhóm C có bao nhiêu?`,c,[total-a,total-b,total+a+b,a+b],[`${total} − ${a} − ${b} = ${c}.`]);});
+      reg13('stats','change-total',2,2,'reasonable',(g)=>{const {a,b,c,total,stem}=data13(g),d=r(2,6);return q13(`${stem} Nếu B thêm ${d}, tổng mới của ba nhóm bằng bao nhiêu?`,total+d,[total-d,total,b+d,total+2*d],[`Tổng cũ: ${a} + ${b} + ${c} = ${total}.`,`Tổng mới: ${total} + ${d} = ${total+d}.`]);});
+      reg13('stats','average',4,1,'accurate',()=>{const a=r(5,20),d=r(1,4),v=shuf([a,a+d,a+2*d]);return q13(`Ba ngày đọc được ${v.join(', ')} trang. Trung bình mỗi ngày đọc bao nhiêu trang?`,a+d,[3*(a+d),a,a+2*d,3*(a+d)/2],[`(${v.join(' + ')}) : 3 = ${a+d} (trang).`]);});
+      reg13('stats','average-missing',4,2,'reverse',()=>{const a=r(10,25),d=r(2,5);return q13(`Ba ngày đọc trung bình ${a} trang/ngày. Hai ngày đầu đọc ${a-d} và ${a+1} trang. Ngày thứ ba đọc bao nhiêu trang?`,a+d-1,[a,a-d-1,3*a,a+d+1],[`Tổng: ${a} × 3 = ${3*a}.`,`Ngày thứ ba: ${3*a} − ${a-d} − ${a+1} = ${a+d-1} trang.`]);},['average']);
+      reg13('stats','pictogram',2,1,'accurate',()=>{const a=p([2,5]),n=r(2,8);return q13(`Biểu đồ quy ước mỗi ★ là ${a} bạn. Nhóm A có ${'★'.repeat(n)}. Nhóm A có bao nhiêu bạn?`,a*n,[a+n,a,n,a*(n-1),a*(n+1)],[`${n} × ${a} = ${a*n} (bạn).`]);});
+      reg13('stats','share',5,2,'accurate',()=>{const total=p([20,40,80]),pct=p([25,50,75]),a=total*pct/100;return q13(`Có ${total} bạn, ${a} bạn chọn bóng đá. Số bạn chọn bóng đá chiếm bao nhiêu phần trăm?`,`${pct}%`,[`${100-pct}%`,`${a}%`,`${total}%`,`${pct/10}%`,`${pct*2}%`],[`${a} : ${total} × 100% = ${pct}%.`]);});
+
+      // Phân số: lớp 3 chỉ trực quan và phân số đơn vị; phép tính từ lớp 4.
+      reg13('fraction','shaded',3,1,'accurate',(g)=>{const d=r(3,8),a=g===3?1:r(1,d-1);return q13('Phân số nào chỉ phần đã tô màu?',F(a,d),[F(d-a,d),F(a,d+1),F(d,a),F(a+1,d)], [`Có ${d} phần bằng nhau, tô màu ${a} phần: ${a}/${d}.`],{figure:countFigure13(a,d)});});
+      reg13('fraction','unshaded',3,1,'accurate',(g)=>{const d=r(3,8),a=g===3?d-1:r(1,d-1);return q13('Phân số nào chỉ phần chưa tô màu?',F(d-a,d),[F(a,d),F(d-a,d+1),F(d,d-a),F(d-a+1,d)], [`Có ${d-a} phần chưa tô trong ${d} phần bằng nhau: ${d-a}/${d}.`],{figure:countFigure13(a,d)});});
+      reg13('fraction','unit-part',3,1,'accurate',()=>{const d=r(2,8),n=r(3,12),total=d*n;return q13(`Có ${total} viên bi. ${FR(1,d)} số viên bi là bao nhiêu viên?`,n,[total-d,total+d,d,total],[`${total} : ${d} = ${n} (viên).`]);});
+      reg13('fraction','unit-original',3,2,'reverse',()=>{const d=r(2,8),n=r(3,12);return q13(`${FR(1,d)} số viên bi là ${n} viên. Có tất cả bao nhiêu viên bi?`,d*n,[d+n,n,d,Math.abs(n-d)],[`${n} × ${d} = ${n*d} (viên).`]);});
+      reg13('fraction','remaining-unit',3,2,'accurate',()=>{const d=r(2,8),n=r(3,12),total=d*n;return q13(`Có ${total} chiếc bánh, đã ăn ${FR(1,d)} số bánh. Còn bao nhiêu chiếc?`,total-n,[n,total-d,total+n,d],[`Đã ăn: ${total} : ${d} = ${n} chiếc.`,`Còn lại: ${total} − ${n} = ${total-n} chiếc.`]);});
+      reg13('fraction','read-unit',3,1,'accurate',()=>{const d=r(3,9);return q13(`Chia một chiếc bánh thành ${d} phần bằng nhau. Một phần là phân số nào của chiếc bánh?`,F(1,d),[F(d,1),F(1,d-1),F(d-1,d),F(1,d+1)],[`Một trong ${d} phần bằng nhau là 1/${d} chiếc bánh.`]);});
+      reg13('fraction','compare-denominator',4,1,'compare',()=>{const {a,b,d}=frac13();return q13(`Điền dấu: ${FR(a,d)} □ ${FR(b,d)}.`,relation(a,b),['>','<','='],[`Hai phân số cùng mẫu ${d}; so sánh tử số: ${a} ${relation(a,b)} ${b}.`],{arity:3});});
+      reg13('fraction','compare-numerator',4,1,'compare',()=>{const a=r(1,3),b=r(4,7),c=r(8,12);return q13(`Điền dấu: ${FR(a,b)} □ ${FR(a,c)}.`,'>',['>','<','='],[`Hai phân số cùng tử số dương; mẫu ${b} nhỏ hơn ${c} nên ${a}/${b} lớn hơn ${a}/${c}.`],{arity:3});});
+      reg13('fraction','add',4,1,'accurate',()=>{const {a,b,d}=frac13();return q13(`Tính: ${FR(a,d)} + ${FR(b,d)} = ?`,F(a+b,d),[F(a+b,2*d),F(a*b,d),F(Math.abs(a-b),d),F(a+b,d*d),F(a,d)],[`Cùng mẫu số: (${a} + ${b})/${d} = ${a+b}/${d} = ${solPlain(F(a+b,d))}.`]);});
+      reg13('fraction','subtract',4,1,'accurate',()=>{const d=r(5,12),a=r(3,d-1),b=r(1,a-1);return q13(`Tính: ${FR(a,d)} − ${FR(b,d)} = ?`,F(a-b,d),[F(a+b,d),F(a-b,2*d),F(a,d),F(b,d),F(a-b,1)],[`Cùng mẫu số: (${a} − ${b})/${d} = ${solPlain(F(a-b,d))}.`]);});
+      reg13('fraction','multiply',4,2,'accurate',()=>{const a=r(1,4),b=r(5,9),c=r(1,4),d=r(5,9);return q13(`Tính: ${FR(a,b)} × ${FR(c,d)} = ?`,F(a*c,b*d),[F(a+c,b+d),F(a*c,b+d),F(a+c,b*d),F(a*d,b*c)],[`Nhân tử với tử, mẫu với mẫu: ${a*c}/${b*d} = ${solPlain(F(a*c,b*d))}.`]);});
+      reg13('fraction','divide',4,3,'accurate',()=>{const a=r(1,4),b=r(5,9),c=r(1,4),d=r(5,9);return q13(`Tính: ${FR(a,b)} : ${FR(c,d)} = ?`,F(a*d,b*c),[F(a*c,b*d),F(a*b,c*d),F(a+c,b+d),F(b*c,a*d),F(a*d,b+c)],[`Nhân với phân số đảo ngược: ${a}/${b} × ${d}/${c} = ${solPlain(F(a*d,b*c))}.`]);});
+      reg13('fraction','part',4,2,'accurate',()=>{const {a,d}=frac13(),n=r(3,12),total=d*n;return q13(`${FR(a,d)} của ${total} bằng bao nhiêu?`,a*n,[n,total-a,total*d/a,a+d,total*a],[`${total} : ${d} × ${a} = ${a*n}.`]);});
+      reg13('fraction','complement',4,1,'reverse',()=>{const {a,d}=frac13();return q13(`Điền phân số: ${FR(a,d)} + □ = 1.`,F(d-a,d),[F(a,d),F(d+a,d),F(1,d),F(d-a,1),F(a,d-a)],[`1 = ${d}/${d}; (${d} − ${a})/${d} = ${solPlain(F(d-a,d))}.`]);});
+      reg13('fraction','equivalent',4,1,'accurate',()=>{const {a,d}=frac13(),k=r(2,4);return q13(`Phân số nào bằng ${FR(a,d)}?`,FR(a*k,d*k),[FR(a+k,d+k),FR(a*k,d),FR(a,d*k),FR(d*k,a*k)],[`Nhân cả tử và mẫu với ${k}: ${a}/${d} = ${a*k}/${d*k}.`]);});
+
+      // Số thập phân: dùng số nguyên theo phần mười để tránh sai số sinh đề.
+      reg13('decimal','sum',5,1,'accurate',()=>{const a=r(11,99),b=r(11,99);return calc13(`${D(a/10)} + ${D(b/10)}`,(a+b)/10,[Math.abs(a-b)/10,(a+b)/100,(a+b)/1,(a+b+10)/10],[`Cộng thẳng hàng dấu phẩy: ${D(a/10)} + ${D(b/10)} = ${D((a+b)/10)}.`]);});
+      reg13('decimal','difference',5,1,'accurate',()=>{const b=r(11,49),a=b+r(11,50);return calc13(`${D(a/10)} − ${D(b/10)}`,(a-b)/10,[(a+b)/10,(a-b)/100,a-b,(a-b+10)/10]);});
+      reg13('decimal','times-integer',5,1,'accurate',()=>{const a=r(11,99),b=r(2,9);return calc13(`${D(a/10)} × ${b}`,a*b/10,[(a/10)+b,a*b/100,a*b,a/10]);});
+      reg13('decimal','divide-integer',5,1,'accurate',()=>{const a=r(11,99),b=r(2,9);return calc13(`${D(a*b/10)} : ${b}`,a/10,[a,a/100,a*b/10-b,a*b*b/10]);});
+      reg13('decimal','times-decimal',5,2,'accurate',()=>{const a=r(11,59),b=r(11,49);return calc13(`${D(a/10)} × ${D(b/10)}`,a*b/100,[a*b/10,a*b,(a+b)/10,a*b/1000],[`Nhân ${a} × ${b} = ${a*b}, rồi đặt dấu phẩy với tổng 2 chữ số thập phân: ${D(a*b/100)}.`]);});
+      reg13('decimal','divide-decimal',5,2,'accurate',()=>{const a=r(2,15),b=r(2,9);return calc13(`${D(a*b/10)} : ${D(b/10)}`,a,[a/10,a*10,a*b/10-b/10,a*b*b/100],[`Nhân cả số bị chia và số chia với 10: ${a*b} : ${b} = ${a}.`]);});
+      reg13('decimal','compare',5,1,'compare',()=>{const a=r(1,9),b=r(1,8),c=r(1,9),x=a+b/10,y=a+b/10+c/100;return q13(`Điền dấu: ${D(x)} □ ${D(y)}.`,'<',['>','<','='],[`Viết ${D(x)} với hai chữ số thập phân; chữ số hàng phần trăm 0 < ${c}.`],{arity:3});});
+      reg13('decimal','round',5,1,'estimate',()=>{const a=r(101,999),n=a/100,ans=Math.round(a/10)/10;return q13(`Làm tròn ${D(n)} đến hàng phần mười được số nào?`,ans,[Math.floor(a/10)/10,Math.ceil(a/10)/10,Math.floor(n),Math.ceil(n),n],[`Xét chữ số hàng phần trăm ${a%10}; làm tròn được ${D(ans)}.`]);});
+      reg13('decimal','shift-ten',5,1,'accurate',()=>{const a=r(101,999);return calc13(`${D(a/100)} × 10`,a/10,[a/1000,a,a/100,a/100+10],[`Nhân 10: chuyển dấu phẩy sang phải một chữ số, được ${D(a/10)}.`]);});
+      reg13('decimal','shift-hundred',5,1,'accurate',()=>{const a=r(101,999);return calc13(`${D(a/10)} : 100`,a/1000,[a*10,a/100,a,a/10],[`Chia 100: chuyển dấu phẩy sang trái hai chữ số, được ${D(a/1000)}.`]);});
+      reg13('decimal','missing',5,2,'reverse',()=>{const a=r(11,99),b=r(11,99);return q13(`Tìm x: x + ${D(b/10)} = ${D((a+b)/10)}.`,a/10,[(a+2*b)/10,a/100,b/10,(a+b)/10],[`x = ${D((a+b)/10)} − ${D(b/10)} = ${D(a/10)}.`]);});
+      reg13('decimal','change-unit',5,2,'accurate',()=>{const a=r(101,999);return unit13(`${D(a/100)} m bằng bao nhiêu xăng-ti-mét?`,a,[a/10,a*10,a/100,a/100+100],'cm',[`${D(a/100)} × 100 = ${a} (cm).`]);});
+      reg13('decimal','shopping',5,2,'accurate',()=>{const a=r(11,49),b=r(2,5);return unit13(`Mỗi ki-lô-gam cam giá ${D(a/10)} nghìn đồng. Mua ${b} kg hết bao nhiêu tiền?`,a*b/10,[a/10+b,a*b,a*b/100,a/10],'nghìn đồng',[`${D(a/10)} × ${b} = ${D(a*b/10)} (nghìn đồng).`]);});
+
+      // Phần trăm: đại lượng gốc rõ ràng, phần còn lại và suy ngược.
+      reg13('percent','part',5,1,'accurate',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]);return q13(`${pct}% của ${base} bằng bao nhiêu?`,base*pct/100,[base-pct,base*pct,base/pct,base*(100-pct)/100],[`${base} × ${pct} : 100 = ${base*pct/100}.`]);});
+      reg13('percent','find-rate',5,1,'reverse',()=>{const base=p([20,40,80]),pct=p([25,50,75]),part=base*pct/100;return unit13(`${part} chiếm bao nhiêu phần trăm của ${base}?`,pct,[100-pct,part,base,pct/10,pct*2],'%', [`${part} : ${base} × 100 = ${pct} (%).`]);});
+      reg13('percent','original',5,2,'reverse',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]),part=base*pct/100;return q13(`${pct}% của một số bằng ${part}. Số đó bằng bao nhiêu?`,base,[part*pct/100,part*pct,part+ pct,part],[`${part} : ${pct} × 100 = ${base}.`]);},['reverse-percent']);
+      reg13('percent','discount',5,2,'accurate',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]);return unit13(`Áo giá ${base} nghìn đồng, giảm ${pct}%. Giá sau giảm là bao nhiêu?`,base*(100-pct)/100,[base*pct/100,base-pct,base*(100+pct)/100,base],'nghìn đồng',[`Giảm: ${base} × ${pct}% = ${base*pct/100}.`,`Giá mới: ${base} − ${base*pct/100} = ${base*(100-pct)/100} (nghìn đồng).`]);});
+      reg13('percent','increase',5,2,'accurate',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]);return unit13(`Giá ban đầu ${base} nghìn đồng, tăng ${pct}%. Giá mới là bao nhiêu?`,base*(100+pct)/100,[base*pct/100,base+pct,base*(100-pct)/100,base],'nghìn đồng',[`Tăng: ${base} × ${pct}% = ${base*pct/100}.`,`Giá mới: ${base} + ${base*pct/100} = ${base*(100+pct)/100}.`]);});
+      reg13('percent','remaining',5,1,'accurate',()=>{const base=p([20,40,80]),pct=p([25,50,75]);return q13(`Có ${base} học sinh, ${pct}% đi xe đạp. Có bao nhiêu em không đi xe đạp?`,base*(100-pct)/100,[base*pct/100,base-pct,base,100-pct],[`Không đi xe đạp: 100% − ${pct}% = ${100-pct}%.`,`${base} × ${100-pct} : 100 = ${base*(100-pct)/100} (em).`]);});
+      reg13('percent','before-discount',5,3,'reverse',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]),price=base*(100-pct)/100;return unit13(`Giảm ${pct}% thì áo còn ${price} nghìn đồng. Giá ban đầu là bao nhiêu?`,base,[price*(100+pct)/100,price+pct,price*100/pct,price],'nghìn đồng',[`Giá mới bằng ${100-pct}% giá cũ.`,`${price} : ${100-pct} × 100 = ${base} (nghìn đồng).`]);},['reverse-percent']);
+      reg13('percent','before-increase',5,3,'reverse',()=>{const base=p([100,200,400,800]),pct=p([10,20,25,50]),price=base*(100+pct)/100;return unit13(`Tăng ${pct}% thì giá là ${price} nghìn đồng. Giá ban đầu là bao nhiêu?`,base,[price*(100-pct)/100,price-pct,price*100/pct,price],'nghìn đồng',[`Giá mới bằng ${100+pct}% giá cũ.`,`${price} : ${100+pct} × 100 = ${base}.`]);},['reverse-percent']);
+      reg13('percent','rate-change',5,2,'compare',()=>{const base=p([100,200,400]),pct=p([10,20,25,50]),next=base*(100+pct)/100;return unit13(`Giá tăng từ ${base} lên ${next} nghìn đồng. Giá tăng bao nhiêu phần trăm so với ban đầu?`,pct,[next/base*100,100-pct,next-base,pct/10],'%', [`Mức tăng: ${next} − ${base} = ${next-base}.`,`${next-base} : ${base} × 100 = ${pct}%.`]);});
+      reg13('percent','successive',5,3,'accurate',()=>{const base=p([100,200,400]),pct=p([10,20,25]);return unit13(`Giá ${base} nghìn đồng tăng ${pct}%, rồi giảm ${pct}% theo giá mới. Giá cuối là bao nhiêu?`,base*(100+pct)*(100-pct)/10000,[base,base*(100+pct)/100,base*(100-pct)/100,base*(100-2*pct)/100],'nghìn đồng',[`Sau tăng: ${base*(100+pct)/100}.`,`Sau giảm: ${base*(100+pct)/100} × ${100-pct}% = ${D(base*(100+pct)*(100-pct)/10000)} (nghìn đồng).`]);});
+
+      // Tỉ số: dùng phần bằng nhau và số nguyên trong các bài đếm.
+      reg13('ratio','direct',4,1,'accurate',()=>{const b=r(3,20),k=r(2,5);return q13(`A gấp ${k} lần B, B = ${b}. A bằng bao nhiêu?`,b*k,[b+k,b,k,b/k],[`${b} × ${k} = ${b*k}.`]);});
+      reg13('ratio','reverse',4,1,'reverse',()=>{const b=r(3,20),k=r(2,5);return q13(`A gấp ${k} lần B, A = ${b*k}. B bằng bao nhiêu?`,b,[b*k-k,b*k+k,b*k*k,k],[`${b*k} : ${k} = ${b}.`]);});
+      reg13('ratio','sum-small',4,2,'reverse',()=>{const b=r(3,20),k=r(2,5),sum=(k+1)*b;return q13(`Tổng hai số là ${sum}, số lớn gấp ${k} lần số bé. Số bé bằng bao nhiêu?`,b,[sum/k,sum-b,sum-k,sum/(k-1)],[`Tổng số phần: ${k} + 1 = ${k+1}.`,`Số bé: ${sum} : ${k+1} = ${b}.`]);});
+      reg13('ratio','sum-large',4,2,'reverse',()=>{const b=r(3,20),k=r(2,5),sum=(k+1)*b;return q13(`Tổng hai số là ${sum}, số lớn gấp ${k} lần số bé. Số lớn bằng bao nhiêu?`,b*k,[b,sum/k,sum-k,sum],[`Một phần: ${sum} : ${k+1} = ${b}.`,`Số lớn: ${b} × ${k} = ${b*k}.`]);});
+      reg13('ratio','difference-small',4,2,'reverse',()=>{const b=r(3,20),k=r(3,5),d=(k-1)*b;return q13(`Hiệu hai số là ${d}, số lớn gấp ${k} lần số bé. Số bé bằng bao nhiêu?`,b,[d/k,d/(k+1),d,b*k],[`Hiệu số phần: ${k} − 1 = ${k-1}.`,`Số bé: ${d} : ${k-1} = ${b}.`]);});
+      reg13('ratio','difference-large',4,2,'reverse',()=>{const b=r(3,20),k=r(3,5),d=(k-1)*b;return q13(`Hiệu hai số là ${d}, số lớn gấp ${k} lần số bé. Số lớn bằng bao nhiêu?`,b*k,[b,d,d*k,d+k],[`Số bé: ${d} : ${k-1} = ${b}.`,`Số lớn: ${b} × ${k} = ${b*k}.`]);});
+      reg13('ratio','write-ratio',4,1,'accurate',()=>{const a=r(2,8),b=r(9,15);return q13(`Tỉ số của ${a} và ${b} là phân số nào?`,F(a,b),[F(b,a),F(a,a+b),F(b,a+b),F(a+b,b)],[`Lấy số thứ nhất chia số thứ hai: ${a}/${b} = ${solPlain(F(a,b))}.`]);});
+      reg13('ratio','parts',4,2,'reverse',()=>{const a=r(2,4),b=r(5,8),k=r(3,10);return q13(`A : B = ${a} : ${b}, A + B = ${(a+b)*k}. A bằng bao nhiêu?`,a*k,[b*k,k,(a+b)*k/a,(a+b)*k/b],[`Một phần: ${(a+b)*k} : (${a} + ${b}) = ${k}.`,`A = ${k} × ${a} = ${a*k}.`]);});
+      reg13('ratio','keep-ratio',4,3,'reasonable',()=>{const b=r(3,15),k=r(2,5),d=r(2,5);return q13(`A gấp ${k} lần B. B tăng từ ${b} lên ${b+d}, tỉ số giữ nguyên. A mới bằng bao nhiêu?`,(b+d)*k,[b*k+d,b*k,b+d,b*k+k],[`B mới = ${b+d}; A mới = ${b+d} × ${k} = ${(b+d)*k}.`]);});
+      reg13('ratio','difference',4,1,'accurate',()=>{const b=r(3,20),k=r(2,5);return q13(`Số bé là ${b}, số lớn gấp ${k} lần số bé. Hiệu hai số bằng bao nhiêu?`,b*(k-1),[b*k,b*(k+1),b+k,b-k,b],[`Số lớn: ${b} × ${k} = ${b*k}.`,`Hiệu: ${b*k} − ${b} = ${b*(k-1)}.`]);});
+
+      // Chuyển động: đầy đủ đơn vị và giả thiết vận tốc không đổi.
+      reg13('motion','distance',5,1,'accurate',()=>{const v=r(3,8)*10,t=r(2,5);return unit13(`Xe chạy đều ${v} km/giờ trong ${t} giờ. Xe đi được bao nhiêu ki-lô-mét?`,v*t,[v+t,v/t,v,v*(t+1)],'km',[`Quãng đường = vận tốc × thời gian = ${v} × ${t} = ${v*t} (km).`]);});
+      reg13('motion','speed',5,1,'reverse',()=>{const v=r(3,8)*10,t=r(2,5),s=v*t;return unit13(`Xe chạy đều ${s} km trong ${t} giờ. Vận tốc bằng bao nhiêu?`,v,[s*t,s-t,s+t,t],'km/giờ',[`${s} : ${t} = ${v} (km/giờ).`]);});
+      reg13('motion','time',5,1,'reverse',()=>{const v=r(3,8)*10,t=r(2,5),s=v*t;return unit13(`Xe chạy đều ${v} km/giờ trên quãng đường ${s} km. Thời gian đi là bao lâu?`,t,[s-v,s+v,s*v,v],'giờ',[`${s} : ${v} = ${t} (giờ).`]);});
+      reg13('motion','minutes',5,2,'accurate',()=>{const v=r(3,8)*12,t=p([15,30,45,90]);return unit13(`Xe chạy đều ${v} km/giờ trong ${t} phút. Xe đi được bao nhiêu ki-lô-mét?`,v*t/60,[v*t,v*t/100,v+t,v],'km',[`${t} phút = ${D(t/60)} giờ.`,`${v} × ${D(t/60)} = ${v*t/60} (km).`]);});
+      reg13('motion','meeting',5,3,'reverse',()=>{const a=r(3,6)*10,b=r(3,6)*10,t=r(2,4),s=(a+b)*t;return unit13(`Hai xe cách nhau ${s} km, cùng lúc đi về phía nhau với ${a} và ${b} km/giờ. Sau bao lâu gặp nhau?`,t,[s/a,s/b,s/(a+b)*2,a+b],'giờ',[`Vận tốc tiến lại gần: ${a} + ${b} = ${a+b} km/giờ.`,`${s} : ${a+b} = ${t} giờ.`]);});
+      reg13('motion','catch-up',5,3,'reverse',()=>{const b=r(3,5)*10,a=b+r(1,3)*10,t=r(2,5),gap=(a-b)*t;return unit13(`Xe sau chạy ${a} km/giờ, xe trước chạy ${b} km/giờ, cách ${gap} km. Cùng chiều, sau bao lâu xe sau đuổi kịp?`,t,[gap/(a+b),gap/a,gap/b,a-b],'giờ',[`Mỗi giờ rút ngắn ${a} − ${b} = ${a-b} km.`,`${gap} : ${a-b} = ${t} giờ.`]);});
+      reg13('motion','opposite',5,2,'accurate',()=>{const a=r(2,6)*10,b=r(2,6)*10,t=r(2,4);return unit13(`Hai xe cùng xuất phát một chỗ, đi ngược chiều với ${a} và ${b} km/giờ. Sau ${t} giờ cách nhau bao nhiêu?`,(a+b)*t,[Math.abs(a-b)*t,a*t,b*t,a+b+t],'km',[`(${a} + ${b}) × ${t} = ${(a+b)*t} (km).`]);});
+      reg13('motion','rest',5,2,'accurate',()=>{const v=r(3,8)*10,t=r(2,4),rest=p([15,30]);return unit13(`Xe đi ${v*t} km với ${v} km/giờ, nghỉ thêm ${rest} phút. Tổng thời gian cả đi và nghỉ là bao lâu?`,t*60+rest,[t*60,t+rest,t*60-rest,t*100+rest],'phút',[`Thời gian đi: ${v*t} : ${v} = ${t} giờ = ${t*60} phút.`,`Cả nghỉ: ${t*60} + ${rest} = ${t*60+rest} phút.`]);});
+      reg13('motion','remaining',5,2,'accurate',()=>{const v=r(3,8)*10,t=r(2,4),extra=r(1,3),s=v*(t+extra);return unit13(`Quãng đường dài ${s} km. Xe chạy đều ${v} km/giờ trong ${t} giờ. Còn bao nhiêu ki-lô-mét?`,v*extra,[s-v,s+v*t,v*t,s-t],'km',[`Đã đi: ${v} × ${t} = ${v*t} km.`,`Còn: ${s} − ${v*t} = ${v*extra} km.`]);});
+      reg13('motion','speed-change',5,2,'reasonable',()=>{const v=r(3,6)*10,d=r(1,3)*10,t=r(2,5);return unit13(`Trong ${t} giờ, tăng vận tốc từ ${v} lên ${v+d} km/giờ thì đi thêm bao nhiêu ki-lô-mét?`,d*t,[d,v*t,(v+d)*t,d+t],'km',[`Vận tốc tăng: ${v+d} − ${v} = ${d} km/giờ.`,`Đi thêm: ${d} × ${t} = ${d*t} km.`]);});
+      // Suy luận và các module chuyên biệt.
+      reg13('logic','order-three',1,1,'compare',()=>{const names=shuf(['An','Bình','Chi']);return q13(`${names[0]} cao hơn ${names[1]}, ${names[1]} cao hơn ${names[2]}. Ai cao nhất?`,names[0],[names[1],names[2],'Cả ba cao bằng nhau'],[`${names[0]} cao hơn ${names[1]}, ${names[1]} cao hơn ${names[2]}, nên ${names[0]} cao nhất.`]);},['order']);
+      reg13('logic','order-small',1,1,'compare',()=>{const names=shuf(['An','Bình','Chi']);return q13(`${names[0]} ít tuổi hơn ${names[1]}, ${names[1]} ít tuổi hơn ${names[2]}. Ai ít tuổi nhất?`,names[0],[names[1],names[2],'Cả ba cùng tuổi'],[`Thứ tự tuổi tăng dần: ${names.join(', ')}.`]);},['order']);
+      reg13('logic','condition',1,1,'range',()=>{const a=r(2,7);return q13(`Số nào nằm ngay trước ${a+3} và lớn hơn ${a}?`,a+2,[a,a+1,a+3],[`Số cần tìm là ${a+2}; ${a} < ${a+2} < ${a+3}.`]);},['condition']);
+      reg13('logic','condition-gap',1,2,'range',()=>{const a=r(3,7);return q13(`Số nào bé hơn ${a+2} và lớn hơn ${a}?`,a+1,[a-1,a,a+2,a+3],[`Chỉ có số tự nhiên ${a+1} nằm giữa hai mốc.`]);},['condition']);
+      reg13('logic','queue',1,2,'accurate',()=>{const a=r(1,3),b=r(1,4);return q13(`An đứng trong hàng, có ${a} bạn phía trước và ${b} bạn phía sau. Hàng có bao nhiêu bạn?`,a+b+1,[a+b,a+1,b+1,a+b+2],[`Tính cả An: ${a} + 1 + ${b} = ${a+b+1} bạn.`]);},['order']);
+      reg13('logic','grid-right',1,1,'accurate',()=>{const a=r(1,4),b=r(1,4);return q13(`Trên lưới đánh số cột từ trái sang phải, An ở cột ${a}, đi sang phải ${b} ô. An đến cột mấy?`,a+b,[Math.abs(a-b),a,b,a+b+1],[`Số cột tăng ${b}: ${a} + ${b} = ${a+b}.`]);},['grid']);
+      reg13('logic','grid-left',1,1,'accurate',()=>{const a=r(5,9),b=r(1,4);return q13(`Trên lưới đánh số cột từ trái sang phải, An ở cột ${a}, đi sang trái ${b} ô. An đến cột mấy?`,a-b,[a+b,a,b,a-b+1],[`Số cột giảm ${b}: ${a} − ${b} = ${a-b}.`]);},['grid']);
+      reg13('logic','grid-reverse',1,2,'reverse',()=>{const a=r(1,4),b=r(1,4);return q13(`An đi sang phải ${b} ô thì đến cột ${a+b}. Các cột tăng từ trái sang phải. An bắt đầu ở cột mấy?`,a,[a+b,a+2*b,b,a+b+1],[`${a+b} − ${b} = ${a}.`]);},['grid']);
+      reg13('logic','undo-two',2,2,'reverse',()=>{const a=r(5,20),b=r(2,5),c=r(2,4),n=a+b-c;return q13(`Một số thêm ${b}, rồi bớt ${c}, được ${n}. Số ban đầu là bao nhiêu?`,a,[n-b-c,n+b+c,n+b-c,n],[`Làm ngược: ${n} + ${c} − ${b} = ${a}.`]);},['reverse']);
+      reg13('logic','legs',2,2,'accurate',()=>{const a=r(2,9);return q13(`Có ${a} con gà. Có tất cả bao nhiêu chân gà?`,2*a,[a,a+2,4*a,2*a+2],[`Mỗi con gà có 2 chân: ${a} × 2 = ${a*2}.`]);});
+      reg13('logic','two-kinds-legs',3,3,'reverse',()=>{const c=r(2,7),rabbits=r(2,7),heads=c+rabbits,legs=2*c+4*rabbits;return q13(`Gà và thỏ có ${heads} con, ${legs} chân. Có bao nhiêu con thỏ?`,rabbits,[c,heads,legs/2,(legs-heads)/2],[`Nếu đều là gà: ${heads} × 2 = ${heads*2} chân.`,`Mỗi thỏ hơn gà 2 chân: (${legs} − ${heads*2}) : 2 = ${rabbits} con thỏ.`]);});
+      reg13('logic','minimum-pairs',3,3,'reasonable',()=>{const a=r(3,9);return q13(`Hộp có ${a} bi đỏ và ${a} bi xanh. Lấy không nhìn, ít nhất mấy viên để chắc chắn có 2 viên cùng màu?`,3,[2,a,a+1,2*a],[`Hai viên có thể khác màu. Viên thứ ba chắc chắn cùng màu với một trong hai viên trước.`]);});
+      reg13('logic','shopping-count',2,1,'reverse',()=>{const price=p([2,5]),n=r(2,10);return q13(`Mỗi bút giá ${price} nghìn đồng. Có ${price*n} nghìn đồng, mua vừa đủ bao nhiêu bút?`,n,[price*n-price,price+n,price*n,price],[`${price*n} : ${price} = ${n} chiếc bút.`]);},['money']);
+      reg13('logic','shopping-total',2,1,'accurate',()=>{const price=p([2,5]),n=r(2,10);return unit13(`Mỗi vở giá ${price} nghìn đồng. Mua ${n} quyển cần bao nhiêu tiền?`,price*n,[price+n,price,n,price*(n+1)],'nghìn đồng',[`${price} × ${n} = ${price*n} (nghìn đồng).`]);},['money']);
+      reg13('logic','question-total',2,1,'filter',()=>{const a=r(3,9),b=r(2,8);return q13(`An có ${a} bút đỏ, ${b} bút xanh. Phép tính ${a} + ${b} trả lời câu hỏi nào?`,'An có tất cả bao nhiêu bút?',['Bút đỏ nhiều hơn bút xanh bao nhiêu?','An có bao nhiêu bút đỏ?','An có bao nhiêu bút xanh?'],['Cộng số bút đỏ và bút xanh để tìm tổng số bút.']);},['missing-question']);
+      reg13('logic','question-difference',2,1,'filter',()=>{const a=r(6,9),b=r(2,5);return q13(`An có ${a} bút đỏ, ${b} bút xanh. Phép tính ${a} − ${b} trả lời câu hỏi nào?`,'Bút đỏ nhiều hơn bút xanh bao nhiêu?',['An có tất cả bao nhiêu bút?','An có bao nhiêu bút đỏ?','An có bao nhiêu bút xanh?'],['Lấy số lớn trừ số bé để tìm chênh lệch số bút.']);},['missing-question']);
+      reg13('logic','question-groups',2,2,'filter',()=>{const a=p([2,5]),b=r(2,9);return q13(`Có ${b} hộp, mỗi hộp ${a} bút. Phép tính ${b} × ${a} trả lời câu hỏi nào?`,'Có tất cả bao nhiêu bút?',['Có bao nhiêu hộp?','Mỗi hộp có bao nhiêu bút?','Số hộp hơn số bút mỗi hộp bao nhiêu?'],['Nhân số hộp với số bút mỗi hộp để tìm tổng số bút.']);},['missing-question']);
+      reg13('logic','equivalent-sum',2,1,'crosscheck',()=>{const a=r(3,9),b=r(2,8);return q13(`Biểu thức nào có giá trị bằng ${a} + ${b}?`,`${b} + ${a}`,[`${a} − ${b}`,`${a} + ${b} + 1`,`${a} + ${b} − 1`],['Đổi chỗ hai số hạng không làm thay đổi tổng.']);},['two-ways']);
+      reg13('logic','equivalent-product',2,1,'crosscheck',()=>{const a=p([2,5]),b=r(3,5);return q13(`Biểu thức nào có giá trị bằng ${a} × ${b}?`,Array(b).fill(a).join(' + '),[Array(b-1).fill(a).join(' + '),Array(b+1).fill(a).join(' + '),`${a} × ${b} + 1`],[`Có ${b} số hạng bằng ${a}, nên tổng bằng ${a} × ${b}.`]);},['two-ways']);
+      reg13('logic','equivalent-sub',2,2,'crosscheck',()=>{const a=r(20,60),b=r(3,9);return q13(`Biểu thức nào có giá trị bằng ${a} − ${b}?`,`${a+1} − ${b+1}`,[`${a+1} − ${b}`,`${a} − ${b+1}`,`${a} + ${b}`],['Tăng cả số bị trừ và số trừ cùng 1 đơn vị thì hiệu không đổi.']);},['two-ways']);
+      reg13('logic','best-price',5,2,'compare',()=>{const n=r(3,8),price=r(3,9),discount=r(1,n-1),bulk=n*price-discount;return q13(`Mua ${n} bút: tiệm A bán ${price} nghìn/bút, tiệm B bán cả bộ ${bulk} nghìn. Phương án nào rẻ hơn?`,'Mua ở tiệm B',['Mua ở tiệm A','Hai tiệm bằng giá','Không đủ dữ kiện'],[`Tiệm A: ${n} × ${price} = ${n*price} nghìn.`,`Tiệm B: ${bulk} nghìn < ${n*price} nghìn.`]);},['optimize']);
+      reg13('logic','saving',5,2,'compare',()=>{const n=r(3,8),price=r(3,9),discount=r(1,n-1),bulk=n*price-discount;return unit13(`Mua lẻ ${n} bút giá ${price} nghìn/bút; mua bộ ${n} bút giá ${bulk} nghìn. Mua bộ tiết kiệm bao nhiêu?`,discount,[n*price,bulk,n*price+bulk,price],'nghìn đồng',[`${n} × ${price} − ${bulk} = ${discount} (nghìn đồng).`]);},['optimize']);
+      reg13('logic','budget',5,3,'reasonable',()=>{const price=r(3,9),n=r(3,8),rem=r(1,price-1),money=price*n+rem;return q13(`Có ${money} nghìn đồng, mỗi vở giá ${price} nghìn. Mua được nhiều nhất bao nhiêu quyển?`,n,[n+1,money-price,price,money],[`${money} : ${price} = ${n} dư ${rem}; tiền dư chưa đủ mua thêm một quyển.`]);},['optimize','money']);
+      reg13('logic','error-add',1,1,'verify',(g,l,truth)=>{const {a,b,sum}=pair13(g,l),claim=truth?sum:Math.abs(a-b);return q13(`An viết ${a} + ${b} = ${claim}. Phép tính này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${a} + ${b} = ${sum}.`,`Kết quả ${claim} ${truth?'trùng':'không trùng'} ${sum}, nên ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('logic','error-sub',1,1,'verify',(g,l,truth)=>{const {a,b,sum}=pair13(g,l),claim=truth?a:sum+b;return q13(`Bình viết ${sum} − ${b} = ${claim}. Phép tính này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${sum} − ${b} = ${a}.`,`Kết quả ${claim} ${truth?'trùng':'không trùng'} ${a}, nên ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('logic','error-mul',2,1,'verify',(g,l,truth)=>{const {a,b,n}=product13(g,l),wrong=n+a,claim=truth?n:wrong;return q13(`An viết ${a} × ${b} = ${claim}. Phép tính này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${a} × ${b} = ${n}.`,`Đối chiếu với ${claim}: ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('logic','error-priority',3,2,'error',(g,l,truth)=>{const a=r(2,9),b=r(2,9),c=r(2,9),n=a+b*c,claim=truth?n:(a+b)*c;return q13(`Lan tính ${a} + ${b} × ${c} = ${claim}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Nhân trước: ${b} × ${c} = ${b*c}.`,`Cộng sau: ${a} + ${b*c} = ${n}; kết quả của Lan ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('fraction','error-add',4,1,'error',(g,l,truth)=>{const {a,b,d}=frac13(),ans=F(a+b,d),claim=truth?ans:F(a+b,2*d);return q13(`An viết ${FR(a,d)} + ${FR(b,d)} = ${claim}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Cộng tử, giữ mẫu: ${a}/${d} + ${b}/${d} = ${solPlain(ans)}.`,`Kết quả của An ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('fraction','error-equivalent',4,1,'error',(g,l,truth)=>{const {a,d}=frac13(),claim=truth?FR(a*2,d*2):FR(a+1,d+1);return q13(`Bình viết ${FR(a,d)} = ${claim}. Đẳng thức này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Nhân cả tử và mẫu với 2: ${a}/${d} = ${a*2}/${d*2}.`,truth?'Hai phân số bằng nhau.':`Cộng 1 vào tử và mẫu không giữ nguyên giá trị vì ${a} ≠ ${d}.`],{arity:2,truth});},['error']);
+      reg13('decimal','error-place',5,1,'error',(g,l,truth)=>{const a=r(11,99),b=r(2,9),correct=a*b/10,claim=truth?correct:a*b;return q13(`An viết ${D(a/10)} × ${b} = ${D(claim)}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${D(a/10)} × ${b} = ${D(correct)}.`,`Kết quả của An ${truth?'đúng':'sai do đặt sai dấu phẩy'}.`],{arity:2,truth});},['error']);
+      reg13('decimal','error-sum',5,1,'error',(g,l,truth)=>{const a=r(11,99),b=r(11,99),correct=(a+b)/10,claim=truth?correct:(a+b)/100;return q13(`Lan viết ${D(a/10)} + ${D(b/10)} = ${D(claim)}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${D(a/10)} + ${D(b/10)} = ${D(correct)}.`,`Kết quả của Lan ${truth?'đúng':'sai do đặt sai dấu phẩy'}.`],{arity:2,truth});},['error']);
+
+      reg13('number','secret-tens',2,1,'reverse',()=>{const h=r(1,8),t=r(1,8),u=r(1,8);return q13(`Điền chữ số: ${h}□${u} = ${h*100} + ${t*10} + ${u}.`,t,[h,u,h+t,t+u,0],[`Phần hàng chục là ${t*10}, nên chữ số cần điền là ${t}.`]);},['digit']);
+      reg13('number','secret-hundreds',2,1,'reverse',()=>{const h=r(1,8),t=r(1,8),u=r(1,8);return q13(`Điền chữ số: □${t}${u} = ${h*100} + ${t*10+u}.`,h,[t,u,h+t,t+u,0],[`Phần hàng trăm là ${h*100}, nên chữ số cần điền là ${h}.`]);},['digit']);
+      reg13('number','digit-change',2,2,'reverse',()=>{const h=r(1,7),t=r(1,6),u=r(1,8),d=r(1,3),n=100*h+10*t+u;return q13(`Số ${h}□${u} lớn hơn ${n} đúng ${d*10}. Chữ số trong ô là gì?`,t+d,[h,t,u,d,h+d],[`${n} + ${d*10} = ${n+d*10}; chữ số hàng chục là ${t+d}.`]);},['digit']);
+      reg13('number','digit-product',4,3,'reverse',()=>{const a=r(2,5),b=r(2,8);return q13(`Một số có hai chữ số, hàng chục là ${a}, tích hai chữ số là ${a*b}. Chữ số hàng đơn vị là gì?`,b,[a,a+b,a*b,a*b-a],[`Chữ số hàng đơn vị: ${a*b} : ${a} = ${b}.`]);},['digit']);
+      reg13('stats','average-total',4,1,'reverse',()=>{const n=r(3,6),avg=r(8,25);return q13(`${n} ngày đọc trung bình ${avg} trang/ngày. Tổng số trang đã đọc là bao nhiêu?`,avg*n,[avg+n,avg/n,avg,avg*(n-1)],[`${avg} × ${n} = ${avg*n} trang.`]);},['average']);
+      reg13('stats','average-two',4,1,'reverse',()=>{const a=r(10,30),d=r(2,7);return q13(`Hai bạn có trung bình ${a} viên bi. An có ${a+d} viên. Bình có bao nhiêu viên?`,a-d,[a,a+d,2*a,a-d+1],[`Tổng: ${a} × 2 = ${2*a}.`,`Bình có: ${2*a} − ${a+d} = ${a-d} viên.`]);},['average']);
+      reg13('stats','average-extra',4,2,'reverse',()=>{const a=r(8,25),d=r(1,4);return q13(`Ba ngày đầu đọc trung bình ${a} trang/ngày. Cả bốn ngày trung bình ${a+d} trang/ngày. Ngày thứ tư đọc bao nhiêu trang?`,a+4*d,[a+d,4*(a+d),a+3*d,3*a],[`Ba ngày: ${a} × 3 = ${3*a} trang.`,`Bốn ngày: ${a+d} × 4 = ${4*(a+d)} trang.`,`Ngày thứ tư: ${4*(a+d)} − ${3*a} = ${a+4*d} trang.`]);},['average']);
+      reg13('geometry','area-double',4,1,'reasonable',()=>{const {a,b,area}=rect13();return unit13(`Hình chữ nhật dài ${a} cm, rộng ${b} cm. Giữ chiều dài, gấp đôi chiều rộng thì diện tích mới bằng bao nhiêu?`,2*area,[area,area+2,(a+b)*2,area*4],'cm²',[`Chiều rộng mới: ${b} × 2 = ${2*b} cm.`,`Diện tích mới: ${a} × ${2*b} = ${2*area} cm².`]);},['same-area']);
+      reg13('geometry','equal-area-width',4,1,'reverse',()=>{const a=r(3,8),b=r(3,8),s=a*b;return unit13(`Hình chữ nhật thứ nhất có diện tích ${s} cm². Hình thứ hai cùng diện tích, dài ${a} cm. Chiều rộng hình thứ hai là bao nhiêu?`,b,[s-a,s+a,a,s],'cm',[`${s} : ${a} = ${b} cm.`]);},['same-area']);
+      reg13('geometry','equal-area-square',4,2,'reverse',()=>{const a=r(3,8)*2;return unit13(`Hình vuông cạnh ${a} cm và hình chữ nhật dài ${a*2} cm có cùng diện tích. Chiều rộng hình chữ nhật bằng bao nhiêu?`,a/2,[a,a*2,a*a,a/4],'cm',[`Diện tích hình vuông: ${a} × ${a} = ${a*a} cm².`,`Chiều rộng: ${a*a} : ${a*2} = ${a/2} cm.`]);},['same-area']);
+      reg13('geometry','equal-area-perimeter',4,3,'compare',()=>{const a=r(3,8)*2;return unit13(`Hình vuông cạnh ${a} cm và hình chữ nhật dài ${a*2} cm có cùng diện tích. Chu vi hình chữ nhật bằng bao nhiêu?`,a*5,[4*a,2*a,a*a,a*3],'cm',[`Chiều rộng: ${a*a} : ${a*2} = ${a/2} cm.`,`Chu vi: (${a*2} + ${a/2}) × 2 = ${a*5} cm.`]);},['same-area']);
+      reg13('word','filter-price',3,1,'filter',()=>{const n=r(3,8),price=r(2,9),extra=r(2,9);return unit13(`Lan mua ${n} vở giá ${price} nghìn/quyển và ${extra} chiếc bút. Riêng tiền vở là bao nhiêu?`,n*price,[n+price,n*price+extra,(n+extra)*price,price*extra],'nghìn đồng',[`Chỉ tính vở: ${n} × ${price} = ${n*price} nghìn đồng.`]);});
+      reg13('word','filter-remaining',3,1,'filter',()=>{const a=r(20,40),b=r(3,9),c=r(2,8);return unit13(`Kho có ${a} kg gạo và ${c} kg đỗ. Bán ${b} kg gạo thì còn bao nhiêu ki-lô-gam gạo?`,a-b,[a+c-b,a+b,a-b-c,a+c+b],'kg',[`Chỉ xét gạo: ${a} − ${b} = ${a-b} kg.`]);});
+      reg13('word','filter-time',3,2,'filter',()=>{const a=r(3,8),b=r(3,9),year=p([2023,2024,2025]);return unit13(`Năm ${year}, lớp trồng ${a} hàng cây, mỗi hàng ${b} cây. Lớp trồng tất cả bao nhiêu cây?`,a*b,[a+b,a,a*b+a,b],'cây',[`${a} × ${b} = ${a*b} cây.`,`Năm trồng không tham gia phép tính số cây.`]);});
+      reg13('word','filter-needed',3,2,'filter',()=>{const a=r(3,8),b=r(3,9),c=r(2,7);return q13(`Có ${a} hộp bút, mỗi hộp ${b} bút và ${c} quyển vở. Tính tổng số bút cần dùng dữ kiện nào?`,`${a} hộp và ${b} bút/hộp`,[`${a} hộp và ${c} quyển vở`,`${b} bút/hộp và ${c} quyển vở`,'Chỉ số quyển vở'],['Số bút = số hộp × số bút mỗi hộp; không cần số quyển vở.']);});
+      reg13('logic','condition-one-more',1,1,'range',()=>{const a=r(2,7);return q13(`Số nào lớn hơn ${a} đúng 1 đơn vị?`,a+1,[a,a-1,a+2],[`${a} + 1 = ${a+1}.`]);},['condition']);
+      reg13('logic','condition-one-less',1,1,'range',()=>{const a=r(3,9);return q13(`Số nào bé hơn ${a} đúng 1 đơn vị?`,a-1,[a,a+1,a-2],[`${a} − 1 = ${a-1}.`]);},['condition']);
+      reg13('logic','condition-bounds',1,2,'range',()=>{const a=r(2,7);return q13(`Trong các số ${a-1}, ${a}, ${a+1}, ${a+3}, số nào lớn hơn ${a} nhưng bé hơn ${a+2}?`,a+1,[a-1,a,a+3],[`${a} < ${a+1} < ${a+2}.`]);},['condition']);
+      reg13('logic','missing-left',2,1,'filter',()=>{const a=r(6,9),b=r(2,5);return q13(`An có ${a} bút, cho bạn ${b} bút. Phép tính ${a} − ${b} trả lời câu hỏi nào?`,'An còn bao nhiêu bút?',['Ban đầu An có bao nhiêu bút?','An cho bạn bao nhiêu bút?','Nếu được cho thêm, An có bao nhiêu bút?'],['Lấy số bút ban đầu trừ số đã cho để tìm số còn lại.']);},['missing-question']);
+      reg13('logic','missing-sharing',2,1,'filter',()=>{const a=p([2,5]),b=r(3,9);return q13(`Chia đều ${a*b} bút vào ${a} hộp. Phép tính ${a*b} : ${a} trả lời câu hỏi nào?`,'Mỗi hộp có bao nhiêu bút?',['Có tất cả bao nhiêu bút?','Có bao nhiêu hộp?','Số bút nhiều hơn số hộp bao nhiêu?'],['Chia tổng số bút cho số hộp để tìm số bút mỗi hộp.']);},['missing-question']);
+      reg13('logic','two-ways-ten',2,1,'crosscheck',()=>{const a=r(12,60);return q13(`Biểu thức nào có giá trị bằng ${a} + 9?`,`${a} + 10 − 1`,[`${a} + 10 + 1`,`${a} − 10 + 1`,`${a} + 10`],['Cộng 9 tương đương cộng 10 rồi trừ 1.']);},['two-ways']);
+      reg13('logic','two-ways-sub',2,1,'crosscheck',()=>{const a=r(21,60);return q13(`Biểu thức nào có giá trị bằng ${a} − 9?`,`${a} − 10 + 1`,[`${a} − 10 − 1`,`${a} + 10 − 1`,`${a} − 10`],['Trừ 9 tương đương trừ 10 rồi cộng 1.']);},['two-ways']);
+      reg13('logic','shopping-change',2,1,'reverse',()=>{const a=p([20,50]),price=p([2,5]),n=r(2,3);return unit13(`Mua ${n} bút giá ${price} nghìn/bút, trả ${a} nghìn đồng. Được trả lại bao nhiêu?`,a-price*n,[a-price,a+price*n,price*n,a-n],'nghìn đồng',[`Tiền bút: ${n} × ${price} = ${n*price}.`,`Tiền trả lại: ${a} − ${n*price} = ${a-n*price} nghìn đồng.`]);},['money']);
+      reg13('logic','grid-up',1,1,'accurate',()=>{const a=r(5,9),b=r(1,4);return q13(`Các hàng trên lưới tăng từ trên xuống. An ở hàng ${a}, đi lên ${b} ô. An đến hàng mấy?`,a-b,[a+b,a,b,a-b+1],[`Đi lên làm số hàng giảm: ${a} − ${b} = ${a-b}.`]);},['grid']);
+      reg13('logic','grid-down',1,1,'accurate',()=>{const a=r(1,4),b=r(1,4);return q13(`Các hàng trên lưới tăng từ trên xuống. An ở hàng ${a}, đi xuống ${b} ô. An đến hàng mấy?`,a+b,[Math.abs(a-b),a,b,a+b+1],[`Đi xuống làm số hàng tăng: ${a} + ${b} = ${a+b}.`]);},['grid']);
+      reg13('fraction','error-product',4,2,'error',(g,l,truth)=>{const {a,b,d}=frac13(),correct=F(a*b,d*d),wrong=F(a*b,d),claim=truth?correct:wrong;return q13(`An viết ${FR(a,d)} × ${FR(b,d)} = ${claim}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Tử nhân tử, mẫu nhân mẫu: ${a*b}/${d*d} = ${solPlain(correct)}.`,`Kết quả của An ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('fraction','error-part',4,1,'error',(g,l,truth)=>{const d=r(3,8),n=r(3,12),total=d*n,claim=truth?n:total*d;return q13(`Bình nói ${FR(1,d)} của ${total} là ${claim}. Bình nói đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`${total} : ${d} = ${n}.`,`Kết quả ${claim} ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('decimal','error-divide',5,1,'error',(g,l,truth)=>{const a=r(11,99),claim=truth?a/100:a;return q13(`An viết ${D(a/10)} : 10 = ${D(claim)}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Chia 10, chuyển dấu phẩy sang trái: ${D(a/10)} : 10 = ${D(a/100)}.`,`Kết quả của An ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+      reg13('decimal','error-compare',5,1,'error',(g,l,truth)=>{const a=r(1,9),b=r(1,8),c=r(1,9),sign=truth?'<':'>';return q13(`Lan viết ${D(a+b/10)} ${sign} ${D(a+b/10+c/100)}. Nhận xét này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[`Viết cùng số chữ số thập phân để so sánh: ${D(a+b/10)} < ${D(a+b/10+c/100)}.`,`Nhận xét của Lan ${truth?'đúng':'sai'}.`],{arity:2,truth});},['error']);
+
+      function strands13(m){
+        const id=m.id;
+        if(/^err/.test(id))return [m.g===4?'fraction':m.g===5?'decimal':'logic'];
+        if(/^think|^hsg|^olym|^custom/.test(id))return ['logic','number','pattern','word'];
+        if(id==='calc3'||id==='calc4')return ['addsub','muldiv'];
+        if(id==='num5')return ['number','fraction'];
+        if(/^num/.test(id))return ['number'];
+        if(/^find/.test(id))return ['unknown'];
+        if(/^rev/.test(id))return [m.g===5?'percent':'unknown'];
+        if(id==='cond1')return ['number','logic'];
+        if(id==='order1')return ['number','logic'];
+        if(id==='pos1')return ['logic'];
+        if(/^miss|^twoway|^money|^opt/.test(id))return ['logic'];
+        if(id==='table2'||id==='avg4'||id==='data5')return ['stats'];
+        if(id==='choose3')return ['word'];
+        if(id==='digit4')return ['number'];
+        if(id==='unit3')return ['measure'];
+        if(/^geom/.test(id))return m.g<=2?['geometry','measure']:['geometry'];
+        return [m.strand];
+      }
+      function pool13(m,l){
+        let pool=QB13.filter(e=>strands13(m).includes(e.strand)&&e.grade<=m.g);
+        if(m.g>=3&&/^geom/.test(m.id))pool=pool.filter(e=>e.grade>=3);
+        if(m.id==='decimalAdv5')pool=pool.filter(e=>e.tier>=2);
+        const tag=/^err/.test(m.id)?'error':m.id==='pos1'?'grid':m.id==='order1'?'order':m.id==='cond1'?'condition':m.id==='miss2'?'missing-question':m.id==='twoway2'?'two-ways':m.id==='money2'?'money':m.id==='opt5'?'optimize':m.id==='digit4'?'digit':m.id==='avg4'?'average':m.id==='rev5'?'reverse-percent':/Cùng diện tích|Quan hệ giữa các diện tích/.test(m.name)?'same-area':null;
+        if(tag){const tagged=pool.filter(e=>e.tags.includes(tag));if(tagged.length)pool=tagged;}
+        if(m.id==='choose3')pool=pool.filter(e=>e.skill==='filter');
+        if(m.id==='data5')pool=pool.filter(e=>e.skill==='reverse');
+        if(m.id==='rev1'||m.id==='rev3')pool=pool.filter(e=>e.skill==='reverse');
+        if(m.id==='frac3'&&m.name.includes('của một nhóm'))pool=pool.filter(e=>['fraction:unit-part','fraction:unit-original','fraction:remaining-unit'].includes(e.id));
+        // Với module chuyên biệt có rất ít lõi, giữ đúng chủ đề trước mức khó yêu cầu.
+        if(m.h){const advanced=pool.filter(e=>e.tier>=2&&(e.grade>=m.g-2||['number','unknown'].includes(e.strand)));if(advanced.length>=3)pool=advanced;}
+        const leveled=pool.filter(e=>e.tier<=l);
+        return leveled.length>=2?leveled:pool;
+      }
+      function configure13(){
+        M.forEach(m=>{
+          const primary=strands13(m)[0];m.strand=primary;
+          m.name=m.name.replace(/ - .*$/,'').replace(/ -.*$/,'').replace(/ - 3 kiểu tư duy/,'');
+          if(m.id==='geom1'||m.id==='geom2')m.name=m.name.startsWith('🧠')?m.name:'Hình học và đo lường';
+          if(/^stats/.test(m.id))m.name=m.g===1?'Đọc số liệu đơn giản':m.g===2?'Đọc số liệu và biểu đồ tranh':'Đọc số liệu, thống kê';
+          if(m.id==='frac3'&&!m.name.startsWith('🧠'))m.name='Phân số trực quan và phân số của một nhóm';
+          if(m.id==='num5')m.name='Số tự nhiên và phân số';
+          if(m.name.includes('Cùng diện tích'))m.name='🧠 Quan hệ giữa các diện tích';
+          m.t=m.name.replace(/^🧠\s*/, '')+'.';
+          sel[m.uid].n=5;
+        });
+      }
+      // Biến thể kiểm chứng chỉ dùng đẳng thức đầy đủ, thay câu hỏi gốc.
+      function variant13(x,goal,g,truth){
+        const expr=x.meta.expression;
+        if(!expr||!['verify','error','crosscheck','compare','range','estimate'].includes(goal))return x;
+        const val=Number(String(x[1]).replace(',','.'));if(!Number.isFinite(val))return x;
+        const wrong=x[3].find(v=>key13(v)!==key13(x[1]));
+        const steps=x.meta.solution.slice();
+        if(goal==='verify'||goal==='error'){
+          const claim=truth?x[1]:wrong;
+          return q13(`An viết ${expr} = ${claim}. Kết quả này đúng hay sai?`,truth?'Đúng':'Sai',['Đúng','Sai'],[...steps,`Kết quả ${claim} ${truth?'trùng':'không trùng'} đáp số ${x[1]}.`],{arity:2,truth,variant:goal});
+        }
+        if(goal==='crosscheck'){
+          const an=truth?x[1]:wrong,binh=truth?wrong:x[1];
+          return q13(`Tính ${expr}: An được ${an}, Bình được ${binh}. Ai có kết quả đúng?`,truth?'An':'Bình',['An','Bình','Cả hai bạn','Không bạn nào'],[...steps,`Chỉ ${truth?'An':'Bình'} có kết quả ${x[1]}.`],{variant:goal});
+        }
+        if(goal==='compare'){
+          const target=p([val,val+1,Math.max(0,val-1)]),ans=relation(val,target);
+          return q13(`Điền dấu: ${expr} □ ${text13(target)}.`,ans,['>','<','='],[...steps,`${x[1]} ${ans} ${text13(target)}.`],{arity:3,variant:goal});
+        }
+        if(g<3||!Number.isInteger(val)||val<10)return x;
+        if(goal==='estimate'){
+          const rounded=Math.round(val/10)*10;
+          return q13(`Tính ${expr}, rồi làm tròn kết quả đến hàng chục.`,rounded,[rounded-10,rounded+10,rounded-20,rounded+20],[...steps,`Làm tròn ${val} đến hàng chục được ${rounded}.`],{variant:goal});
+        }
+        const lo=Math.floor(val/10)*10, label=n=>`Từ ${n} đến ${n+9}`;
+        return q13(`Kết quả ${expr} thuộc khoảng nào?`,label(lo),[label(lo+10),label(lo+20),label(lo+30),...(lo>=10?[label(lo-10)]:[])],[...steps,`${lo} ≤ ${val} ≤ ${lo+9}.`],{variant:goal});
+      }
+      function create13(m,l,attempt,goal,cog,ctx){
+        // Không loại bỏ vĩnh viễn một lõi chỉ vì vài lần thử trùng dữ kiện; cùng một lõi vẫn có thể sinh số mới.
+        const pool=pool13(m,l);if(!pool.length)return null;
+        const counts=ctx?.coreCounts||new Map(),prior=ctx?.priorCore||new Set();
+        let candidates=pool.slice().sort((a,b)=>{
+          const score=e=>(counts.get(e.id)||0)*100+(prior.has(e.id)?3:0)+(e.skill===goal?0:5)+Math.abs(e.tier-Math.min(l,cog||l))*2;
+          return score(a)-score(b);
+        });
+        const best=candidates[0],min=counts.get(best.id)||0;
+        // Les dạng chưa dùng luôn được xét trước dạng đã xuất hiện.
+        candidates=candidates.filter(e=>(counts.get(e.id)||0)===min);
+        const nonAdjacent=candidates.filter(e=>e.id!==ctx?.lastCore);if(nonAdjacent.length)candidates=nonAdjacent;
+        const ranked=candidates.map(e=>({e,score:(e.skill===goal?0:4)+Math.abs(e.tier-Math.min(l,cog||l))*2+(prior.has(e.id)?2:0)+Math.random()*3})).sort((a,b)=>a.score-b.score);
+        const chosen=ranked[0].e;
+        if(ctx)ctx.lastAttemptCore=chosen.id;
+        const truth=ctx?.truthNext??(Math.random()<.5);
+        currentGrade13=m.g;
+        let x=chosen.fn(m.g,l,truth);
+        if(goal)x=variant13(x,goal,m.g,truth);
+        if(!x)return null;
+        if(m.g===1){
+          const max=l===1?10:l===2?20:100, nums=(String(x[0])+' '+String(x[1])).match(/\d+/g)||[];
+          if(nums.some(n=>+n>max))throw Error('Vượt phạm vi số lớp 1');
+        }
+        x.meta={...x.meta,strand:chosen.strand,coreKey:chosen.id,bankIndex:QB13.indexOf(chosen),skill:x.meta.variant||chosen.skill,cogLevel:chosen.tier,requestedSkill:goal,requestedCog:cog,knowledgeDifficulty:l,baseQuestion:x[0],baseAnswer:x[1],baseOpts:x[3].slice(),appliedShell:0};
+        return x;
+      }
+      function failed13(ctx){
+        if(!ctx?.lastAttemptCore)return;
+        ctx.failures??=new Map();ctx.exhaustedCore??=new Set();
+        const key=ctx.lastAttemptCore,n=(ctx.failures.get(key)||0)+1;
+        ctx.failures.set(key,n);if(n>=30)ctx.exhaustedCore.add(key);
+      }
+      function options13(x){
+        const opts=x[3].slice(),keys=opts.map(key13);
+        if(opts.length!==x.meta.arity||new Set(keys).size!==opts.length||keys.filter(k=>k===key13(x[1])).length!==1)throw Error('Phương án không duy nhất');
+        x.o=shuf(opts);x.c=x.o.findIndex(v=>key13(v)===key13(x[1]));return x;
+      }
+      const FORBIDDEN_PROMPT13=/đừng tin ngay|làm trọng tài|khoanh vùng|trực giác số học|dạng biểu diễn|dùng phép tính ngược|hãy tự tính để kiểm tra|hãy tìm nguyên nhân|không cần thử nhiều lần|trước khi chốt|đối chiếu lại|tính hợp lí/i;
+      function validateQuestion13(x,mc){
+        const q=String(x?.[0]??'').replace(/\s+/g,' ').trim();
+        if(!q || FORBIDDEN_PROMPT13.test(q)) throw Error('Câu dẫn không phù hợp học sinh');
+        if(q.length>180) throw Error('Câu dẫn quá dài');
+        if(mc){
+          const binary=x.o?.length===2 && x.o.map(v=>String(v).trim().toLowerCase()).sort().join('|')==='đúng|sai';
+          if(!Array.isArray(x.o)||(!binary&&x.o.length!==4)) throw Error('Trắc nghiệm phải có 4 phương án, trừ câu kiểm tra đúng hoặc sai');
+          if(new Set(x.o.map(key13)).size!==4) throw Error('Phương án trùng');
+          if(x.c<0||x.c>=x.o.length) throw Error('Thiếu đáp án đúng');
+        }
+        return x;
+      }
+      function balance13(sections){
+        const bins={};sections.filter(s=>s.mc).forEach(s=>s.it.forEach(x=>(bins[x.o.length]??=[]).push(x)));
+        for(const [size,items] of Object.entries(bins)){
+          const n=+size,positions=shuf(Array.from({length:items.length},(_,i)=>i%n));
+          items.forEach((x,i)=>{const answer=x.o[x.c],wrong=shuf(x.o.filter((_,j)=>j!==x.c)),at=positions[i];wrong.splice(at,0,answer);x.o=wrong;x.c=at;});
+        }
+      }
+      function score13(sections){
+        const total=sections.reduce((s,x)=>s+x.it.length,0),scale=total>1000?10000:1000;
+        let index=0;sections.forEach(s=>{s.it.forEach(x=>{x.points=(Math.floor((index+1)*scale/total)-Math.floor(index*scale/total))/(scale/10);index++;});s.pt=Number(s.it.reduce((n,x)=>n+x.points,0).toFixed(3));});
+      }
+      function quality13(){
+        const all=P.secs.flatMap(s=>s.it),types=new Set(all.map(x=>x.meta.coreKey));
+        const mismatch=all.filter(x=>x.meta.requestedSkill&&x.meta.requestedSkill!==x.meta.skill).length;
+        const cogMismatch=all.filter(x=>x.meta.requestedCog&&x.meta.requestedCog!==x.meta.cogLevel).length;
+        const incomplete=P.secs.filter(s=>s.it.length<s.wanted);
+        const repeated=all.length-types.size;
+        return `Đã tạo ${all.length} câu · ${types.size} dạng lõi · Tổng 10 điểm. ${repeated?`${repeated} câu dùng lại dạng với dữ kiện khác. `:''}${mismatch||cogMismatch?`${mismatch} câu điều chỉnh kỹ năng, ${cogMismatch} câu điều chỉnh mức tư duy để khớp dạng bài. `:''}${incomplete.length?'Một số phần chưa đủ số câu; hãy giảm số câu hoặc đổi mức độ.':''}`;
+      }
+
       const COG_GUIDES = {
         accurate:{
           2:["Hãy kiểm tra lại phép tính trước khi chốt.","Sau khi tính, thử thay kết quả vào dữ kiện ban đầu.","Đừng bỏ qua đơn vị hoặc chữ số ở hàng cuối."],
@@ -4736,45 +5244,33 @@ Phần III - 2 bài toán có lời văn"></textarea>
         expression: g>=3?null:[]
       });
 
-      function variedQuestion(m, l, attempt, depth, skillId, cogLevel=2, ctx=null) {
-        const strand = m.strand || strandOf(m);
-        const entries = difficultyCorePool(strand,m.g,l);
-        const bankChance = knowledgeBankChance(depth,l);
-        // Khi chế độ ma trận/blueprint hoạt động, ưu tiên 100% ngân hàng lõi đã phân tầng.
-        // Generator gốc của nhiều module đời đầu chỉ đổi số chứ không đổi cấu trúc và thường bỏ qua Dễ/Vừa/Khó.
-        // Vì vậy chỉ dùng generator gốc làm phương án dự phòng khi mạch chưa có lõi phù hợp.
-        const useBank = entries.length > 0;
-        let x;
-        try {
-          if(useBank){
-            const chosen=pickCoreEntry(entries,ctx,attempt);
-            if(!chosen)return null;
-            x = chosen.fn(m.g,l);
-            if(x) x.meta={...(x.meta||{}),strand,bankIndex:chosen.idx,coreKey:`b${chosen.idx}`,shell:-1};
-          } else {
-            x = m.gen(l);
-            if(x) x.meta={...(x.meta||{}),strand,bankIndex:-1,coreKey:"native",shell:0};
+      function variedQuestion(m,l,attempt,depth,skillId,cogLevel=2,ctx=null){
+        try{
+          const cp=curriculumProfile();
+          if(cp[4] && ['number','addsub'].includes(m.strand||strandOf(m))){
+            const max=Math.max(2,Math.min(cp[2],5)), a=1+Math.floor(Math.random()*(max-1)), b=1+Math.floor(Math.random()*(max-a)), ans=a+b;
+            const pool=Array.from({length:max+1},(_,i)=>i).filter(v=>v!==ans).sort(()=>Math.random()-.5).slice(0,3);
+            return qmake(`${a} + ${b} = ?`,ans,[ans,...pool],{arity:4,coreKey:`early-add-${a}-${b}`,strand:m.strand||strandOf(m)});
           }
-          if(!x) return null;
-          x.meta={...(x.meta||{}),knowledgeDifficulty:l,knowledgeDifficultyName:(m.h?LH:LB)[l-1]};
-          if(x.meta.baseQuestion==null) x.meta.baseQuestion=String(x[0]);
-          if(x.meta.baseAnswer==null) x.meta.baseAnswer=x[1];
-          if(x.meta.baseOpts==null) x.meta.baseOpts=Array.isArray(x[3])?x[3].slice():[];
-          if(skillId) x=applyGoalSkill(x,skillId,m,l);
-          x=applyCognitiveLevel(x,cogLevel,skillId,m,l);
-          return x;
-        } catch(e){ return null; }
+          return create13(m,l,attempt,skillId,cogLevel,ctx);
+        }catch(e){failed13(ctx);return null;}
+      }
+      function curriculumAccept13(x){
+        const cp=curriculumProfile(), max=cp[2];
+        if(!x||!Number.isFinite(max)) return true;
+        const text=[x[0],x[1],...(Array.isArray(x[3])?x[3]:[])].join(' ');
+        const nums=text.match(/(?<![A-Za-zÀ-ỹ])\d+(?:[.,]\d+)?/g)||[];
+        return nums.every(v=>Number(v.replace(',','.'))<=max);
       }
 
-      function bankCoverageText() {
-        const active = new Set(M.filter(m=>sel[m.uid]?.on).map(m=>m.strand || strandOf(m)));
-        const count = [...active].reduce((s,k)=>s+(TB[k]?.length||0),0);
-        return `🧠 ${count} lõi tư duy đang sẵn sàng · 10 kỹ năng · 3 mức tư duy · ma trận 3 chiều giao mục tiêu riêng cho từng mạch, kỹ năng và độ sâu suy luận`;
+      function bankCoverageText(){
+        const active=M.filter(m=>sel[m.uid]?.on), ids=new Set(active.flatMap(m=>pool13(m,sel[m.uid].l).map(e=>e.id)));
+        return `Ngân hàng v13: ${QB13.length} mẫu bài · ${ids.size} dạng phù hợp lựa chọn hiện tại. Ưu tiên dạng chưa dùng; biến thể đổi số không tính là dạng mới.`;
       }
 
       function gen() {
         const plan = structurePlan(G);
-        const A = plan ? plan.map(z=>z.m) : M.filter((m) => sel[m.uid].on);
+        const A = plan ? plan.map(z=>z.m).filter(curriculumAllowedModule) : M.filter((m) => sel[m.uid].on && curriculumAllowedModule(m));
         if (!A.length) return toast(plan ? "Không nhận diện được cấu trúc. Hãy dùng tên dạng bài gợi ý." : "Hãy tích chọn ít nhất một module");
         const nmc = A.filter((m) => plan ? false : sel[m.uid].mc).length,
           B = plan ? plan.map(z=>z.m) : [...A.filter((m) => sel[m.uid].mc), ...A.filter((m) => !sel[m.uid].mc)],
@@ -4807,8 +5303,10 @@ Phần III - 2 bài toán có lời văn"></textarea>
         const skillTargets = carefulOn ? aggregateSkillCounts(strandWanted) : {};
         const cogTotals = carefulOn ? aggregateCogCounts() : {};
         let lastQuestionPattern = null;
+        const globalCoreCounts=new Map(), truthCounts={Đúng:0,Sai:0};
         P = {
           title: $("ti").value || "ĐỀ KIỂM TRA MÔN TOÁN",
+          curriculum: curriculumProfile(),
           school: $("sc").value,
           time: $("tm").value,
           lop: gs.length == 1 ? gs[0] : "……",
@@ -4821,7 +5319,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           cognitiveTotals: cogTotals,
           blueprint: blueprintOn ? {mode:blueprint.mode,total:blueprint.total,skillTotals:blueprint.globalSkillTarget,cognitiveTotals:blueprint.globalCogTarget,maxSkillRun:blueprint.maxSkillRun,maxCogRun:blueprint.maxCogRun} : null,
           secs: B.map((m, i) => {
-            const planItem = plan ? plan.find(z=>z.m.id===m.id) : null;
+            const planItem = plan ? plan[i] : null;
             const s = sel[m.uid] || {l:1,n:1,mc:0},
               mc = plan ? false : !!s.mc,
               seen = new Set(),
@@ -4831,7 +5329,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
               bpSec = blueprintOn ? blueprint.sections[i] : null,
               sectionStart = strandCursor[strand] || 0,
               historyKey = recentCoreKey(m,s.l),
-              sectionCtx = {usedCore:new Set(),priorCore:new Set(Array.isArray(recentCoreHistory[historyKey])?recentCoreHistory[historyKey]:[])};
+              sectionCtx = {failures:new Map(),exhaustedCore:new Set(),coreCounts:globalCoreCounts,truthNext:Math.random()<.5,usedCore:new Set(),priorCore:new Set(Array.isArray(recentCoreHistory[historyKey])?recentCoreHistory[historyKey]:[])};
             strandCursor[strand] = sectionStart + wanted;
             const maxTries = Math.max(500, wanted * (carefulOn ? 240 : 90));
             for (let k = 0; k < maxTries && it.length < wanted; k++) {
@@ -4841,47 +5339,64 @@ Phần III - 2 bài toán có lời văn"></textarea>
                 const goalSkill = carefulOn ? (bpSlot?.skill || strandSchedules[strand]?.[sectionStart + it.length]) : null;
                 const cogPos = carefulOn && !blueprintOn && goalSkill ? (cogCursor[strand]?.[goalSkill]||0) : 0;
                 const goalCog = carefulOn && goalSkill ? (bpSlot?.cog || cogSchedules[strand]?.[goalSkill]?.[cogPos] || 2) : 2;
-                x = carefulOn ? variedQuestion(m, s.l, k + it.length * 17, depth, goalSkill, goalCog, sectionCtx) : m.gen(s.l);
+                sectionCtx.truthNext=truthCounts.Đúng===truthCounts.Sai?Math.random()<.5:truthCounts.Đúng<truthCounts.Sai;
+                sectionCtx.lastCore=lastQuestionPattern;
+                x = variedQuestion(m,s.l,k+it.length*17,depth,goalSkill,goalCog,sectionCtx);
                 if (!x) continue;
+                if (!curriculumAccept13(x)) continue;
                 x.meta={...(x.meta||{})};
                 if(x.meta.baseQuestion==null) x.meta.baseQuestion=String(x[0]);
                 if(x.meta.baseAnswer==null) x.meta.baseAnswer=x[1];
                 if(x.meta.baseOpts==null) x.meta.baseOpts=Array.isArray(x[3])?x[3].slice():[];
-                if (mc) mkOpts(x, m.g, m.sc);
+                if (mc){
+                  x[0]=x[0].replace(/Điền số vào ô:/g,'Số nào điền vào ô:').replace(/Điền số vào ô\./g,'Số nào điền vào ô?').replace(/Điền số:/g,'Số nào điền vào ô:').replace(/Điền dấu:/g,'Dấu nào điền vào ô:');
+                  options13(x);
+                }
+                if (!curriculumAccept13(x)) continue;
+                validateQuestion13(x,mc);
                 x._goalSkill=goalSkill;x._goalCog=goalCog;x._cogPos=cogPos;
               } catch (e) { continue; }
               const h = x[0] + "||" + x[1] + "||" + (x[2] || "");
-              const pattern = `${strand}|${x._goalSkill||""}|${x._goalCog||""}|${x.meta?.appliedShell??x.meta?.shell??""}|${x.meta?.coreKey??x.meta?.bankIndex??""}`;
-              const samePattern = blueprintOn && lastQuestionPattern && pattern===lastQuestionPattern;
-              if (!seen.has(h) && (!samePattern || k%7===6)) {
+              const pattern=x.meta.coreKey;
+              if (!seen.has(h)) {
+                sectionCtx.failures.delete(pattern);
                 seen.add(h); it.push(x); lastQuestionPattern=pattern;
-                if(x.meta?.coreKey) sectionCtx.usedCore.add(x.meta.coreKey);
+                sectionCtx.usedCore.add(pattern);
+                globalCoreCounts.set(pattern,(globalCoreCounts.get(pattern)||0)+1);
+                if(x[1]==='Đúng'||x[1]==='Sai')truthCounts[x[1]]++;
                 if(carefulOn&&!blueprintOn&&x._goalSkill)cogCursor[strand][x._goalSkill]=x._cogPos+1;
-              }
+              } else {failed13(sectionCtx);}
             }
             if (it.length < wanted) console.warn(`Ngân hàng ${m.id} chỉ sinh được ${it.length}/${wanted} câu khác nhau.`);
             saveRecentCores(m,s.l,it);
-            return { m, l: s.l, mc, it, pt: i < n - 1 ? bs : 10 - bs * (n - 1) };
+            return {m,l:s.l,mc,it,wanted,pt:0};
           }),
         };
+        balance13(P.secs);
+        score13(P.secs);
+        P.quality=quality13();
         const fg = (x) => (x[2] ? `<span class=fg>${x[2]}</span>` : ""),
           item = (s, x, j) =>
             s.mc
-              ? `<div class=mc><div class=qi><span><b>Câu ${j + 1}.</b> ${H(x[0])}</span>${fg(x)}</div><div class="op ${oc(x)}">${x.o.map((v, i) => `<span><b>${LT[i]}.</b> ${H(v)}</span>`).join("")}</div></div>`
-              : `<div><div class=qi><span><b>Câu ${j + 1}.</b> ${H(x[0])}</span>${fg(x)}</div>${P.sp && NL[s.m.w] ? dl("").repeat(NL[s.m.w]) + dl("Đáp số: ") : ""}${P.sp && s.m.w == 2 ? dl("Trả lời: ") : ""}</div>`;
+              ? `<div class=mc><div class=qi><span><b>Câu ${j + 1} (${D(x.points)} điểm).</b> ${H(x[0])}</span>${fg(x)}</div><div class="op ${oc(x)}">${x.o.map((v, i) => `<span><b>${LT[i]}.</b> ${H(v)}</span>`).join("")}</div></div>`
+              : `<div><div class=qi><span><b>Câu ${j + 1} (${D(x.points)} điểm).</b> ${H(x[0])}</span>${fg(x)}</div>${P.sp && NL[s.m.w] ? dl("").repeat(NL[s.m.w]) + dl("Đáp số: ") : ""}${P.sp && s.m.w == 2 ? dl("Trả lời: ") : ""}</div>`;
         $("paper").innerHTML =
-          `<table class=hd><tr><td><b>${eh(P.school)}</b></td><td><b>${eh(P.title)}</b><br>Môn: Toán – Lớp ${P.lop}<br><i>Thời gian làm bài: ${eh(P.time)}</i></td></tr></table>\n<table class=bx><tr><td style="width:46%">Họ và tên: ......................<br><br>Lớp: ........ Số báo danh: ........</td><td style="width:14%;text-align:center"><b>Điểm</b></td><td><b>Nhận xét của giáo viên</b></td></tr></table>` +
+          `<table class=hd><tr><td><b>${eh(P.school)}</b></td><td><b>${eh(P.title)}</b><br>Môn: Toán – Lớp ${P.lop}<br><i>Thời gian làm bài: ${eh(P.time)}</i></td></tr></table>\n<table class=bx><tr><td style="width:46%">Họ và tên: ......................<br><br>Lớp: ........ Số báo danh: ........</td><td style="width:14%;text-align:center"><b>Điểm</b></td><td><b>Nhận xét của giáo viên</b></td></tr></table><p class=hn><b>Phạm vi:</b> ${H(P.curriculum[1])}. ${P.curriculum[4]?"Tuần đầu: giáo viên đọc câu hỏi cho học sinh.":""}<br><b>Thang điểm: 10 điểm.</b> Điểm tối đa ghi ở từng câu. Trắc nghiệm: chọn một phương án; đúng được trọn điểm, sai hoặc bỏ trống được 0 điểm.</p>` +
           P.secs
             .map(
               (s, i) =>
                 (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc))
                   ? `<h3 class=pt>${s.mc ? "Phần I. Trắc nghiệm" : "Phần II. Tự luận"}</h3>`
                   : "") +
-                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(s.m.t)}${s.mc ? ' <span class=hn>(Khoanh vào chữ cái đặt trước đáp án đúng)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
+                `<h3>Bài ${i + 1} <em>(${D(s.pt)} điểm)</em>. ${H(s.m.t)}${s.mc ? ' <span class=hn>(Chọn một đáp án)</span>' : ""}</h3><div class="qs ${s.mc ? "mq" : s.m.w ? "w" : P.sp ? (s.m.g >= 3 ? "sp2" : "sp1") : ""}">${s.it.map((x, j) => item(s, x, j)).join("")}</div>`,
             )
             .join("") +
           `<div class=end>— Hết —</div>`;
-        toast(blueprintOn ? `Đã tạo đề theo blueprint toàn đề · ${totalWanted} câu` : carefulOn ? `Đã tạo đề theo ma trận 3 chiều · ${totalWanted} câu` : `Đã tạo đề · ${totalWanted} câu`);
+        let report=$('qualityReport13');
+        if(!report){report=document.createElement('div');report.id='qualityReport13';report.className='curriculum-note';$('paper').parentNode.before(report);}
+        const actual=P.secs.flatMap(s=>s.it),skills=SKILL_DEFS.filter(k=>actual.some(x=>x.meta.skill===k.id)||P.skillMatrix[k.id]);
+        report.innerHTML=`<b>${H(P.quality)}</b><details style="margin-top:6px"><summary>Xem phân bổ kỹ năng thực tế</summary><table style="width:100%;font-size:12px;text-align:left"><tr><th>Kỹ năng</th><th>Mục tiêu</th><th>Thực tế</th></tr>${skills.map(k=>`<tr><td>${H(k.name)}</td><td>${P.skillMatrix[k.id]??'—'}</td><td>${actual.filter(x=>x.meta.skill===k.id).length}</td></tr>`).join('')}</table></details>`;
+        toast(`Đã tạo ${P.secs.reduce((n,s)=>n+s.it.length,0)} câu · Tổng 10 điểm`);
       }
       function scrollToBuilder() {
         const el = document.querySelector('.selector-card');
@@ -4913,7 +5428,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${title}</title>
 <style>
 *{box-sizing:border-box}html{background:#eef2f7}body{margin:0;padding:14px 10px 90px;color:#111;font-family:Arial,sans-serif}.student-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:780px;margin:0 auto 9px;padding:9px 10px;border:1px solid #dce5f0;border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(15,23,42,.10);backdrop-filter:blur(10px)}.student-top b{font-size:13px;color:#334155}.student-top small{display:block;color:#64748b;margin-top:2px}.student-top button{border:0;border-radius:9px;background:#4f6bff;color:#fff;padding:8px 10px;font-weight:700;cursor:pointer}.paper{width:min(760px,100%);margin:auto;background:#fff;padding:22px 18px;border-radius:12px;box-shadow:0 8px 28px rgba(15,23,42,.10);font:16px/1.55 "Times New Roman",serif}.paper table{width:100%;border-collapse:collapse}.paper .hd td{vertical-align:top;text-align:center;width:50%;font-size:15px}.paper .bx{margin:8px 0 10px}.paper .bx td{border:1px solid #111;padding:6px 8px;vertical-align:top;height:24mm;font-size:15px}.paper h3{font-size:16px;margin:14px 0 6px}.paper h3.pt{text-align:center;font-size:17px;margin:18px 0 4px}.paper .hn{font-weight:400;font-style:italic;color:#555;font-size:14px}.qs{columns:2;column-gap:24px}.qs>div{break-inside:avoid;padding:5px 0}.qs.w{columns:1}.qs.w>div{padding:6px 0 12px}.qs.mq{columns:1}.qs.mq>div{padding:4px 0 8px}.qi{display:flex;justify-content:space-between;align-items:center;gap:8px}.op{display:grid;gap:4px 10px;margin-top:4px;padding-left:4px}.op.c4{grid-template-columns:repeat(4,1fr)}.op.c2{grid-template-columns:repeat(2,1fr)}.op.c1{grid-template-columns:1fr}.mc .op span{border:1px solid transparent;border-radius:8px;padding:5px 7px;cursor:pointer;transition:.12s}.mc .op span.selected{border-color:#4f6bff;background:#eef2ff}.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;line-height:1.2;font-size:.95em}.fr>i{font-style:normal;padding:0 3px}.fr>i:first-child{border-bottom:1.5px solid #111}.ln{display:flex;align-items:flex-end;min-height:8mm;overflow:hidden;white-space:nowrap}.ln .dt{flex:1;overflow:hidden;letter-spacing:3px;color:#333;margin-left:4px;line-height:1.1}.fg{flex:none}.end{text-align:center;margin-top:14px;font-style:italic}.student-work{display:block;width:100%;min-height:74px;margin:8px 0 4px;border:1px solid #d7deea;border-radius:9px;padding:8px;font:14px/1.45 Arial,sans-serif;resize:vertical;background:#fbfcfe}.save-note{max-width:760px;margin:8px auto 0;text-align:center;color:#64748b;font-size:11px}
-@media(max-width:700px){body{padding:7px 7px 80px}.student-top{border-radius:10px;margin-bottom:7px}.student-top small{display:none}.paper{padding:14px 12px;border-radius:10px;font-size:16px;box-shadow:none}.paper .qs{columns:1!important}.paper .op.c4,.paper .op.c2,.paper .op.c1{grid-template-columns:1fr}.paper .op span{background:#fafafa}.paper .hd,.paper .hd tbody,.paper .hd tr,.paper .hd td{display:block;width:100%!important}.paper .hd td:first-child{font-size:13px;margin-bottom:4px}.paper .bx,.paper .bx tbody,.paper .bx tr{display:block;width:100%}.paper .bx td:first-child{display:block;width:100%!important;height:auto;min-height:52px}.paper .bx td:nth-child(2),.paper .bx td:nth-child(3){display:none}.paper .qi{align-items:flex-start}.paper .fg{max-width:42%;overflow:auto}.student-work{min-height:90px}}
+@media(max-width:700px){body{padding:7px 7px 80px}.student-top{border-radius:10px;margin-bottom:7px}.student-top small{display:none}.paper{padding:14px 12px;border-radius:10px;font-size:16px;box-shadow:none}.paper .qs{columns:1!important}.paper .op.c4,.paper .op.c2,.paper .op.c1{grid-template-columns:1fr}.paper .op span{background:#fafafa}.paper .hd,.paper .hd tbody,.paper .hd tr,.paper .hd td{display:block;width:100%!important}.paper .hd td:first-child{font-size:13px;margin-bottom:4px}.paper .bx,.paper .bx tbody,.paper .bx tr{display:block;width:100%}.paper .bx td:first-child{display:block;width:100%!important;height:auto;min-height:52px}.paper .bx td:nth-child(2),.paper .bx td:nth-child(3){display:none}.paper .qi{align-items:flex-start}.paper .fg{max-width:100%;overflow:auto}.student-work{min-height:90px}}
 @media print{html{background:#fff}body{padding:0}.student-top,.save-note,.student-work{display:none!important}.paper{width:190mm;box-shadow:none;border-radius:0;padding:6mm 4mm}.paper .qs{columns:2}.paper .qs.w,.paper .qs.mq{columns:1}.paper .hd{display:table}.paper .hd tbody{display:table-row-group}.paper .hd tr{display:table-row}.paper .hd td{display:table-cell}.paper .bx{display:table}.paper .bx tbody{display:table-row-group}.paper .bx tr{display:table-row}.paper .bx td{display:table-cell!important}}
 </style></head><body>
 <div class="student-top"><div><b>🧮 Bài Toán của em</b><small>Trắc nghiệm: chạm vào đáp án. Tự luận: có thể gõ nháp bên dưới.</small></div><button onclick="window.print()">🖨 In / PDF</button></div>
@@ -5082,6 +5597,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
             ],
           }),
           c = [hd, t(""), bx];
+        c.push(t("Thang điểm: 10 điểm. Điểm từng câu ghi trong đề; trắc nghiệm đúng được trọn điểm, sai hoặc bỏ trống được 0 điểm."));
         for (const [i, s] of P.secs.entries()) {
           if (P.both && (i == 0 || (!s.mc && P.secs[i - 1].mc)))
             c.push(
@@ -5092,7 +5608,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
             );
           c.push(
             t(
-              `Bài ${i + 1} (${D(s.pt)} điểm). ${s.m.t}${s.mc ? " (Khoanh vào chữ cái đặt trước đáp án đúng)" : ""}`,
+              `Bài ${i + 1} (${D(s.pt)} điểm). ${s.m.t}${s.mc ? " (Chọn một đáp án)" : ""}`,
               {
                 r: { bold: true },
                 p: { spacing: { before: 240, after: 100 }, keepNext: true },
@@ -5104,9 +5620,9 @@ Phần III - 2 bài toán có lời văn"></textarea>
               ? new Paragraph({
                   keepNext: true,
                   spacing: { after: 60 },
-                  children: [run(`Câu ${j + 1}. `, { bold: true }), ...rr(x[0])],
+                  children: [run(`Câu ${j + 1} (${D(x.points)} điểm). `, { bold: true }), ...rr(x[0])],
                 })
-              : t(`Câu ${j + 1}. ${x[0]}`, {
+              : t(`Câu ${j + 1} (${D(x.points)} điểm). ${x[0]}`, {
                   p: {
                     spacing: {
                       before: s.m.w ? 140 : 0,
@@ -5330,6 +5846,30 @@ Phần III - 2 bài toán có lời văn"></textarea>
         if(d.length>=2&&d.every((z,i)=>i<2||solNear(z,d[i%2]))){return [`Quan sát mức thay đổi giữa các số; quy luật lặp lại theo các bước đã cho.`,`Áp dụng bước tiếp theo, ta được ${solPlain(ans)}.`];}
         return null;
       }
+      // Giữ đủ mọi nhóm đồng hạng; các lựa chọn một nhóm ghi rõ "Chỉ".
+      function largestGroups(values, labels){
+        const max=Math.max(...values), winners=labels.filter((_,i)=>values[i]===max);
+        const answer=winners.length===1 ? `Chỉ ${winners[0]}` : winners.length===labels.length ? `Cả ${winners.slice(0,-1).join(', ')} và ${winners[winners.length-1]}` : winners.join(' và ');
+        const options=[answer,...labels.map(label=>`Chỉ ${label}`)].filter((v,i,a)=>a.indexOf(v)===i);
+        if(options.length<4) options.push(`Cả ${labels.slice(0,-1).join(', ')} và ${labels[labels.length-1]}`);
+        return {max,winners,answer,options};
+      }
+      function solLargestGroups(q){
+        const patterns=[
+          {re:/Số liệu A=(\d+), B=(\d+), C=(\d+)\./,labels:["A","B","C"],unit:"Nhóm"},
+          {re:/Số bạn chọn môn: Toán (\d+), Tiếng Việt (\d+), Mĩ thuật (\d+)\./,labels:["Toán","Tiếng Việt","Mĩ thuật"],unit:"Môn"},
+          {re:/Số sách đọc: Thứ Hai (\d+), Thứ Ba (\d+), Thứ Tư (\d+)\./,labels:["Thứ Hai","Thứ Ba","Thứ Tư"],unit:"Ngày"}
+        ];
+        for(const {re,labels,unit} of patterns){
+          const match=String(q).match(re); if(!match)continue;
+          const values=match.slice(1).map(Number), result=largestGroups(values,labels);
+          const distinct=[...new Set(values)].sort((a,b)=>a-b);
+          const comparison=distinct.length===1 ? `Các giá trị đều bằng ${result.max}.` : `So sánh: ${distinct.join(' < ')}. Giá trị lớn nhất là ${result.max}.`;
+          const conclusion=result.winners.length===1 ? `${unit} ${result.winners[0]} có giá trị ${result.max}, lớn hơn các giá trị còn lại.` : `${unit} ${result.winners.join(' và ')} cùng có giá trị ${result.max}, nên phải nêu đủ ${result.winners.length===labels.length?'cả ba':result.winners.join(' và ')}.`;
+          return [comparison,conclusion];
+        }
+        return null;
+      }
       function solStats(q,ans){
         const low=String(q).toLowerCase(),v=solNums(q),out=solPlain(ans);
         if(/tổng/.test(low)&&/(ngày thứ nhất|đã biết|một phần)/.test(low)&&/(ngày thứ hai|phần còn lại)/.test(low)&&v.length>=2){return [`Đã biết tổng và một phần, muốn tìm phần còn lại thì lấy tổng trừ phần đã biết.`,`${solFmt(v[0])} − ${solFmt(v[1])} = ${out}.`];}
@@ -5363,8 +5903,8 @@ Phần III - 2 bài toán có lời văn"></textarea>
 
       function solCore(x,s){
         const q=String(x.meta?.baseQuestion ?? x[0]), ans=x.meta?.baseAnswer ?? x[1], strand=x.meta?.strand || s?.m?.strand || strandOf(s?.m||{}), low=q.toLowerCase();
-        let steps=[];
-        if(strand==='number'||strand==='arithmetic'||strand==='logic'){const z=solNumber(q,ans);if(z)steps.push(...z);}
+        let steps=solLargestGroups(q)||[];
+        if(!steps.length&&(strand==='number'||strand==='arithmetic'||strand==='logic')){const z=solNumber(q,ans);if(z)steps.push(...z);}
         if(!steps.length&&strand==='ratio'){const z=solRatio(q,ans);if(z)steps.push(...z);}
         if(!steps.length&&strand==='muldiv'){const z=solMulDiv(q,ans);if(z)steps.push(...z);}
         const unk=!steps.length&&strand==='unknown'?solUnknown(q):null;if(unk)steps.push(...unk);
@@ -5424,6 +5964,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         return out;
       }
       function teacherSolution(x,s){
+        if(x.meta?.version===13)return {question:String(x[0]),answer:solPlain(x[1]),steps:x.meta.solution.map(solPlain),tip:x.meta.tip,baseAnswer:solPlain(x[1])};
         const core=solCore(x,s), steps=[...core.steps,...solWrapper(x,core)];
         const skill=x._goalSkill||x.meta?.skill, cog=x._goalCog||x.meta?.cogLevel||1;
         const tip=((COG_GUIDES[skill]?.[Math.max(2,cog)]||[])[0]) || (skill==='accurate'?'Sau khi tính, kiểm tra lại đơn vị và chữ số cuối.':'Đọc lại câu hỏi một lần nữa trước khi chốt đáp án.');
@@ -5432,7 +5973,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
       function toggleAllSolutions(open){ document.querySelectorAll('#answerContent .solution-q').forEach(d=>d.open=!!open); }
 
       function answerText(x, s, j) {
-        return s.mc ? `Câu ${j + 1}: ${LT[x.c]} — ${String(x[1]).replace(FRD, "$1/$2")}` : `Câu ${j + 1}: ${String(x[1]).replace(FRD, "$1/$2")}`;
+        return s.mc ? `Câu ${j + 1} (${D(x.points)} điểm): ${LT[x.c]} — ${String(x[1]).replace(FRD, "$1/$2")}` : `Câu ${j + 1} (${D(x.points)} điểm): ${String(x[1]).replace(FRD, "$1/$2")}`;
       }
       function answerHtml() {
         if (!P) return "";
@@ -5440,7 +5981,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         const body=P.secs.map((s, i) => {
           const qs=s.it.map((x,j)=>{
             const z=teacherSolution(x,s), ans=s.mc?`${LT[x.c]} — ${z.answer}`:z.answer;
-            return `<details class="solution-q"><summary><div class="solution-q-title"><b>Câu ${j+1}</b><div class="solution-answer">Đáp án: ${H(ans)}</div></div></summary><div class="solution-body"><div style="margin-bottom:8px"><b>Đề bài:</b> ${H(z.question)}</div>${z.steps.map((t,k)=>`<div class="solution-step"><span class="solution-step-no">${k+1}</span><div class="solution-step-text">${H(t)}</div></div>`).join("")}<div class="solution-tip"><b>💡 Cách tự kiểm tra:</b> ${H(z.tip)}</div><div class="solution-final">✓ Kết luận: ${H(ans)}</div></div></details>`;
+            return `<details class="solution-q"><summary><div class="solution-q-title"><b>Câu ${j+1} (${D(x.points)} điểm)</b><div class="solution-answer">Đáp án: ${H(ans)}</div></div></summary><div class="solution-body"><div style="margin-bottom:8px"><b>Đề bài:</b> ${H(z.question)}</div>${z.steps.map((t,k)=>`<div class="solution-step"><span class="solution-step-no">${k+1}</span><div class="solution-step-text">${H(t)}</div></div>`).join("")}<div class="solution-tip"><b>💡 Cách tự kiểm tra:</b> ${H(z.tip)}</div><div class="solution-final">✓ Kết luận: ${H(ans)}</div></div></details>`;
           }).join("");
           return `<div class="ans-item"><b>Bài ${i + 1} (${D(s.pt)} điểm) — ${H(s.m.t)}</b><div style="margin-top:8px">${qs}</div></div>`;
         }).join("");
@@ -5480,7 +6021,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
           children.push(new Paragraph({spacing:{before:220,after:100},children:[run(`Bài ${i+1} (${D(s.pt)} điểm) — ${s.m.t}`,{bold:true,size:27})]}));
           s.it.forEach((x,j)=>{
             const z=teacherSolution(x,s), ans=s.mc?`${LT[x.c]} — ${z.answer}`:z.answer;
-            children.push(new Paragraph({spacing:{before:130,after:55},children:[run(`Câu ${j+1}. Đáp án: ${ans}`,{bold:true,size:25})]}));
+            children.push(new Paragraph({spacing:{before:130,after:55},children:[run(`Câu ${j+1} (${D(x.points)} điểm). Đáp án: ${ans}`,{bold:true,size:25})]}));
             children.push(new Paragraph({spacing:{after:55},children:[run(`Đề bài: ${z.question}`,{size:24})]}));
             z.steps.forEach((st,k)=>children.push(new Paragraph({indent:{left:360},spacing:{after:40},children:[run(`Bước ${k+1}: `,{bold:true,size:24}),run(st,{size:24})]})));
             children.push(new Paragraph({indent:{left:360},spacing:{after:45},children:[run("Cách tự kiểm tra: ",{bold:true,size:23}),run(z.tip,{italics:true,size:23})]}));
@@ -5534,6 +6075,7 @@ Phần III - 2 bài toán có lời văn"></textarea>
         }
       }
       document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("answerModal").hidden) hideAnswers(); });
+      configure13();
       render();
     </script>
   </body>
